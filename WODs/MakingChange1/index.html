@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Amount I want in change in pennies 
+        var amount = 168;
+
+        // Get max number of quarters
+        quarters = parseInt(amount/25);
+
+        // Get max amount of dimes from leftover amount 
+        var leftover = amount%25;
+        dimes = parseInt(leftover/10);
+
+        // Get max amount of nickels from leftover
+        var leftover = amount%10;
+        nickels = parseInt(leftover/5); 
+
+        // What's leftover will be 0-4 pennies 
+        pennies = amount%5;
+
+        document.write('Quarters: ', quarters, " ", 'Dimes: ', dimes, " ", 'Nickels: ', nickels, " ", 'Pennies:', pennies)
+    </script>
+</body>
+</html>
