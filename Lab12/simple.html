@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let params = (new URL(document.location)).searchParams;
+        let GET = {};
+        params.forEach(function (value,key) {GET[key] = value; doucment.write("<BR>GOT" + value);});
+    </script>
+    <form name="my_form" action="" method="GET">
+Enter something:
+<input type="text" name="my_textbox" id="the_textbox">
+<Br>
+Enter email:
+<input type="email" namme="my_email"></br>
+<br>
+<select name="select_box">
+    <option value="Regular">Regular</option>
+    <option vale="Special">Special</option>
+</select></br>
+<input type="submit">
+    </form>
+</body>
+</html>

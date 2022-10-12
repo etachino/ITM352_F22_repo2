@@ -1,0 +1,116 @@
+<script>
+    //Login NO server example 
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    function checkLogin() {
+        passwords = { "dport": "spaz", "kazman": "geek" };
+        var username = document.getElementsByName("username_textbox")[0].value; 
+                        // getting value by name not id 
+                        // only asking for the [0] array since we only have one value and we want the first one 
+        var password = document.getElementsByName("password_textbox")[0].value;
+        if (passwords[username] == password) {
+            // window.location.href = "file:logged_in.html";
+            document.write(`Thank you ${username} for loggin in!`);
+        }
+        else { alert('incorrect login!'); }
+    }
+</script>
+
+<body>
+    <label for="username_textbox">Username:</label>
+    <input type='text' name='username_textbox'>
+    <br>
+    <label for="password_textbox">Password:</label>
+    <input type='password' name='password_textbox'>
+    <br>
+    <input type='button' name='submit_button' value='Login' onclick="checkLogin();"> 
+    <script>
+        // when the button is click we are calling a function - checkLogin() 
+    </script>
+</body>
+
+</html>
+<script>
+    // Login: form Data No server
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    function checkLogin() {
+        passwords = { "dport": "spaz", "kazman": "geek" };
+        var username = login_form["username_textbox"].value;
+        var password = login_form["password_textbox"].value;
+        if (passwords[username] == password) {
+            document.write(`Thank you ${username} for loggin in!`);
+        }
+        else { alert('incorrect login!'); }
+    }
+</script>
+<script>
+    // javascript:function used below
+    // this version the form gets submitted instead of hitting the button and going into the function
+</script>
+<form action="javascript:checkLogin();" name='login_form'>
+    <label for="username_textbox">Username:</label><input type='text' name='username_textbox'>
+    <br>
+    <label for="password_textbox">Password:</label><input type='password' name='password_textbox'>
+    <br>
+    <input type='SUBMIT' name='submit_button' value='Login'>
+</form>
+<body>
+</body>
+</html>
+
+<script>
+    // login self-processing page
+    // let params = (new URL(document.location)).searchParams; - a way to get access to all data thats in query string which is coming from the form, object is URL search parameters
+    // params = object 
+    // GET object = var username = GET["username_textbox"];
+    //  window.stop(); - make page not reload the form(webpage) again below once it is logged in successful 
+</script>
+<script>
+    let params = (new URL(document.location)).searchParams;
+    GET = {};
+    params.forEach(function (value, key) { GET[key] = value });
+    if(typeof GET['submit_button'] != 'undefined') {checkLogin();} 
+    function checkLogin() {
+        passwords = { "dport": "spaz", "kazman": "geek" };
+        var username = GET["username_textbox"];
+        var password = GET["password_textbox"];
+        if (passwords[username] == password) {
+            document.write('Thanks for logging on!' + GET["username_textbox"]);
+            window.stop();
+        }
+        else { alert('incorrect login!'); }
+    }
+</script>
+<script>
+    // action is left empty which means it will be GET request for examples.html
+    // login_form['username_textbox'].value = GET['username_textbox'];} - will become a collection of names for the form elements 
+            // becuase of code above it will make the login username sticky, so that once the username is typed in if the page refreshes it will stay in the text box
+</script>
+<body>
+    <form action="" name='login_form' method="GET">
+        <label for="username_textbox">Username:</label><input type='text' name='username_textbox'>
+        <script> if(typeof GET['submit_button'] != 'undefined') {
+            login_form['username_textbox'].value = GET['username_textbox'];} </script>
+        <br>
+        <label for="password_textbox">Password:</label><input type='password' name='password_textbox'>
+        <br>
+        <input type='SUBMIT' name='submit_button' value='Login'>
+    </form>
+</body>
