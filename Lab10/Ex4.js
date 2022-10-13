@@ -2,15 +2,15 @@
 // returns an array of errors or a boolean indicating; true if that string is a non-negative
 // integer and false otherwise 
 
-function isNonNegInt (q, returnErrors = false) {
+function isNonNegInt(quantityString, returnErrors = false) {
     errors = []; // assume no errors at first
-    if(Number(q) != q) errors.push('Not a number!'); // Check if string is a number value
-    if(q < 0) errors.push('Negative value!'); // Check if it is non-negative
-    if(parseInt(q) != q) errors.push('Not an integer!'); // Check that it is an integer
-  
+    if (Number(quantityString) != quantityString) errors.push('Not a number!'); // Check if string is a number value
+    if (quantityString < 0) errors.push('Negative value!'); // Check if it is non-negative
+    if (parseInt(quantityString) != quantityString) errors.push('Not an integer!'); // Check that it is an integer
+
     if (returnErrors) {
         return errors;
-    } else if(errors.length == 0) {
+    } else if (errors.length == 0) {
         return true;
     } else {
         return false;

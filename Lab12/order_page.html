@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Here</title>
+</head>
+
+<body>
+    <script>
+        function isNonNegInt(quantityString, returnErrors = false) {
+            errors = []; // assume no errors at first
+            if (Number(quantityString) != quantityString) { 
+                errors.push('Not a number!'); // Check if string is a number value
+            } else {
+                if (quantityString < 0) errors.push('Negative value!'); // Check if it is non-negative
+                if (parseInt(quantityString) != quantityString) errors.push('Not an integer!'); // Check that it is an integer
+            }
+            if (returnErrors) {
+                return errors;
+            } else if (errors.length == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function checkQuantityTextbox() {
+            let input_string = document.getElementById("quantity_textbox").value;
+            let error_array = isNonNegInt(input_string, true);
+            if (error_array.length == 0) {
+                qty_textbox_message.innerHTML = input_string;
+            } else {
+                qty_textbox_message.innerHTML = error_array.join(";");
+            }
+        
+        }
+        function displayPurchase() {
+            let value = document.getElementById('quantity_textbox').value; 
+        let is_valid = isNonNegInt(value);
+        if (is_valid) {
+        document.write(`Thank you for ordering ${value} things!`);
+        } /*else {
+            document.write(`Enter a valid quantity bozo!`);
+        }*/
+        }
+    </script>
+    <form name="quantity_form" action="display_purchase.html" method="GET">
+         <label>Enter Quantity Desired</label>
+        <input type="text" onkeyup="checkQuantityTextbox();" id="quantity_textbox" name="quantity_textbox"></input>
+         <BR><span id='qty_textbox_message'>Enter quantity</span>
+        <BR><input type ="submit" value="Purchase!"></input>
+    </form>
+</body>
+
+</html>
