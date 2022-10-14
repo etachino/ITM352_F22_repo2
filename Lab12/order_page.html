@@ -45,13 +45,35 @@
             document.write(`Enter a valid quantity bozo!`);
         }*/
         }
+        let params = (new URL(document.location)).searchParams;
+        console.log("Params =" + params);
+        if (params.has("quantity_textbox")) {
+            let the_text= params.get("quantity_textbox");
+
+            // validate the input and if good, thank the user, otherwise print error message
+         if (isNonNegInt(the_text)) {
+            window.location.href = "display_purchase.html" + document.location.search;
+         }
+    }
+
+
+
+        // when "" is goes to self processing = action=""
     </script>
-    <form name="quantity_form" action="display_purchase.html" method="GET">
-         <label>Enter Quantity Desired</label>
+    <form name="quantity_form" action="" method="GET">
+         <label>Enter a Quantity</label>
         <input type="text" onkeyup="checkQuantityTextbox();" id="quantity_textbox" name="quantity_textbox"></input>
          <BR><span id='qty_textbox_message'>Enter quantity</span>
         <BR><input type ="submit" value="Purchase!"></input>
     </form>
+    <script>
+        // Make the form sticky- in the textbox on the webpage (refills textbox)
+     if (params.has('quantity_textbox')) {
+        quantity_form["quantity_textbox"].value = params.get('quantity_textbox');
+     checkQuantityTextbox(quantity_form["quantity_textbox"]);
+}
+
+    </script>
 </body>
 
 </html>
