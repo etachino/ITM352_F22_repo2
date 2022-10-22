@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Smart Phone Store</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Cherry+Swash%7CRaleway" rel="stylesheet">
+
+    <link href="products-style.css" rel="stylesheet">
+
+    <script src="./products_data.js"></script>
+
+</head>
+<form name="submit_form" action="./invoice.html" method="GET">
+<body>
+    <header>
+        <h1>Erin's Used Smart Phone Store</h1>
+    </header>
+
+    <div>
+
+        <main>
+ 
+           <script>
+            for (i=0; i<products.length; i++){
+                document.write(`
+                <section class="item">
+                <h2>${products[i].name}</h2>
+                <h6>Quantities</h6>
+                <input type="text" name="quantity${i}" id="quantity${i}_label">
+                <p>\$${products[i].price}</p>
+                <img src="${products[i].image}">
+            </section>
+                `)
+        }
+           </script>
+        </main>
+    </div>
+    <footer>
+        <h1>
+            Your One Stop For Used Phones
+            <br>
+                <input type="submit" value = "Purchase!">
+        </h1>
+    </footer>
+</form>
+</body>
+
+</html>
