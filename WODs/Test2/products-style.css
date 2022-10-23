@@ -1,10 +1,10 @@
- /* General */
+/* General */
  
 
- html {
+html {
   
   font-family: 'Raleway', sans-serif;
-  background-color: yellow;
+  background-color: lightblue;
   font-size: 10px;
   
 }
@@ -34,7 +34,7 @@ h1 {
 
 h2 {
   font-size: 2rem;
-  color: yellow;
+  color: lightblue;
   text-align: right;
   width: 160px;
   position: absolute;
@@ -60,7 +60,7 @@ h6 {
 
 input[type=text], select {
   width: 10%;
-  right:4%;
+  right: 4%;
   position: absolute;
   margin-top: 70px;
   padding-top: 20px;
@@ -146,7 +146,7 @@ section {
 }
 
 section p {
-  color: yellow;
+  color: white;
   background: black;
   width: 50px;
   height: 50px;
@@ -164,6 +164,7 @@ section p {
 .item {
   background-size: 234px 24px;
 }
+
 
 
 .item img {

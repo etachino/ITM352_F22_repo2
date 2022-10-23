@@ -55,10 +55,10 @@
 <script>
   params = (new URL(document.location)).searchParams;
 
-    for(i=0; i<quantities.length; i++) {
-      quantities[i] = params.get(`quantity${i}`);
-      document.write(quantities[i]);
-    }
+  for(i=0; i<quantities.length; i++) {
+    quantities[i] = params.get(`quantity${i}`);
+    document.write(quantities[i]);
+  }       
 </script>
 <body>
     <table border="2">
