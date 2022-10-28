@@ -1,0 +1,75 @@
+
+    [
+        {
+        "name" : "Playbox Cat Tower with Ball Track",
+        "price" : 164.99,
+        "image" : "https://www.petsmart.com/cat/beds-and-furniture/furniture-and-towers/whisker-city-60-in-playbox-ball-track-with-scratcher-toys-cat-tree-linen-61389.html?cgid=200102&fmethod=Browse",
+        "quantity_available" : 20
+        },
+        {
+        "name" : "Cozy Inn Cat Tower",
+        "price" : 103.99,
+        "image" : "https://www.petsmart.com/cat/beds-and-furniture/furniture-and-towers/whisker-city-cozy-inn-cat-tower-color-varies-5001.html?cgid=200102&fmethod=Browse",
+        "quantity_available" : 15
+        },
+        {
+        "name" : "Cream Grande Cat Tower",
+        "price" : 75.99,
+        "image" : "https://www.petsmart.com/cat/beds-and-furniture/furniture-and-towers/trixie-baza-grande-cat-tower-35009.html?cgid=200102&fmethod=Browse",
+        "quantity_available" : 25
+        },
+        {
+        "name" : "Plush Multi-Cat Kitten Tree & Condo",
+        "price" : 57.99,
+        "image" : "https://www.chewy.com/yaheetech-51-in-plush-multi-cat/dp/269114",
+        "quantity_available" : 20
+            },
+        {
+        "name" : "Scratch Scroll Cat Scratcher",
+        "price" : 19.97,
+        "image" : "https://www.chewy.com/smartykat-scratch-scroll-cat/dp/135025g",
+        "quantity_available" : 50
+        },
+        {
+        "name" : "Scratch & Roll Scratcher Cat Toy",
+        "price" : 16.57,
+        "image" : "https://www.chewy.com/frisco-scratch-roll-scratcher-cat-toy/dp/193218",
+        "quantity_available" : 40
+        },
+        {
+         "name" : "Fall Squirrel & Acorn Cat Toy",
+        "price" : 21.98,
+        "image" : "https://www.chewy.com/frisco-fall-squirrel-acorn/dp/370423",
+        "quantity_available" : 30
+         },
+        {
+        "name" : "Paperboard Vertical Scratcher Cat Toy",
+        "price" : 32.48,
+        "image" : "https://www.chewy.com/way-basics-zboard-paperboard-vertical/dp/306852",
+        "quantity_available" : 20
+        },
+        {
+        "name" : "Cats Toy Variety Pack",
+        "price" : 4.97,
+        "image" : "https://www.chewy.com/hartz-just-cats-toy-variety-pack-13/dp/166064",
+        "quantity_available" : 50
+        },
+        {
+        "name" : "Crinkle Balls Indoor Cat Toy",
+        "price" : 5.70,
+        "image" : "https://www.chewy.com/sungrow-kitty-crinkle-balls-indoor/dp/241960",
+        "quantity_available" : 60
+        },
+        {
+        "name" : "Cat Toys and Tri-Tunnel",
+        "price" : 25.61,
+        "image" : "https://www.chewy.com/frisco-branded-pack-frisco-peek-boo/dp/582382",
+        "quantity_available" : 50
+        },
+        {
+        "name" : "Turbo Lattice Ball Cat Toy",
+        "price" : 1.99,
+        "image" : "https://www.chewy.com/turbo-lattice-ball-cat-toy/dp/228784",
+        "quantity_available" : 70
+        }
+    ]

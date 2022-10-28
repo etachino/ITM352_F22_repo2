@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./product_data.js"></script>
+    <title>Receipt Page</title>
+</head>
+<body>
+    <script>
+        function isNonNegativeInteger(queryString, returnErrors = false) {
+    errors = []; // assume no errors at first
+    if (Number(queryString) != queryString) {
+        errors.push('Not a number!'); // Check if string is a number value
+    } else {
+        if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
+        if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
+    }
+    if (returnErrors) {
+        return errors;
+    } else if (errors.length == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+let params = (new URL(document.location)).searchParams;
+var q = params.get('quantity');
+
+if (typeof q != 'undefined') {
+    if (isNonNegativeInteger(q)) {  // We have a valid quantity
+        
+        let brand = products[0]['name'];
+        let brand_price = products[0]['price'];
+
+        document.write(`<H1>Receipt</H1><BR>Thank you for purchasing <B>${q}</B> ${brand} at ${brand_price} each for a total of ${brand_price * q}`);
+    } else {
+        document.write('Enter a valid quantity!');
+    }
+} 
+    </script>
+</body>
+</html>

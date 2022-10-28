@@ -28,15 +28,11 @@
             }
         }
 
-        function checkQuantityTextbox(the_object) {
-            let input_string = the_object.value;
-            let error_array = isNonNegativeInteger(input_string, true);
-            if (error_array.length == 0) {
-                qty_textbox_message.innerHTML = input_string;
-            } else {
-                qty_textbox_message.innerHTML = error_array.join("; ");
-            }
+        function checkQuantityTextbox(theTextbox) {
+            errs = isNonNegInt(theTextbox.value, true);
+            document.getElementById(theTextbox.name + '_message').innerHTML = errs.join(", ");
         }
+
 
         function displayPurchase() {
             let value = document.getElementById('quantity_textbox').value;
@@ -70,24 +66,20 @@
 
     </script>
 
-    <form name="quantity_form" action="/process_form" method="POST">
-        <script>for (i=0; i<products.length; i++) {
-            document.write(`<h3>${products[i]["name"]} at \$${products[i]["price"]}</h3>`);
-            document.write(`<h4>${products[i]["total_sold"]} ${products[i]["name"]} have been sold!</h4>`);
-
+<form name='quantity_form' action="process_form" method="POST">
+    <script>
+        for (i in products) {
+            document.write(`<h3>${products[i]["name"]} at \$${products[i]["price"]} (${products[i]["total_sold"]} sold)</h3>`);
+            document.write(`
+    <label for="quantity_textbox">quantity desired:</label>
+    <input type="text" name="quantity_textbox[${i}]" onkeyup="checkQuantityTextbox(this);">
+    <span id="quantity_textbox[${i}]_message">Enter a quantity</span>
+    `);
         }
-        </script>
-
-        <label>Buy Something!</label>
-        <BR>
-        <input type="text" onkeyup="checkQuantityTextbox(this);" id="textbox1" name="text1">
-        </input>
-        <BR>
-        <input type="text" onkeyup="checkQuantityTextbox(this);" id="textbox2" name="text2">
-        </input>
-        <BR><span id='qty_textbox_message'>Enter a quantity</span>
-        <BR><input type="submit" value="Purchase!" name="Submit"></input>
-    </form>
+    </script>
+    <br>
+    <input type="submit" value='Purchase'>
+</form>
 
     <script>
         // Make the form sticky
