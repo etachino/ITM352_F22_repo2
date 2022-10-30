@@ -13,7 +13,7 @@ app.all('*', function (request, response, next) {
 var products = require(__dirname + '/master_product_data.json');
 products.forEach( (prod,i) => {prod.total_sold = 0}); 
 
-app.get("/master_product_data.js", function (request, response, next) {
+app.get('/master_product_data.json', function (request, response, next) {
    response.type('.js');
    var products_str = `var products = ${JSON.stringify(products)};`;
    response.send(products_str);
