@@ -4,7 +4,7 @@
  html {
   
   font-family: 'Raleway', sans-serif;
-  background-color: yellow;
+  background-color: pink;
   font-size: 10px;
   
 }
@@ -19,7 +19,7 @@ body {
 
 h1, h2 {
   
-  font-family: 'Cherry Swash', cursive;
+  font-family: 'Times New Roman', serif;
   margin: 0;
   
   text-align: center;

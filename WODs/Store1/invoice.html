@@ -3,7 +3,7 @@
   quantities = ["orange",5,0,1.6,-3]
 
   function isNonNegInt(quantityString, returnErrors = false) {
-    errors = []; // assume no errors at first
+    errors = []; // assume no errors at first (true statement)
     if (Number(quantityString) != quantityString) errors.push('Not a number!'); // Check if string is a number value
     if (quantityString < 0) errors.push('Negative value!'); // Check if it is non-negative
     if (parseInt(quantityString) != quantityString) errors.push('Not an integer!'); // Check that it is an integer
