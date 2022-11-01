@@ -1,16 +1,11 @@
 var express = require('express'); // importing the express file from node_modules
 var app = express(); //putting imported express files into function named app
-var products_array = require(__dirname + '/product_data.json');
+var products = require(__dirname + '/public/product_data.json');
 // Routing 
 
 // route all other GET requests to files in public 
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
-
-app.get('/test', function (request, response, next) {
-    console.log("Got a test path");
-    next();
-});
 
 // monitor all requests
 app.all('*', function (request, response, next) {
@@ -18,8 +13,8 @@ app.all('*', function (request, response, next) {
    next();
 });
 
-var products_array = require(__dirname + '/product_data.json');
-products_array.forEach( (prod,i) => {prod.total_sold = 0}); 
+var products = require(__dirname + '/public/product_data.json');
+products.forEach( (prod,i) => {prod.total_sold = 0}); 
 
 app.get('/product_data.js', function (request, response, next) {
    response.type('.js');
@@ -27,8 +22,25 @@ app.get('/product_data.js', function (request, response, next) {
    response.send(products_str);
 });
 
+function isNonNegativeInteger(queryString, returnErrors = false) {
+    errors = []; // assume no errors at first
+    if (Number(queryString) != queryString) {
+        errors.push('Not a number!'); // Check if string is a number value
+    } else {
+        if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
+        if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
+    }
+    if (returnErrors) {
+        return errors;
+    } else if (errors.length == 0) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 // process purchase request (validate quantities, check quantity available) taken from lab13 info server ex4
-app.post("/process_form", function (request, response) {
+app.post("/invoice.html", function (request, response) {
     //response.send(request.body)
     var q = request.body['text1'];
     if (typeof q != 'undefined') {
@@ -38,12 +50,12 @@ app.post("/process_form", function (request, response) {
             let brand_price = products[0]['price'];
             products[0].total_sold += Number(q);
 
-            response.send(`<H1>Invoice</H1><BR>Thank you for purchasing <B>${q}</B> ${brand} at ${brand_price} each for a total of ${brand_price * q}`);
+            response.redirect("/invoice.html");
         } else {
             response.send(`${q} is not a valid quantity -- hit the back button`);
         }
     } else {
-        response.send("Enter some quantities!");
+        response.redirect("/invoice.html");
     }
 });
 

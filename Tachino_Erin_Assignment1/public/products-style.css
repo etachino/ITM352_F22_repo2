@@ -21,8 +21,9 @@ h1, h2 {
   
   font-family: 'Times New Roman', serif;
   margin: 0;
-  
   text-align: center;
+  color: lightblue;
+  text-shadow: 2px 2px 1px black;
 }
 
 
@@ -34,7 +35,7 @@ h1 {
 
 h2 {
   font-size: 2rem;
-  color: yellow;
+  color: white;
   text-align: right;
   width: 160px;
   position: absolute;
@@ -45,24 +46,35 @@ h2 {
   padding-top: 0.3rem;
 }
 
-h6 {
+h5 {
   font-size: 1rem;
-  color: white;
+  color: plum;
   text-align: right;
   width: 160px;
   position: absolute;
   right: 4%;
   z-index: 3000;
-  text-shadow: 2px 2px 1px black;
   line-height: 4rem;
-  padding-top: 0.3rem;
+  padding-top: 4rem;
+}
+
+h6 {
+  font-size: 1rem;
+  color: black;
+  text-align: right;
+  width: 160px;
+  position: absolute;
+  right: 4%;
+  z-index: 3000;
+  line-height: 4rem;
+  padding-top: 1.5rem;
 }
 
 input[type=text], select {
   width: 10%;
   right: 4%;
   position: absolute;
-  margin-top: 70px;
+  margin-top: 90px;
   padding-top: 20px;
 }
 
@@ -76,27 +88,6 @@ p {
 
 header, aside, main, footer {
   padding: 20px;
-}
-
-header {
-  border: 5px solid black;
-  border-bottom: 0;
-}
-
-aside {
-  border-right: 5px solid black;
-}
-
-
-body > div {
-  border: 5px solid black;
-  display: flex;
-}
-
-
-footer {
-  border: 5px solid black;
-  border-top: 0;
 }
 
 footer h1 {
@@ -125,7 +116,6 @@ main {
 aside {
   display: flex;
   align-items: stretch;
-  background: url(images/phone_globe.jpg) no-repeat 50% center;
   padding: 50px 0;
 }
 
@@ -140,20 +130,21 @@ aside div {
 section {
   width: 45%;
   margin: 5px;
-  background-color: black;
+  background-color: lightblue;
   position: relative;
   height: 215px;
 }
 
+
 section p {
-  color: yellow;
+  color: white;
   background: black;
   width: 50px;
   height: 50px;
   line-height: 50px;
   text-align: center;
-  border-radius: 50%;
-  box-shadow: 2px 2px 1px yellow;
+  border-radius: 70%;
+  box-shadow: 2px 2px 1px white;
   position: absolute;
   right: 10px;
   bottom: -6px;
