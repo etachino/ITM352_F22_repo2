@@ -41,21 +41,24 @@ function isNonNegativeInteger(queryString, returnErrors = false) {
 
 // process purchase request (validate quantities, check quantity available) taken from lab13 info server ex4
 app.post("/invoice.html", function (request, response) {
-    //response.send(request.body)
-    var q = request.body['text1'];
-    if (typeof q != 'undefined') {
-        if (isNonNegativeInteger(q)) {  // We have a valid quantity
-            
-            let brand = products[0]['name'];
-            let brand_price = products[0]['price'];
-            products[0].total_sold += Number(q);
-
-            response.redirect("/invoice.html");
+    function generate_item_rows(product_quantities_array){
+        for(i=0; i<product_quantities_array.length; i++){
+          if(quantities[i]==0){
+            continue;
+          }  
+          errorArray = isNonNegInt(quantities[i], true);
+            if(errors.length==0){
+              extended_price = product_quantities_array[i] * products[i].price;
+              (subtotal += extended_price)
+            } else {extended_price=0}
+    // Process the form by redirecting to the receipt page
+    var products = request.body[`quantities${i}`];
+    if (typeof products != 'undefined') {
+        if (isNonNegativeInteger($quantities[i])) {  // We have a valid quantity
+            response.redirect('invoice.html?quantity=' + products);
         } else {
-            response.send(`${q} is not a valid quantity -- hit the back button`);
+            response.redirect('products_display.html?error=Invalid%20Quantity&quantity_textbox=' + products); // Lab13 Ex5
         }
-    } else {
-        response.redirect("/invoice.html");
     }
 });
 
