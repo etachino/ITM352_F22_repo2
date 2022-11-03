@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- this produces an invoice AFTER valid quantities have been typed and the customer is ready to check out-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../products.json"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+  <link href="products-style.css" rel="stylesheet">
+
+  <title>Invoice</title>
+</head>
+
+<body>
+  <main>
+  <script>
+  
+  function isNonNegativeInteger(queryString, returnErrors = false) { // isNonNegInt function
+    errors = []; // assume no errors at first
+    if (Number(queryString) != queryString) {
+      errors.push('Not a number!'); // Check if string is a number value
+    } else {
+      if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
+      if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
+    }
+
+    if (returnErrors) { // error portion of isNonNegInt
+      return errors;
+    } else if (errors.length == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  var quantities = [];
+  let params = (new URL(document.location)).searchParams;
+  params.forEach ( // for each iterates through all the keys
+    function(value,key)
+    {
+      quantities.push(value);
+    }
+  )
+
+  function generate_item_rows(quantities) {
+    for (let i in quantities) {
+      if (quantities[i] == 0) {
+        continue;
+      } else {
+      let extended_price = quantities[i] * products[i].price
+      document.write(`
+    <tr>
+      <td align="center"><img src="${products[i].image}" class="img-responsive" style="width:50%; height:auto;" alt="Image"></td>
+      <td>${products[i].name}</td>
+      <td align="center">${quantities[i]}</td>
+      <td align="center">$${(products[i].price).toFixed(2)}</td>
+      <td>$${(quantities[i]*products[i].price).toFixed(2)}</td>
+    </tr>
+      `);
+      subtotal += extended_price
+    }
+    }
+  }
+
+
+    // Compute subtotal
+    var subtotal = 0;
+
+
+  </script>
+
+<h1 class="invoiceheader" style="text-align: center;">Invoice</h1>
+  <table class="invoice-table"> <!-- base css acquired from yt tutorial (https://www.youtube.com/watch?v=biI9OFH6Nmg&ab_channel=dcode)-->
+    <tbody>
+      <thead>
+      <tr>
+        <th align="center">Image</th>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Cost of Item</th>
+        <th>Extended Price</th>
+      </tr>
+    </thead>
+
+      <script>
+        generate_item_rows(quantities);
+
+        // Compute tax
+        var tax_rate = 0.0475;
+        var tax = tax_rate * subtotal;
+
+        // Compute shipping
+        var shipping;
+        if (subtotal < 1000) {
+          shipping = 5;
+        }
+        else if (subtotal >= 1000 && subtotal < 1500) {
+          shipping = 10;
+        }
+        else if (subtotal >= 1500) {
+          shipping = subtotal * 0.02;
+        }
+
+        // Compute grand total
+        var total = tax + subtotal + shipping;
+
+      </script>
+      <tr>
+        <td colspan="5" width="100%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="text-align: right;" colspan="4" width="67%">Sub-total</td>
+        <td width="54%">$
+          <script>document.write(subtotal)</script>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: right;" colspan="4" width="67%">Tax @ 4.75%</span></td>
+        <td width="54%">$
+          <script>document.write(tax.toFixed(2))</script>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: right;" colspan="4" width="67%">Shipping</td>
+        <td width="54%">$
+          <script>document.write(shipping.toFixed(2))</script>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: right;" colspan="4" width="67%"><strong>Total</strong></td>
+        <td width="54%"><strong>$
+            <script>document.write(total.toFixed(2))</script>
+          </strong></td>
+      </tr>
+      <tr>
+        <td style="text-align: center;" colspan="5" width="100%">
+          <b>
+            Shipping Policy:
+            <BR>
+            Orders with subtotals of $0 - $999.99 will be charged $5 for shipping.
+            <BR>
+            Orders with subtotals of $1000 - $1499.99 will be charged $10 for shipping.
+            <BR>Orders with subtotals of $1500 and over will be charged 2% of the subtotal amount.</b>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center;" colspan="5" width="100%">
+        <form action="/products_display.html">
+        <input type="submit" id="button" value='Return to Ordering Screen' id="Return"></input>
+      </form>
+       </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+</body>
+
+</html>
