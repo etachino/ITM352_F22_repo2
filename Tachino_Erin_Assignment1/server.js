@@ -41,7 +41,8 @@ app.post("/invoice.html", function (request, response) {
     let valid = true; // if the quantity is a true number then it is valid 
     let ordered = ""; // creating a string 
     let goodnum = true; // if the number is valid then it is good
-    let error_reason = true; 
+    let error = ""; // IR4 
+    let error_reason = ""; // IR4 
     for (i = 0; i < products.length; i++) {
         let quantity_name = 'quantity' + i;
         let qty = request.body['quantity' + i];
@@ -53,8 +54,9 @@ app.post("/invoice.html", function (request, response) {
             goodnum = false;
         } else if (Number(qty) >= products[i].quantity_available) { // if it is number enter is more than quantity available than this is false 
             valid = false;     
-        } else if (error_reason < qty) {
-            error_reason = false; 
+        } else if (error = "") {
+            isNonNegInt(qty) && qty > 0 && Number(qty) <= products[i].quantity_available; 
+            error.push("Please Enter Valid Number")
         }
     }
      // Errors response redirect 
@@ -62,20 +64,12 @@ app.post("/invoice.html", function (request, response) {
         response.redirect(`products_display.html?error=Invalid%20Quantity,%20Please%20Enter%20Valid%20Number!`);
      } else if (!valid) { // if quantity is greater than quanitity available redirect 
         response.redirect(`products_display.html?error=Invalid%20Quantity,%20Please%20Enter%20Value%20Number%20Equal%20Or$20Less%20Than%20Quantity%20Avaiable!`);
-     } else if (!error_reason) {
-        if (error_reason != "") {
-            document.write(`<input type="submit" value=${error_reason}>`);
-        } else 
-        {
-          document.write(`<input type="submit" value="Check Out!">`);
-        }
      }
      else { // if there are none of these errors redirect to invoice page 
         response.redirect('invoice.html?' + ordered);
      }  
    
-    }
-    
+    } 
 );
 
 
