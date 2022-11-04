@@ -18,35 +18,33 @@ function isNonNegInt(queryString, returnErrors = false) {
     } else {
         return false;
     }
-};
-  function generate_item_rows(product_quantities_array) { // generating the row of data 
+}; 
+function generate_item_rows(product_quantities_array) { // generating the row of data 
+  
     for (i = 0; i < product_quantities_array.length; i++) {
+      
       if (quantities[i] == 0) {
         continue;
       }
-      errorArray = isNonNegInt(quantities, true);
-      if (errorArray.length == 0) {
+      errorArray = isNonNegInt(quantities[i], true);
+      if (errors.length == 0) {
         extended_price = product_quantities_array[i] * products[i].price;
         (subtotal += extended_price)
       } else { extended_price = 0 }
-      
 
-      // IR5 Optional 
       document.write(`
           <tr>
-            <td width="43%"><img src="${products[i].image}" style="width: 20%; height: 20%">${products[i].name}</td> 
+            <td width="43%"><img src="${products[i].image}" style="width: 20%; height: 20%">${products[i].name}</td>
             <td align="center" width="11%">${quantities[i]}</td>
             <td width="13%">\$${products[i].price}</td>
             <td width="54%">\$${extended_price}</td>
           </tr>
           `);
-          subtotal += extended_price;
     }
-  }; 
+  }
 
   // Compute sub-total
   var subtotal = 0
- 
 </script>
 <!DOCTYPE html>
 <html lang="en">
@@ -87,16 +85,18 @@ function isNonNegInt(queryString, returnErrors = false) {
         // Computer Tax
         var tax_rate = 0.0475;
         var tax = tax_rate * subtotal;
-        // Computer Shipping
+
+        // Computer Shipping 
         if (subtotal <= 200) {
-          shipping = subtotal * 0.02 ;
+          shipping = 0.02 * subtotal;
         }
         else if (subtotal <= 300) {
-          shipping = subtotal * 0.05 ;
+          shipping = 0.05 * subtotal;
         }
-        else {
-          shipping = 0;
+        if (subtotal >= 500) {
+          shipping = 0
         }
+
         // Computer Grand total
         var total = subtotal + tax + shipping;
        
@@ -107,7 +107,7 @@ function isNonNegInt(queryString, returnErrors = false) {
       <tr>
         <td style="text-align: center;" colspan="3" width="67%">Sub-total</td>
         <td width="54%">$
-          <script>document.write(subtotal);</script>
+          <script>document.write(subtotal.toFixed(2));</script>
         </td>
       </tr>
       <tr>
@@ -132,7 +132,7 @@ function isNonNegInt(queryString, returnErrors = false) {
       </tr>
     </tbody>
   </table>
-  <div style="font-weight: bold;">
+  <div style="font-weight: bold; text-align: center;">
     OUR SHIPPING POLICY IS:
     <br>
     A subtotal $0 - $200 will be 2% subtotal for shipping
