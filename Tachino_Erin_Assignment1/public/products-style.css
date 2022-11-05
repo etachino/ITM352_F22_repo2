@@ -45,6 +45,16 @@ h2 {
   padding-top: 0.1rem;
 }
 
+h4 {
+  font-size: 1rem;
+  color: plum;
+  text-align: right;
+  position: absolute;
+  right: 4%;
+  z-index: 3000;
+  line-height: 4rem;
+  bottom: 4rem;
+}
 h5 {
   font-size: 1rem;
   color: plum;
@@ -64,7 +74,7 @@ h6 {
   right: 4%;
   z-index: 3000;
   line-height: 4rem;
-  padding-top: 1rem;
+  padding-top: -1rem;
 }
 
 input[type=text], select {
