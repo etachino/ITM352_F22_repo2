@@ -67,29 +67,35 @@ app.get("/register", function (request, response) {
  });
 
  app.post("/register", function (request, response) {
-    // process a simple register form
-    let POST = request.body;
-    console.log(POST);
-    let user_name = POST["username"];
-    let user_pass = POST["password"];
-    let user_email = POST["email"];
-    let user_pass2 = POST["repeat_password"];
 
-    if(users[user_name] == undefined); {
-    users[user_name] = {};
-    users[user_name].name = user_name;
-    users[user_name].password = user_pass;
-    users[user_name].email = user_email;
+    
+   // process a simple register form
+   let POST = request.body;
+   console.log(POST);
+   let user_name = POST["username"];
+   let user_pass = POST["password"];
+   let user_email = POST["email"];
+   let user_pass2 = POST["repeat_password"];
 
-    let data = JSON.stringify(users);
-    fs.writeFileSync(fname,data, 'utf-8');
+  
+   if (users[user_name] == undefined && user_pass == user_pass2) {
+       users[user_name] = {};
+       users[user_name].name = user_name;
+       users[user_name].password = user_pass;
+       users[user_name].email = user_email;
+       users[user_name].repeat_password = user_pass2;
 
-    response.send("got a registation");
- } else {
-    response.send("user" + user_name + "already exsits"); //append all params - search params 
-    // redirct with error message 
- }
- });
+       let data = JSON.stringify(users);
+       fs.writeFileSync(fname, data, 'utf-8');
 
+       response.send("Got a registration");
+   } else if (users[user_name] != undefined && user_pass == user_pass2) {
+       response.send("User " + user_name + " already exists!");
+   } else if (users[user_name] == undefined && user_pass != user_pass2) {
+       response.send("Passwords do not match!");
+   }
+
+
+});
 
 app.listen(8080, () => console.log(`listening on port 8080`));
