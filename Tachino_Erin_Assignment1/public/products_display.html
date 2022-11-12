@@ -43,10 +43,10 @@
         // this is so that when the error occurs this say that it will go to the document location, message pop up is link from the server.js 
         let params = (new URL(document.location)).searchParams;
         // Check for an error and if so, pop up an alert to the user
-        if (params.has("error")) { // alert is marked as error 
+        if (json.parse(params.get("error"))) { // alert is marked as error 
             let err_msg = params.get("error");
             alert(err_msg); // error message is pulled within the sever.js 
-        } if (error != "") { // IR4 REQUIRED if error is there an change the button to what error's value message coming from server.js
+        } if (error_msg != "") { // IR4 REQUIRED if error is there an change the button to what error's value message coming from server.js
     document.write(`<input type="submit" value=${error}>`);
         } else {
     document.write(`<input type="submit" value="Check Out!">`); // if no errors then have button be check out!

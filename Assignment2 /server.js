@@ -1,7 +1,6 @@
 var express = require('express'); // importing the express file from node_modules
 var app = express(); //putting imported express files into function named app
 // Routing 
-var crypto = require('crypto');
 
 // route all other GET requests to files in public 
 app.use(express.static(__dirname + '/public'));
@@ -28,102 +27,8 @@ app.get('/product_data.js', function (request, response, next) {
    response.type('.js');
    var products_str = `var products = ${JSON.stringify(products)};`; //Stringifies the product array in the product_display.json and sets the string to = products_str variable
    response.send(products_str); 
+   console.log(products);
 });
-
-var fs = require('fs');
-var fname = "user_data.json";
-
-if (fs.existsSync(fname)) {
-    var data = fs.readFileSync(fname, 'utf-8');
-    var users = JSON.parse(data);
-    console.log(users);
-} else {
-    console.log("Sorry file " + fname + " does not exist.");
-}
-
-app.get("/login", function (request, response) {
-    // Give a simple login form
-    str = `
-<body>
-<form action="" method="POST">
-<input type="text" name="username" size="40" placeholder="enter username" ><br />
-<input type="password" name="password" size="40" placeholder="enter password"><br />
-<input type="submit" value="Submit" id="submit">
-<br>
-Don't have an account? Register here: <input type="button" onclick="location.href='/register';" value="Register" />
-
-</form>
-</body>
-    `;
-    response.send(str);
- });
-
-app.post("/login", function (request, response) {
-    // Process login form POST and redirect to logged in page if ok, back to login page if not
-    let POST = request.body;
-    let user_name = POST["username"];
-    let user_pass = POST["password"];
-
-    console.log("User name=" + user_name + " password=" + user_pass);
-    
-    if (users[user_name] != undefined) {
-        if (users[user_name].password == user_pass) {
-            response.redirect("/invoice.html");
-        } else {
-            response.redirect("/login?error='Bad password'");
-        }
-    } else {
-        response.redirect("/login?error='Please enter username and password'");
-    }
-});
-
-app.get("/register", function (request, response) {
-    // Give a simple register form
-    str = `
-<body>
-<form action="" method="POST">
-<input type="text" name="username" size="40" placeholder="enter username" ><br />
-<input type="password" name="password" size="40" placeholder="enter password"><br />
-<input type="password" name="repeat_password" size="40" placeholder="enter password again"><br />
-<input type="email" name="email" size="40" placeholder="enter email"><br />
-<input type="submit" value="Submit" id="submit">
-</form>
-</body>
-    `;
-    response.send(str);
- });
-
- app.post("/register", function (request, response) {
-    // process a simple register form
-    let POST = request.body;
-    console.log(POST);
-    let user_name = POST["username"];
-    let user_pass = POST["password"];
-    let user_email = POST["email"];
-    let user_pass2 = POST["repeat_password"];
-
-   
-    if (users[user_name] == undefined && user_pass == user_pass2) {
-        users[user_name] = {};
-        users[user_name].name = user_name;
-        users[user_name].password = user_pass;
-        users[user_name].email = user_email;
-        users[user_name].repeat_password = user_pass2;
-
-        let data = JSON.stringify(users);
-        fs.writeFileSync(fname, data, 'utf-8');
-
-        response.redirect("/invoice.html");
-    } else if (users[user_name] != undefined && user_pass == user_pass2) {
-        response.send("User " + user_name + " already exists!");
-    } else if (users[user_name] == undefined && user_pass != user_pass2) {
-        response.send("Passwords do not match!");
-    }
-
-
- });
-
-
 
 //Taken from the Stor1 WOD
 //check if there are any invalid quantity inputs
@@ -149,7 +54,7 @@ function isNonNegInt(quantityString, returnErrors = false) {
 app.post("/invoice.html", function (request, response) {
     // Process the invoice.html form for all quantities and then redirect if quantities are valid
     let valid = true;  //going to use the boolean to verify if the quantity entered is less than the qty_available 
-    let ordered = ""; //ordered variable creates a string that will be used in URL on the invoice page
+    ordered = ""; //ordered variable creates a string that will be used in URL on the invoice page
     let valid_num= true; 
     for (i = 0; i < products.length; i++) { // Runs loop for all products and their respective entered quantities
         let qty_name = 'quantity' + i; //going to be used to set the url string for the different quantities entered in the textbox for each product 
@@ -178,9 +83,110 @@ app.post("/invoice.html", function (request, response) {
         response.redirect('products_display.html?error=Not Enough Left In Stock');
     } else {
         // If no errors are found, then redirect to the invoice page.
-        response.redirect('invoice.html?' + ordered);
+        response.redirect('login?' + ordered);
     }
 });
+
+var fs = require('fs');
+var fname = "user_data.json";
+
+if (fs.existsSync(fname)) {
+    var data = fs.readFileSync(fname, 'utf-8');
+    var users = JSON.parse(data);
+    console.log(users);
+} else {
+    console.log("Sorry file " + fname + " does not exist.");
+}
+
+app.get("/login", function (request, response) {
+    // Give a login form
+    str = `
+<body>
+<form action="" method="POST">
+<input type="text" name="username" size="40" placeholder="enter username" ><br />
+<input type="password" name="password" size="40" placeholder="enter password"><br />
+<input type="submit" value="Submit" id="submit">
+<br>
+Don't have an account? Register here: <input type="button" onclick="location.href='/register';" value="Register" />
+</form>
+</body>
+    `;
+
+//Product display -> Login + ordered -> invoice + ordered
+//Product display -> Login + ordered -> Register + ordered -> login + ordered -> Invoice + ordered
+    response.send(str);
+ });
+
+app.post("/login", function (request, response) {
+    // Process login form POST and redirect to logged in page if ok, back to login page if not
+    let POST = request.body;
+    let user_name = POST["username"];
+    let user_pass = POST["password"];
+
+    console.log("User name=" + user_name + " password=" + user_pass);
+    
+    if (users[user_name] != undefined) {
+        if (users[user_name].password == user_pass) {
+            //if the user has a valid username and password and was successfully logged in, then redirect to invoice with the product quantities ordered
+            response.redirect('invoice.html?' + ordered); 
+        } else {
+            response.redirect("/login?error='Bad password'");
+        }
+    } else {
+        response.redirect("/login?error='Please enter username and password'");
+    }
+});
+
+app.get("/register", function (request, response) {
+    // Give a register form
+    //Sets the following string into a variable
+    str = ` 
+<body>
+<form action="" method="POST">
+<input type="text" name="username" size="40" placeholder="enter username" ><br />
+<input type="password" name="password" size="40" placeholder="enter password"><br />
+<input type="password" name="repeat_password" size="40" placeholder="enter password again"><br />
+<input type="email" name="email" size="40" placeholder="enter email"><br />
+<input type="submit" value="Submit" id="submit">
+</form>
+</body>
+    `;
+    //sends a response to the users' html request that has been sent to the server. The response is then displayed showing the register page
+    response.send(str); 
+ });
+
+ app.post("/register", function (request, response) {
+    // once users' information is entered into the register page, post then processes the register form
+    let POST = request.body; //Sets all the users' inputted information from their request into the POST variable 
+    console.log(POST); //Writes the user data into a variable
+
+    //The following 4 variables are set to individual attributes of the users' entered information
+    let user_name = POST["username"]; 
+    let user_pass = POST["password"];
+    let user_email = POST["email"];
+    let user_pass2 = POST["repeat_password"];
+
+   //runs an if statement 
+    if (users[user_name] == undefined && user_pass == user_pass2) {
+        users[user_name] = {};
+        users[user_name].name = user_name;
+        users[user_name].password = user_pass;
+        users[user_name].email = user_email;
+        users[user_name].repeat_password = user_pass2;
+        
+        //if the users information is 
+        let data = JSON.stringify(users);
+        fs.writeFileSync(fname, data, 'utf-8'); 
+
+        response.redirect('login?' + ordered);
+    } else if (users[user_name] != undefined && user_pass == user_pass2) {
+        response.send("User " + user_name + " already exists!");
+    } else if (users[user_name] == undefined && user_pass != user_pass2) {
+        response.send("Passwords do not match!");
+    }
+
+
+ });
 
 // start server and if started correctly, display message on the console. 
 app.listen(8080, () => console.log(`listening on port 8080`));
