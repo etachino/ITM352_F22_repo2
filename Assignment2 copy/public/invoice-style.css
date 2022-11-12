@@ -1,0 +1,16 @@
+html {
+    background-color: beige;
+}
+tr:hover {
+    background-color: #77DD77;
+  }
+tr {
+    text-align: center;
+}
+  .shipping_info {
+    position: center;
+  }
+
+div {
+    text-align: center;
+}

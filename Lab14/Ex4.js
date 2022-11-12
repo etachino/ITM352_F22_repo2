@@ -1,21 +1,18 @@
 var express = require('express');
 var app = express();
 
-
 app.use(express.urlencoded({ extended: true }));
 
 var fs = require('fs');
- var fname = "user_data.json";
+var fname = "user_data.json";
 
- if (fs.existsSync(fname)) {
-    var data = fs.readFileSync(fname, 'utf-8') 
-     // can read any data
-
-var users =JSON.parse(data);
-console.log(users);
- } else {
-    console.log("sorry file" + fname + "does not exsit")
- };
+if (fs.existsSync(fname)) {
+    var data = fs.readFileSync(fname, 'utf-8');
+    var users = JSON.parse(data);
+    console.log(users);
+} else {
+    console.log("Sorry file " + fname + " does not exist.");
+}
 
 app.get("/login", function (request, response) {
     // Give a simple login form
@@ -33,22 +30,23 @@ app.get("/login", function (request, response) {
 
 app.post("/login", function (request, response) {
     // Process login form POST and redirect to logged in page if ok, back to login page if not
-   let POST = request.body;
-   let user_name = POST["username"];
-   let user_pass = POST["password"];
+    let POST = request.body;
+    let user_name = POST["username"];
+    let user_pass = POST["password"];
 
-   console.log("User name" + user_name + "password" + user_pass);
-
-   if (users[user_name] != undefined) {
-     if(users[user_name].password == user_pass) {
-        response.send ("Good login for user" + user_name);
+    console.log("User name=" + user_name + " password=" + user_pass);
+    
+    if (users[user_name] != undefined) {
+        if (users[user_name].password == user_pass) {
+            response.send("Good login for user " + user_name);
+        } else {
+            response.redirect("/login?error='Bad password'");
+        }
     } else {
-        response.redirect("/.login");
+        response.redirect("/login?error='No such user'");
     }
 
-   } else {
-    response.redirect("/.login?error=No Such errors");
-   }});
+});
 
 app.get("/register", function (request, response) {
     // Give a simple register form
@@ -67,35 +65,27 @@ app.get("/register", function (request, response) {
  });
 
  app.post("/register", function (request, response) {
+    // process a simple register form
+    let POST = request.body;
+    console.log(POST);
+    let user_name = POST["username"];
+    let user_pass = POST["password"];
+    let user_email = POST["email"];
+    let user_pass2 = POST["repeat_password"];
 
-    
-   // process a simple register form
-   let POST = request.body;
-   console.log(POST);
-   let user_name = POST["username"];
-   let user_pass = POST["password"];
-   let user_email = POST["email"];
-   let user_pass2 = POST["repeat_password"];
+    if (users[user_name] == undefined) {
+        users[user_name] = {};
+        users[user_name].name = user_name;
+        users[user_name].password = user_pass;
+        users[user_name].email = user_email;
 
-  
-   if (users[user_name] == undefined && user_pass == user_pass2) {
-       users[user_name] = {};
-       users[user_name].name = user_name;
-       users[user_name].password = user_pass;
-       users[user_name].email = user_email;
-       users[user_name].repeat_password = user_pass2;
+        let data = JSON.stringify(users);
+        fs.writeFileSync(fname, data, 'utf-8');
 
-       let data = JSON.stringify(users);
-       fs.writeFileSync(fname, data, 'utf-8');
-
-       response.send("Got a registration");
-   } else if (users[user_name] != undefined && user_pass == user_pass2) {
-       response.send("User " + user_name + " already exists!");
-   } else if (users[user_name] == undefined && user_pass != user_pass2) {
-       response.send("Passwords do not match!");
-   }
-
-
-});
+        response.send("Got a registration");
+    } else {
+        response.send("User " + user_name + " already exists!");
+    }
+ });
 
 app.listen(8080, () => console.log(`listening on port 8080`));
