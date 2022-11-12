@@ -10,21 +10,21 @@
     <link href="products-style.css" rel="stylesheet">
 
 </head>
-<form name="quantity_form" action="./invoice.html" method="POST">
+<form name="submit_form" action="./invoice.html" method="POST">
 <body>
     <script>
         // from lab 13 order_page.html, this is so that we can get an error message when an in valid quantity is entered in the text box 
         function isNonNegInt(queryString, returnErrors = false) {
-            errors = []; // assume no errors at first
+            error_array = []; // assume no errors at first
             if (Number(queryString) != queryString) {
-                errors.push('Not a number!'); // Check if string is a number value
+                error_array.push('Not a number!'); // Check if string is a number value
             } else {
-                if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
-                if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
+                if (queryString < 0) error_array.push('Negative value!'); // Check if it is non-negative
+                if (parseInt(queryString) != queryString) error_array.push('Not an integer!'); // Check that it is an integer
             }
             if (returnErrors) {
-                return errors;
-            } else if (errors.length == 0) {
+                return error_array;
+            } else if (error_array.length == 0) {
                 return true;
             } else {
                 return false;
@@ -32,22 +32,21 @@
         }
         // checks that the quantity entered in text box is within the parameters set / lab 13 order_page.html
         function checkQuantityTextbox(the_object) {
-            let input_string = the_object.value;
-            let error_array = isNonNegInt(input_string, true);
+            var error_array = isNonNegInt(the_object.value, true);
             if (error_array.length == 0) {
-                qty_textbox_message.innerHTML = input_string;
-            } else {
-                qty_textbox_message.innerHTML = error_array.join("; ");
-            }
-        }
+                error_array = [`<input type="submit" value=${error_msg}>`];
+            } else if(the_object.value.trim()== '') {
+                error_array = [`<input type="submit" value="Check Out!">`];
+        } document.getElementById(the_object.name + '_label').innerHTML = error_array.join(",");
+    }
         // this is so that when the error occurs this say that it will go to the document location, message pop up is link from the server.js 
         let params = (new URL(document.location)).searchParams;
         // Check for an error and if so, pop up an alert to the user
-        if (json.parse(params.get("error"))) { // alert is marked as error 
-            let err_msg = params.get("error");
-            alert(err_msg); // error message is pulled within the sever.js 
-        } if (error_msg != "") { // IR4 REQUIRED if error is there an change the button to what error's value message coming from server.js
-    document.write(`<input type="submit" value=${error}>`);
+        if (JSON.parse(params.get("error"))) { // alert is marked as error 
+            let error_array = params.get("error");
+            alert(error_array); // error message is pulled within the sever.js 
+        } if (error_array != "") { // IR4 REQUIRED if error is there an change the button to what error's value message coming from server.js
+    document.write(`<input type="submit" value=${error_msg}>`);
         } else {
     document.write(`<input type="submit" value="Check Out!">`); // if no errors then have button be check out!
     };
@@ -77,7 +76,7 @@
     </div>
     <footer>
         <h1>
-            <input type="submit" value="Check Out!">
+        <input type="submit" value="Check Out!">
         </h1>
     </footer>
 </form>
