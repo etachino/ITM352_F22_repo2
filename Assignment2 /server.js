@@ -179,7 +179,7 @@ app.get("/register", function (request, response) {
         fs.writeFileSync(fname, data, 'utf-8'); 
 
         response.redirect('login?' + ordered);
-    } else if (users[user_name] != undefined && user_pass == user_pass2) {
+        } else if (users[user_name] != undefined && user_pass == user_pass2) {
         response.send("User " + user_name + " already exists!");
     } else if (users[user_name] == undefined && user_pass != user_pass2) {
         response.send("Passwords do not match!");

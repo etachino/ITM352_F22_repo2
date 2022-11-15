@@ -31,9 +31,9 @@ function generate_item_rows(product_quantities_array) { // generating the row of
         extended_price = product_quantities_array[i] * products[i].price;
         (subtotal += extended_price)
       } else { extended_price = 0 }
-// IR5 Optional: I used img src and then image array so that the images will pull with the product name stated, I also styled with the width of 20% and height of 20% because I saw that it was a suitble size for the invoice
+
       document.write(`
-          <tr> 
+          <tr>
             <td width="43%"><img src="${products[i].image}" style="width: 20%; height: 20%">${products[i].name}</td>
             <td align="center" width="11%">${quantities[i]}</td>
             <td width="13%">\$${products[i].price}</td>

@@ -1,0 +1,36 @@
+[
+    {  
+      "name":"White",  
+      "price": 20,  
+      "image": "White.jpg",
+      "quantity_available": 12
+    },
+
+    {  
+      "name":"Silver",  
+      "price": 23,  
+      "image": "silver.jpg",
+      "quantity_available": 8
+      },
+  
+    {  
+      "name": "Black",  
+      "price": 26,  
+      "image": "Black.jpg",
+      "quantity_available": 10
+      },
+
+    {  
+      "name":"Gold",  
+      "price": 28,  
+      "image": "gold.jpg",
+      "quantity_available": 7
+    },
+
+    {  
+      "name":"Tropical",  
+      "price": 30,  
+      "image": "NavyTropical.jpg",
+      "quantity_available": 5
+      }  
+  ]

@@ -9,7 +9,7 @@
     <script src="./product_data.js"></script>
 </head>
 
-<form name="submit_form" action="./invoice.html" method="POST">
+<form name="submit_button" action="./invoice.html" method="POST">
 
 <body>
 
@@ -20,42 +20,41 @@
     <script>
         //Taken from Lab13 order_page.new.html
         //Used for the textbox check and to ultimately display error messages under textbox if errors are detected
-        function isNonNegInt(queryString, returnErrors = false) { 
+        function isNonNegInt(qty, returnErrors = false) { 
             errors = []; // assume no errors at first
-            if (Number(queryString) != queryString) {
+            qty = 'quantity' + i;
+            if  (qty < 0 || Number(qty) >= products[i].qty_available || parseInt(qty) != qty) { // if this is true then we will move down to the statement(error.push)
                 errors.push('Not a number!'); // Check if string is a number value
-            } else {
-                if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
-                if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
-                if (queryString == 0 && queryString == '') errors.push('Enter valid quantity'); //result in an error if values of 0 or no value are inputted in the textbox
-            }
-            if (returnErrors) {
-                return errors;
-            } else if (errors.length == 0) {
+            }  if (errors.length == 0) {
                 return true;
             } else {
+                let quantity = error.join("");
                 return false;
             }
         }
-        //Taken from Lab13 order_page.new.html      
+
+        // This function needs to bring back orginal button once valid quantity is input by client 
+    function clickbutton() {
+        document.getElementById("button").value = "Purchase"; // get the button using the id name I gave below in the input, we want the name of the button to be displayed if the quantity enter is valid which is why we use the name id Purchase
+    }
+    // This function is to check if any quantity is even entered in the text boxes, if not we need to say nothing is selected, enter something 
+    function emptyTextBox () { // function declartion this is so we can call the functions anywhere, makes the function global
+        for(i = 0; i < products.length; i++) { // got this for loop from my products display loop below 
+            if (document.getElementById('quantity' + i).value != 0) {
+                return true;
+            } else if (document.getElementById('button').value = "Please enter quantity amount"); {
+                return false; 
+            }
+        }
+    }
+        //Taken from Lab13 order_page.new.html   we also want this function get and check input value    
         function checkQuantityTextbox(theTextbox) { 
                 //checks the textbox for errors and sets true outputs to variable errs. 
                 errs = isNonNegInt(theTextbox.value, true);
                 //if errors are found, then will write the errors in the quantity_message textbox
-                document.getElementById(theTextbox.name + '_message').innerHTML = errs.join(", "); 
+                document.getElementById(theTextbox.name + '_message').innerHTML = errs.join(", "); // .join puts array string together eg. names=["dom","nick","bes"] -> names.join() -> dom,nick,bes
             }
-
-        //Taken from Lab13 order_page.new.html
-        let params = (new URL(document.location)).searchParams;
-
-        //Taken from Lab13 order_page.new.html
-        //displays error message when invalid quantities are entered into textbox
-        console.log("Params=" + params);
-        if (params.has("error")) {
-            let err_msg = params.get("error");
-            alert(err_msg);
-        }
-
+    
     </script>
 
     <div>
@@ -99,7 +98,19 @@
         <h1>
             The Source for the #1 Triathalon Equipement!
             <br>
-            <input class="submit_button" type="submit" value="Purchase!">
+            <input type="submit" name = "Purchase" value="Check Out!" id="button"></input>
+            <script>   
+                //Taken from Lab13 order_page.new.html
+                //Taken from Lab13 order_page.new.html
+                // changes what the button text value 
+                let params = (new URL(document.location)).searchParams;
+                console.log(params);
+                if (params.has("Purchase") == 'Not a valid quantity, please enter valid quantity') {
+                    document.getElementById("button").value = params.get("Purchase");
+                } else if (params.get("Purchase") == 'Quantity Amount Exceeded, please enter valid quantity') {
+                    document.getElementById("button").value = parmas.get ("Purchase");
+                }
+                    </script>
         </h1>
     </footer>
 </body>

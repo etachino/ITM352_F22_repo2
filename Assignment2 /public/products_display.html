@@ -9,54 +9,13 @@
     <script src="./product_data.js"></script>
 </head>
 
-<form name="submit_form" action="./login" method="POST">
+<form name="submit_form" action="./invoice.html" method="POST">
 
 <body>
 
     <header>
         <h1>Island Cycling</h1>
     </header>
-
-    <script>
-        //Taken from Lab13 order_page.new.html
-        //Used for the textbox check and to ultimately display error messages under textbox if errors are detected
-        function isNonNegInt(queryString, returnErrors = false) { 
-            errors = []; // assume no errors at first
-            if (Number(queryString) != queryString) {
-                errors.push('Not a number!'); // Check if string is a number value
-            } else {
-                if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
-                if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
-                if (queryString == 0 && queryString == '') errors.push('Enter valid quantity'); //result in an error if values of 0 or no value are inputted in the textbox
-            }
-            if (returnErrors) {
-                return errors;
-            } else if (errors.length == 0) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        //Taken from Lab13 order_page.new.html      
-        function checkQuantityTextbox(theTextbox) { 
-                //checks the textbox for errors and sets true outputs to variable errs. 
-                errs = isNonNegInt(theTextbox.value, true);
-                //if errors are found, then will write the errors in the quantity_message textbox
-                document.getElementById(theTextbox.name + '_message').innerHTML = errs.join(", "); 
-            }
-
-        //Taken from Lab13 order_page.new.html
-        let params = (new URL(document.location)).searchParams;
-
-        //Taken from Lab13 order_page.new.html
-        //displays error message when invalid quantities are entered into textbox
-        console.log("Params=" + params);
-        if (params.has("error")) {
-            let err_msg = params.get("error");
-            alert(err_msg);
-        }
-
-    </script>
 
     <div>
         <main>
@@ -98,15 +57,59 @@
     <footer>
         <h1>
             The Source for the #1 Triathalon Equipement!
-            <br>
-            <input class="submit_button" type="submit" value="Purchase!">
+            <input id="submit_button" type="submit" value="Purchase!">        
         </h1>
     </footer>
 </body>
 </form>
-<script>
-                if (params.has('quantity')) { //makes the form "sticky"
-            quantity_form["quantity"].value = params.get('quantity');
-            checkQuantityTextbox(quantity_form["quantity"]);}
+<script>   
+//Taken from Lab13 order_page.new.html
+//Used for the textbox check and to ultimately display error messages under textbox if errors are detected
+        function isNonNegInt(queryString, returnErrors = false) { 
+        errors = []; // assume no errors at first
+        if (Number(queryString) != queryString) {
+        errors.push('Not a number!'); // Check if string is a number value
+        } else {
+        if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
+        if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
+        if (queryString == 0 && queryString == '') errors.push('Enter valid quantity'); //result in an error if values of 0 or no value are inputted in the textbox
+        } if (returnErrors) {
+        return errors;
+        } else if (errors.length == 0) {
+        return true;
+        } else { 
+        return false;
+        }
+        }
+        //Taken from Lab13 order_page.new.html      
+        function checkQuantityTextbox(theTextbox) { 
+        //checks the textbox for errors and sets true outputs to variable errs. 
+        errs = isNonNegInt(theTextbox.value, true);
+        //if errors are found, then will write the errors in the quantity_message textbox
+        document.getElementById(theTextbox.name + '_message').innerHTML = errs.join(", "); 
+        }
+
+        let params = (new URL(document.location)).searchParams;
+        // Check for an error and if so, pop up an alert to the user
+        if (error != "") {
+        document.getElementById("submit_button").value = errs;
+        } else { 
+        document.getElementById("submit_button")
+        }
+        if (params.has("error")) { // alert is marked as error 
+        let err_msg = params.get("error");
+        alert(err_msg); // error message is pulled within the sever.js 
+        } if (error != "") { // IR4 REQUIRED if error is there an change the button to what error's value message coming from server.js
+        document.write(`<input type="submit" value=${error}>`);
+        } else {
+        document.write(`<input type="submit" value="Check Out!">`); // if no errors then have button be check out!
+        };
+
+        document.querySelector('submit_button').value = 'Enter Valid Quantity';
+        </script>
+        <script>
+        if (params.has('quantity')) { //makes the form "sticky"
+        quantity_form["quantity"].value = params.get('quantity');
+        checkQuantityTextbox(quantity_form["quantity"]);}
 </script>
 </html>

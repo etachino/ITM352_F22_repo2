@@ -66,7 +66,6 @@ app.post("/invoice.html", function (request, response) {
                 products[i].total_sold += Number(qty); //increments quantities to quantities sold
                 ordered += qty_name + "=" + qty + "&"; //writes the URL string combining the valid quantities entered by the user
             } else if(isNonNegInt(qty) != true) {                 
-
                 valid_num = false;
             } else if(Number(qty) >= products[i].qty_available) {
                 // If the quantities enter are greater then the qty_available, then valid = false (returns)
@@ -76,11 +75,11 @@ app.post("/invoice.html", function (request, response) {
     //from Lab 13 info_server.new.js, errors will redirect to products display page
     //if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement, then redirect to error msg.
     if(!valid_num){ 
-        response.redirect('products_display.html?error=Please Enter Valid Quantity');
+        response.redirect('products_display.html?Purchase=Please Enter Valid Quantity');
     }
     //if quantity available is less then the amount of quantity ordered, then redirect to error page
     if (!valid) {
-        response.redirect('products_display.html?error=Not Enough Left In Stock');
+        response.redirect('products_display.html?Purchase=Not Enough Left In Stock');
     } else {
         // If no errors are found, then redirect to the invoice page.
         response.redirect('login?' + ordered);
