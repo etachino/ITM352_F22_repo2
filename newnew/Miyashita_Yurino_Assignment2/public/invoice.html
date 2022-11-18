@@ -1,0 +1,235 @@
+<!--this invoice is based on Bootdey company invoice template-->
+<!--this is a link to template https://www.bootdey.com/snippets/view/company-invoice  
+    copied both html and css into  invoice.html   and  invoice-style.css   -->
+
+<!--loading product data -->
+<script src="../products.json"></script>
+
+<!-- loading cascading style sheet-->
+    <link rel="stylesheet" href="./css/invoice-style.css">
+
+<!-- identifying which type of files used -->
+    <script type="text/javascript"> </script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+       
+    <title>Invoice</title>    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // taken from Example Assignment 1
+        window.onload = function () {    
+          let params = (new URL(document.location)).searchParams;
+          if (params.has('quantity')) {
+            let quantity = JSON.parse(params.get('quantity'));
+            let quantity_str = '';
+            for (elem in quantity) {
+                quantity_str += quantity[elem] + '\n';
+            }
+          }
+          let fullname = params.get('fullname');
+          document.getElementById("fullname").textContent = fullname;
+        }
+      </script>
+</head>
+<body>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<form name="qtyTextbox" action="/purchase" method="GET"> </form>  <!--loading quantity entered on store.html through server-->
+<div class="page-content container">
+    <div class="page-header text-blue-d2">
+
+        <div class="page-tools">
+
+                </a>
+            </div>
+        </div>
+    </div>
+<!-- display header of invoice-->
+    <div class="container px-0">
+        <div class="row mt-4">
+            <div class="col-12 col-lg-12">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-center text-150">
+                            <span class="text-default-d3">Invoice: Sunday's Book</span><br>
+                            <script>
+                                document.write(`<p class="message"><a href="/registration-update.html${location.search}"> Edit an account</a></p>`)
+                              </script>
+                              <!--display fullname -->
+                        </div>
+                    </div>
+                </div>
+
+
+                <hr class="row brc-default-l1 mx-n1 mb-4" />
+                <!-- display company information on the right side -->
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div>
+                            <span class="text-sm text-grey-m2 align-middle">To:</span>
+                            <span id="fullname" class="text-600 text-110 text-blue align-middle"></span>
+                            <br>
+                            <span class="text-sm text-grey-m2 align-middle">From:</span>
+                            <span class="text-600 text-110 text-blue align-middle">Sunday's Book</span>
+                        </div>
+                        <div class="text-grey-m2">
+                            <div class="my-1">
+                                344 Kaimuki Av
+                            </div>
+                            <div class="my-1"></div>
+                                Honolulu, HI 96822
+                            </div>
+                            <div class="my-1"><i class="fa fa-phone fa-flip-horizontal text-secondary"></i> <b class="text-600">808 909 8888</b></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            <!--invoice table display-->
+                <div class="table-responsive">
+                    <table class="table table-striped table-borderless border-0 border-b-2 brc-default-l1">
+                        <thead class="bg-none bgc-default-tp1">
+                            <tr class="text-white">
+                                <th class="opacity-2">#</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th width="140">Extended price</th>
+                            </tr>
+                        </thead>
+                        
+                        <script>
+                        // taking quary string to array 
+                        // copied from invoice.html from store 1 WODs
+                            let params = (new URL(document.location)).searchParams;
+                            let quantities = JSON.parse(params.get("quantity"));
+                        </script>
+
+
+<script> 
+    var subtotal = 0;
+    for (i = 0; i < products.length; i++) {
+        var extended_price = (products[i].price * quantities[i]) //calculate extended price = quantity entered times product price 
+        subtotal = subtotal + extended_price;    //calculate subtotal 
+        if (quantities[i] != 0) {      //i is not qual to 0 
+            document.write(`
+            <tbody class="text-95 text-secondary-d3">
+            <tr></tr>
+            <tr>
+            <td>${[i+1]}</td>
+            <td><img src="${products[i].image}" style="width:5%" alt="Image">${products[i]['name']}</td>
+            <td>${quantities[i]}</td>
+            <td class="text-95">$${products[i]['price'].toFixed(2)}</td>
+            <td class="text-secondary-d2">$${(products[i]['price'] * quantities[i]).toFixed(2)}</td>
+        </tr> 
+        </tbody>
+       `);
+
+         };
+    }    
+    </script>
+
+                    </table>
+                    </div>
+
+                    <div class="row border-b-2 brc-default-l2"></div>
+                    </div>
+
+                   <script>
+                    //taken from invoice.html from store 1 WODs 
+                    //Compute tax 
+                    let tax_rate = 0.05;
+                    let tax = tax_rate * subtotal;
+
+                    //Computer shipping 
+                    if (subtotal <= 15) {     //when shipping is less than $15, then shipping costs $3
+                     shipping = 3;            
+                        }
+                    else if (subtotal <= 50) {    //when shipping is less than  equal to $50, then shipping costs $5
+                    shipping = 5;                 
+                    }
+                    else {
+                    shipping = 0.05 * subtotal;     //other than conditions above, shipping is 4% of subtotal    
+                    }
+
+
+                    //Compute grand total
+                     let total = subtotal + tax + shipping;
+
+
+                        document.write(`    
+                        <div class="col-12 col-sm-10 text-grey text-90 order-first order-sm-last">
+                            <div class="row my-2">
+                                <div class="col-7 text-right">
+                                    Subtotal
+                                </div>
+                                <div class="col-5">
+                                    <span class="text-120 text-secondary-d1">$${subtotal.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-7 text-right">
+                                    Tax (5%)
+                                </div>
+                                <div class="col-5">
+                                    <span class="text-110 text-secondary-d1">$${tax.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-7 text-right">
+                                   Shipping
+                                </div>
+                                <div class="col-5">
+                                    <span class="text-110 text-secondary-d1">$${shipping.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <div class="row my-2 align-items-center bgc-primary-l3 p-2">
+                                <div class="col-7 text-right">
+                                    Total Amount
+                                </div>
+                                <div class="col-5">
+                                    <span class="text-150 text-success-d3 opacity-2">$${total.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `)
+                    </script>
+                    
+                    <hr />
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <center><table class = "policy"> 
+       <button><a href="complete.html">Submit</a></button>
+
+        <tr>
+            <td colspan="4"> <strong>
+                <br> <!-- explains Sunday Bookstore policy -->
+                SUNDAY BOOKSTORE POLICY:
+                </br>
+                <br>
+                Return only available until a month of purchase
+                </br>
+                <br>
+               Thank you for purchasing!
+                </br>
+            </strong>
+        </tr>
+    </table> 
+</center>
+</style>
+
+   <p></p>
+</body>
+</html>

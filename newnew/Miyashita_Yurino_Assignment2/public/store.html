@@ -1,0 +1,111 @@
+<!--created by Yurino Miyashhita-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunday Bookstore</title>
+  <link href="./css/products-style.css" type="text/css" rel="stylesheet">
+  <link href="images/" rel="images">
+  <script src="./products.json" type="text/javascript">
+  </script>
+  <script>
+    //
+    // Determines valid quantity (If "q" is a negative interger)
+    function isNonNegInt(q, return_errors = false) {
+      errors = []; // assume no errors at first
+      if (q == '') q = 0; // handle blank inputs as if they are 0
+      if (Number(q) != q) errors.push('<b><font color="red">Not a number!</font></b>'); // Check if string is a number value
+      if (q < 0) errors.push('<b><font color="red">Negative value!</font></b>'); // Check if it is non-negative
+      if (parseInt(q) != q) errors.push('<b><font color="red">Not an integer!</font></b>'); // Check that it is an integer
+      return return_errors ? errors : (errors.length == 0);  
+    };
+    
+    // Determines input in textbox
+    function checkQuantityTextbox(qtyTextbox) {   
+      console.log(qtyTextbox)
+      errs = isNonNegInt(qtyTextbox.value, true);
+      if (errs.length == 0) errs = ['Want to purchase: '];  // when entered valid quantity 
+      if (qtyTextbox.value.trim() == '') errs = ['Type desired quantity: '];  //when there is no entry in taxtbox 
+      const productsNumber = Number(qtyTextbox.id.replace('quantity', ''));    //replace messages with "quantity" 
+      if(products[productsNumber].quantity_available < Number(qtyTextbox.value)) errs = ['<b><font color="red">no stock!</font></b>'];
+      console.log(errs.join('<font color="red">, </font>'))  //when we don't have inventory of quantity entered, display error message in red 
+      document.getElementById(qtyTextbox.id + '_label').innerHTML = errs.join('<font color="red">, </font>');
+    };
+      
+    // taken from Example Assignment 1
+    let params = (new URL(document.location)).searchParams;
+    window.onload = function () {    
+      if (params.has('errors')) {
+        var errors = JSON.parse(params.get('errors'));
+        let err_str = '';
+        for (err in errors) {
+          err_str += errors[err] + '\n';
+        }
+        alert(err_str);
+      }
+    }
+  </script>    
+</head>
+
+<body> 
+    <header>
+  <!-- Page Header-->
+	<div class="jumbotron">
+        <div class="container text-center">
+        <hr>
+          <h1><center>Sunday Bookstore</center></h1>   
+        <hr>   
+          <p><strong><center>Welcome to Sunday's Bookstore. Currently, we have 6 books on sell</center></strong></p>
+        </div>
+      </div>
+      <!-- Navigation Bar -->
+      <nav>
+          <div class="menu">
+            <ul class="menu-list">
+              <li class="menu-list-item"><a href="./index.html">Home</a></li>
+              <li class="menu-list-item" class="active"><a href="#">Products</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <form action="./purchase" method="POST">
+    <script>
+        // Print items on page
+        //based on store 1 WODs product_display.html 
+        for(i = 0; i < products.length; i++) {
+            document.write(`
+            <div class="content">
+              <div class="card-list">  <center>
+                <div style="max-width:1200px;margin-top:100px"> </div>
+                <div class="Image"><div class="overlay"> <img src="${products[i].image}" class="img-responsive" style="width:50%" alt="Image"></div></div>
+                <div class="card-listTitle">${products[i].name}</div> by <div class="panel-heading">${products[i].author}</div> 
+                
+                <div class="card-listText">${products[i].description}</div>
+              
+                <div class="card-listText">
+                  <label id = "quantity${i}_label"> Enter Quantity Desired: </label>
+                  <div class="input"><input id="quantity${i}" type = "text"  placeholder = "Quantity Available: ${products[i].quantity_available}" name = "quantity" onkeyup="checkQuantityTextbox(this);"></div>
+                </div>
+            
+              </div>
+            </div>
+            </center>
+            `);
+        }
+    </script>
+</body>
+<br>
+<br>
+
+<footer><!--submit button and submit the quantity entered value"purchase" is detremined in sever.js-->
+    <div class="label"></div>
+       <center> 
+           <input type="submit" value ="purchase" name="purchase_submit" onlick=""></center> 
+        </form>
+    </div>
+
+</footer>
+</html>

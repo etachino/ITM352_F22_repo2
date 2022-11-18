@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="./login" method="POST">
+        <input type="text" name="email" id="email" value="" size="40" placeholder="enter email" ><br />
+            <input type="password" name="password" size="40" placeholder="enter password"><br />
+            <input type="submit" value="Submit" id="error_button">
+    </form>
+    <script>
+        var params = (new URL(document.location)).searchParams;
+            console.log(params);
+            if (params.has("errors")) {
+                document.getElementById("error_button").value = "Invalid Login";};
+            console.log(params.get("errors"));
+        </script>
+        <br>
+        <form action="/register" method="GET">
+        Don't have an account? Register here: <a onclick="window.location='./register.html'+window.location.search;">Click here to regsiter<a>
+        </form>
+</body>
+<script>
+            if (params.has('email')) { //makes the form "sticky"
+        document.getElementById["email"].value = params.get('email');};
+</script>
+</html>

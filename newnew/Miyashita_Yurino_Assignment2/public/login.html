@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in</title>
+  <!--load cascading style sheet-->
+  <link rel="stylesheet" href="./css/login-style.css">
+  <script>
+    // taken from Example Assignment 1
+    //display error when page is loaded 
+    let params = (new URL(document.location)).searchParams;
+    window.onload = function () {
+      if (params.has('errors')) {
+        let errors = JSON.parse(params.get('errors'));
+        let err_str = '';
+        for (err in errors) {
+          err_str += errors[err] + '\n';
+        }
+        alert(err_str);
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="login-page">
+  <div class="form">
+    <form class="login-form" action="login_user" method="POST">
+      <input id="#" type="text" id="#" placeholder="email" required name="email"/>
+      <input id="#" type="password" id="#" placeholder="password" required name="password"/>
+      <button>login</button>
+      <script>
+        document.write(`<p class="message">Not registered? <a href="/registration.html${location.search}"> Create an account</a></p>`)
+      </script>
+    </form>
+
+  </div>
+
+</div>
+</body>
+</html>

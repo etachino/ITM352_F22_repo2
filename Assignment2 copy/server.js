@@ -1,7 +1,12 @@
 var express = require('express'); // importing the express file from node_modules
 var app = express(); //putting imported express files into function named app
 // Routing 
+const crypto = require('crypto');
+var fs = require('fs');
 
+ var user_data = require(__dirname + '/user_data.json');
+
+                
 // route all other GET requests to files in public 
 app.use(express.static(__dirname + '/public'));
 
@@ -47,27 +52,33 @@ function isNonNegInt(quantityString, returnErrors = false) {
     } else {
         return false;
     }
-};
+}
+
+app.get("/invoice.html", function (request, response) {
+    // Give a simple invoice using query string data
+    response.send(`You want ${request.query['quantity']} items`);
+    });
 
 // process POST request which will validate the quantities and check the qty_available. 
 //Code source: Worked with Erin Tachino and Professor Kazman, Lab13-Ex5. 
 app.post("/invoice.html", function (request, response) {
     // Process the invoice.html form for all quantities and then redirect if quantities are valid
     let valid = true;  //going to use the boolean to verify if the quantity entered is less than the qty_available 
+    var params = new URLSearchParams(request.body); 
     ordered = ""; //ordered variable creates a string that will be used in URL on the invoice page
     let valid_num= true; 
     for (i = 0; i < products.length; i++) { // Runs loop for all products and their respective entered quantities
         let qty_name = 'quantity' + i; //going to be used to set the url string for the different quantities entered in the textbox for each product 
         let qty = request.body['quantity' + i]; //pulls product quantities for i and sets it to qty. to be used
         if (qty == "") continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
-            if (isNonNegInt(qty) && qty > 0 && Number(qty) <= products[i].qty_available) {
+            if (isNonNegInt(qty) && qty > 0 && Number(qty) <= products[i].qty) {
             //if the qty meets the above criteria, then update the product's qty sold and available with the respective product quantities entered
-                products[i].qty_available -= Number(qty);//subtracts quantities from qty_available
+                products[i].qty -= Number(qty);//subtracts quantities from qty_available
                 products[i].total_sold += Number(qty); //increments quantities to quantities sold
                 ordered += qty_name + "=" + qty + "&"; //writes the URL string combining the valid quantities entered by the user
             } else if(isNonNegInt(qty) != true) {                 
                 valid_num = false;
-            } else if(Number(qty) >= products[i].qty_available) {
+            } else if(Number(qty) >= products[i].qty) {
                 // If the quantities enter are greater then the qty_available, then valid = false (returns)
                 valid = false;
              }
@@ -82,23 +93,22 @@ app.post("/invoice.html", function (request, response) {
         response.redirect('products_display.html?Purchase=Not Enough Left In Stock');
     } else {
         // If no errors are found, then redirect to the invoice page.
-        response.redirect('login?' + ordered);
+        response.redirect('./login?'+ params.toString())
     }
 });
+// https://www.folkstalk.com/2022/10/how-to-hash-with-crypto-node-js-with-code-examples.html
+// https://www.folkstalk.com/2022/09/hashing-in-node-js-with-code-examples-2.html
+function generateHash(originalText) {
+    const hash = crypto.createHash('sha256', "password")
+    const crypted = hash.update(originalText, 'sha256', 'base64')
+    const hashed = crypted + hash.digest('base64')
+    return hashed;
+  }
 
-var fs = require('fs');
-var fname = "user_data.json";
-
-if (fs.existsSync(fname)) {
-    var data = fs.readFileSync(fname, 'utf-8');
-    var users = JSON.parse(data);
-    console.log(users);
-} else {
-    console.log("Sorry file " + fname + " does not exist.");
-}
 
 app.get("/login", function (request, response) {
     // Give a login form
+    params = new URLSearchParams(request.query);
     str = `
 <body>
 <form action="" method="POST">
@@ -113,30 +123,27 @@ Don't have an account? Register here: <input type="button" onclick="location.hre
     response.send(str);
  });
 
-app.post("/login", function (request, response) {
+ app.post("/login", function (request, response,) {
+    let params = new URLSearchParams(request.query);
     // Process login form POST and redirect to logged in page if ok, back to login page if not
-    let POST = request.body;
-    let user_name = POST["username"];
-    let user_pass = POST["password"];
-
-    console.log("User name=" + user_name + " password=" + user_pass);
-    
-    if (users[user_name] != undefined) {
-        if (users[user_name].password == user_pass) {
-            //if the user has a valid username and password and was successfully logged in, then redirect to invoice with the product quantities ordered
-            response.redirect('invoice.html?' + ordered); 
+    the_username = request.body['username'].toLowerCase();
+    the_password = request.body['password'];
+    const encryption = generateHash(the_password);
+    if (typeof user_data[the_username] != 'undefined') {
+        if (user_data[the_username].password == the_password) {
+            response.redirect('./invoice.html?'+ params.toString());
         } else {
-            response.redirect("/login?error='Bad password'");
+            response.send(`Wrong password!`);
         }
-    } else {
-        response.redirect("/login?error='Please enter username and password'");
+        return;
     }
+    response.send(`${the_username} does not exist`);
 });
-
 app.get("/register", function (request, response) {
     // Give a register form
     //Sets the following string into a variable
-    str = ` 
+    params = new URLSearchParams(request.query);
+     str = ` 
 <body>
 <form action="" method="POST">
 <input type="text" name="username" size="40" placeholder="enter username" ><br />
@@ -155,6 +162,8 @@ app.get("/register", function (request, response) {
     // once users' information is entered into the register page, post then processes the register form
     let POST = request.body; //Sets all the users' inputted information from their request into the POST variable 
     console.log(POST); //Writes the user data into a variable
+    params = new URLSearchParams(request.query); 
+
 
     //The following 4 variables are set to individual attributes of the users' entered information
     let user_name = POST["username"]; 
@@ -163,21 +172,17 @@ app.get("/register", function (request, response) {
     let user_pass2 = POST["repeat_password"];
 
    //runs an if statement 
-    if (users[user_name] == undefined && user_pass == user_pass2) {
-        users[user_name] = {};
-        users[user_name].name = user_name;
-        users[user_name].password = user_pass;
-        users[user_name].email = user_email;
-        users[user_name].repeat_password = user_pass2;
-        
-        //if the users information is 
-        let data = JSON.stringify(users);
-        fs.writeFileSync(fname, data, 'utf-8'); 
+    if (user_data[user_name] == undefined && user_pass == user_pass2) {
+        user_data[user_name] = {};
+        user_data[user_name].name = user_name;
+        user_data[user_name].password = user_pass;
+        user_data[user_name].email = user_email;
+        user_data[user_name].repeat_password = user_pass2;
 
-        response.redirect('login?' + ordered);
-    } else if (users[user_name] != undefined && user_pass == user_pass2) {
+        response.redirect('login?' + params.toString());
+    } else if (user_data[user_name] != undefined && user_pass == user_pass2) {
         response.send("User " + user_name + " already exists!");
-    } else if (users[user_name] == undefined && user_pass != user_pass2) {
+    } else if (user_data[user_name] == undefined && user_pass != user_pass2) {
         response.send("Passwords do not match!");
     }
 

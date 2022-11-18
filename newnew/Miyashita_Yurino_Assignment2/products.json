@@ -1,0 +1,51 @@
+[
+    {
+            "name": "Atomic Habits",
+            "author":"James Clear",
+            "price": 11.98,
+            "quantity_available":15,
+            "image": "./images/AtomicHabits.jpg", 
+            "description":""
+    },
+     {
+            "name": "Rich Dad Poor Dad",
+            "author":"Robert T Kiyosaki",
+            "price": 7.68,
+            "quantity_available":23,
+            "image": "./images/RichDadPoorDad.jpg",
+            "description":""
+    },
+    {
+            "name": "Crazy Rich Asian",
+            "author":"Kevin Kwan",
+            "price": 9.99,
+            "quantity_available":9,
+            "image": "./images/CrazyRichAsian.jpg",
+            "description":""
+    },
+    {
+            "name": "Talking to Strangers",
+            "author":"Malcolm Gladwell",
+            "price": 9.65,
+            "quantity_available":31,
+            "image": "./images/TalkingtoStrangers.jpg",
+            "description":""
+    },
+   {
+            "name": "Seven Husbands of Evelyn Hugo",
+            "author":"Taylor Jekkins Reid",
+            "price": 21.92,
+            "quantity_available":4,
+            "image": "./images/SevenHusband.jpg",
+            "description":""
+    },
+    {
+            "name": "It Ends with Us",
+            "author":"Colleen Hoover",
+            "price": 11.98,
+            "quantity_available":5,
+            "image": "./images/ItEndsWithUs.jpg",
+            "description":""
+    }
+]
+    

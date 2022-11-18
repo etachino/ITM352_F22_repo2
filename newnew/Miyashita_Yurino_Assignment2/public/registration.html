@@ -1,0 +1,46 @@
+<!--created by Yurino Miyasshita-->
+<!-- this page for new user to create new account-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration</title>
+  <!--load cascading style sheet-->
+  <link rel="stylesheet" href="./css/login-style.css">
+
+  <script>
+    // taken from Example Assignment 1
+    let params = (new URL(document.location)).searchParams;
+    window.onload = function () {
+      if (params.has('errors')) {
+        let errors = JSON.parse(params.get('errors'));
+        let err_str = '';
+        for (err in errors) {
+          err_str += errors[err] + '\n';
+        }
+        alert(err_str);
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="login-page">
+  <div class="form">
+    <form action="registrate_user" method="POST">
+      <input type="text" placeholder="name" name="fullname"/>
+      <input type="text" placeholder="email address" name="email"/>
+      <input type="password" placeholder="password" required name="password"/>
+      <input type="password" placeholder="comfirm password" required name="confirm_Password"/>
+      <center> 
+        <input type="submit" value ="Register" name="register_submit" onlick=""></center>
+      
+        <!--go back to log in page  or go to invoice -->
+    </form>
+
+  </div>
+
+</div>
+</body>
+</html>
