@@ -48,7 +48,7 @@ app.post("/process_form", function (request, response) {
         q = qtys[i];
         let brand = products[i]['name'];
         let brand_price = products[i]['price'];
-        if (isNonNegInt(q)) {
+        if (isNonNegativeInteger(q)) {
             products[i]['total_sold'] += Number(q);
             receipt += `<h3>Thank you for purchasing: ${q} ${brand}. Your total is \$${q * brand_price}!</h3>`; // render template string
         } else {

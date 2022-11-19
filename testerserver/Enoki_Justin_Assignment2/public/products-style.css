@@ -1,0 +1,237 @@
+/* General */
+ 
+
+html {
+  
+  font-family: 'Montserrat';
+  background-image: url("https://raw.githubusercontent.com/Enokij/hello-world/main/pictures/switch%20background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-color: white;
+  font-size: 10px;
+  
+}
+
+body {
+  width: 800px;
+  margin: 0 auto;
+}
+
+/* Typography */
+
+
+h1, h2 {
+  margin: 0;
+  text-align: center;
+}
+
+
+h1 {
+  font-size: 5rem;
+  background-size: 48px 48px;
+  background-blend-mode: lighten;
+  color: white;
+  text-shadow: 2px 2px 1px gray;
+}
+
+h2 {
+  font-size: 2rem;
+  color: white;
+  text-align: right;
+  width: 160px;
+  position: absolute;
+  right: 4%;
+  z-index: 3000;
+  text-shadow: 2px 2px 1px gray;
+  line-height: 2rem;
+  padding-top: 0.3rem;
+}
+
+p {
+  font-size: 1.5rem;
+  color: white;
+}
+
+
+/* block styling */
+
+
+header, aside, main, footer {
+  padding: 20px;
+}
+
+header {
+  border: 5px solid black;
+  border-bottom: 0;
+}
+
+aside {
+  border-right: 5px solid black;
+}
+
+
+body > div {
+  border: 5px solid black;
+  display: flex;
+}
+
+
+footer {
+  border: 5px solid black;
+  border-top: 0;
+  text-align: center;
+}
+
+footer h1 {
+  font-family: 'Montserrat';
+  font-size: 3rem;
+}
+
+aside {
+  flex: 3;
+}
+
+main {
+  flex: 7;
+  border: 5px solid black;
+}
+
+
+/*  Form styling */
+
+
+main {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}
+
+aside div {
+  margin-bottom: 20px;
+}
+
+
+/* Styling the products */
+
+div.policy {
+  font-family: 'Montserrat';
+  text-align: center;
+  border: 3px solid black;
+  margin-top: -2px;
+  background-color: rgb(146, 160, 201);
+}
+
+footer.invoiceFooter {
+  font-family: 'Montserrat';
+  border: 3px solid black;
+  margin-top: -2px;
+  background-color: peachpuff;
+}
+
+
+#available {
+  color: white;
+  text-shadow: 2px 2px 1px gray;
+  font-size: 15px;
+}
+
+section {
+  width: 40%;
+  margin: 5px;
+  background-color: peachpuff;
+  box-shadow: 3px 3px 2px gray;
+  position: relative;
+  height: 230px;
+  border-radius: 8%;
+}
+
+section p {
+  color: white;
+  background: black;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: 2px 2px 1px white;
+  position: absolute;
+  right: 10px;
+  bottom: -6px;
+  z-index: 2000;
+}
+
+.item {
+  background-size: 234px 24px;
+}
+
+
+.item img {
+    width: 200px;
+    height: 200px; 
+    border-radius: 8%;
+    display: block;
+    position: absolute;
+    bottom: 0px;  
+}
+
+input {
+  background: black;
+  box-shadow: inset 1px 1px 1px white;
+  color: white;
+  border: none;
+  padding: 5px;
+  width: 201.5px;
+}
+
+section input {
+  color: lightslategray;
+  background: rgb(240, 238, 238);
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  box-shadow: 2px 2px 1px white;
+  position: absolute;
+  right: 10px;
+  bottom: 80px;
+  z-index: 2000;
+}
+
+section label {
+  width: 50px;
+  height: 50px;
+  color: white;
+  text-align: center;
+  position: absolute;
+  right: 10px;
+  bottom:110px;
+  z-index: 2000;
+}
+
+table {
+  font-family: 'Montserrat';
+  font-size: 3rem;
+  border: 2px solid;
+  border-collapse: collapse;
+}
+
+th {
+  font-family: 'Montserrat';
+  background-color: peachpuff;
+  color: black;
+  border: 2px solid black;
+
+}
+
+td {
+  font-family: 'Montserrat';
+  border: 2px solid;
+}
+
+tr {
+  font-family: 'Montserrat';
+}
+
+tr:nth-child(even) {background-color: lightgrey;}
+tr:nth-child(odd) {background-color: white;}
+

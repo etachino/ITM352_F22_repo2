@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="user-update-style.css" rel="stylesheet">
+    <title>Edit credentials</title>
+</head>
+<h1>Already have an account, but want to change ALL your credentials?</h1>
+<h2>Edit all here!</h2>
+<body>
+    <body>
+        <form action="/user_update" method="POST">
+            <h2><input type="text" name="fullname" size="40" placeholder="Update full name" ><br />
+                <input type="password" name="password" size="40" placeholder="Update password"><br />
+                    <input type="password" name="repeat_password" size="40" placeholder="Update password again"><br />
+                        <input type="email" name="email" size="40" placeholder=" Update email"><br /></h2>
+                           <h3><input type="submit" value="Submit" id="submit"></h3>
+        </form>
+</body>
+</html>
