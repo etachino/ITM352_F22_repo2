@@ -105,6 +105,8 @@ app.post("/process_purchase", function (request, response) {
                 valid_num = false;
             } else if(Number(qty) >= products[i].qty_available) { // If the quantities enter are greater then the qty_available, then valid = false (returns)
                 valid = false;
+             } if (qty > 0) { // if quantites is greater than 0 then this statement is true
+                 var zero_qty = true;
              }
             }
     //from Lab 13 info_server.new.js. For Individual Requirement 4 (A1).
@@ -114,7 +116,10 @@ app.post("/process_purchase", function (request, response) {
         response.redirect('products_display.html?submit_button=Please Enter Valid Quantity!' + '&' + order_str);
     /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
     and set the submit_button parameter to the respective error message*/
-    } else if (valid == false) {
+    } if(typeof zero_qty == 'undefined') { // if zero_qty equal underfined aka no quantities inputted than redirect and stay on products_display.html
+        response.redirect('products_display.html?submit_button=Need to select quantity to purchase!' + '&' + order_str);
+    }
+    else if (valid == false) {
         response.redirect('products_display.html?submit_button=Not Enough Left In Stock!' + '&' + order_str);
     } else {
         // If no errors are found, then redirect to the invoice page.
@@ -227,28 +232,6 @@ app.post("/register", function (request, response) {
     }
  });
 
- app.post("/redirect_tologin", function (request, response) {
-    // once users' information is entered into the register page, post then processes the register form
-    let POST = request.body;  // Sets all the users inputted information from their request into the POST variable  
-     entered_email = POST["email"].toLowerCase(); // emailed entered will equal what the user entered and then convert to all lowercase
-    var user_pass = generateCipher(POST['password']); // IR1 we want to encrypt the password 
-    console.log("User email=" + entered_email + " password=" + user_pass);
-    if (typeof users[entered_email] != 'undefined') { // this validates that the email  makes sure that if the entered email matches one of the email's in the user_data.json
-        if(users[entered_email].password == user_pass) { // validates if the input password matches the password in the server data base (user_data.json)
-           qty_ordered['email'] = users[entered_email.name];
-           let params = new URLSearchParams(qty_ordered); // searches for the store data from previous page and puts it in the params
-           response.redirect('/user_update.html?' + '&' + order_str + params.toString());
-           return;
-        } else {
-            request.query.email = entered_email; // keeps form sticky
-            request.query.LoginError = 'Invalid password!' // if the password is incorrect, push an error and not let the user proceed
-        }
-    } else { 
-        request.query.LoginError = 'Invalid username!';
-    }
-    params = new URLSearchParams(request.query);
-    response.redirect('./login.html?' + order_str + params.toString()); // if there is an error during login, redirect back to login
-    });
 
  app.post("/user_update", function (request, response) {
     // once users' information is entered into the register page, post then processes the register form
@@ -270,49 +253,51 @@ app.post("/register", function (request, response) {
 
 
      
-     // validate name
-    if(onlyletters.test(POST.name)) {
+      // using an if statement to validate what we call "name" from our user_data.json
+    if(onlyletters.test(POST.name)) {  // calling the variable that has the rule for only letters, the name cannot be anything but letters
     } else {
-        reg_error['name'] = 'Must only use valid letters';
+        reg_error['name'] = 'Must only use valid letters'; // if there are any nonletter within name then the query string will have this message
     }
-
+    // validating that name is at least 2 characters long and under 30 characters
     if(POST.name > 30 || POST.name < 2) {
         reg_error['name'] = 'Full name must be at least 2 characters long, no more than 30 character allowed'
-    } 
+    } // if it is shorter than 2 or above 30 then this message will appear in the query string 
 
-    // validate email
+    // if statement to check if email added is valid to the requirements called by the variable email_valid_input
     if(email_valid_input.test(POST.email)) {
     } else {
         reg_error['email'] = 'Please enter valid email';
-    }
-    if(typeof users[user_email] != 'undefined') {
-        reg_error['email'] = 'Email already exsist'
+    } // if it does not meet the requirements for valid email then this message appears in query string
+    if(typeof users[user_email] != 'undefined') { // if the email is already within the our user_data.json 
+        reg_error['email'] = 'Email already exsist'  // then send this message to the query string 
     }
 
-    // validate password 
-    if((POST['password'].length) < 10) {
-        reg_error['password'] = 'Password must be longer than 10 characters'
+// if statement to valid password length - required by A2 to have at least 10 characters 
+    if((POST['password'].length) < 10) { // used .length so that it reads the length of password that is inputted
+        reg_error['password'] = 'Password must be longer than 10 characters' // message appears in query string
     }
     if((POST['password']) != POST['repeat_password']) {
+        // make sure both password match 
         reg_error['repeat_password']
     }
 
-    if (Object.keys(reg_error).length == 0) { // validates that the array that is being returned, which is the errors, is 0. If it is, redirect to invoice
+    // used object.keys for the array to check that errors equal to zero
+    // ref for objectkeys: https://www.w3schools.com/jsref/jsref_object_keys.asp
+    if (Object.keys(reg_error).length == 0) {
         var email = POST['email'].toLowerCase();
         users[email] = {};
         users[email]["name"] = POST['name'];
         users[email]["password"] = encrpt_user_password;
         users[email]["email"] = POST['email'];
 
-        fs.writeFileSync(fname, JSON.stringify(users), "utf-8"); // creates a string from the user information on the server data base using stringify
-        response.redirect('/invoice.html?' + '&' + order_str + '&' + `email=${entered_email}` + '&' + `name=${users[entered_email].name}`); // direct to the invoice page if all data is valid
+        fs.writeFileSync(fname, JSON.stringify(users), "utf-8"); // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
+        response.redirect('/login.html?' + '&' + order_str + '&' + `email=${entered_email}` + '&' + `name=${users[entered_email].name}`); // redirect to login page if all registered data is good, we want to keep the name enter so that when they go to the invoice page after logging in with their new user account
     } else {
         POST['reg_error'] = JSON.stringify(reg_error);
+        // if there are errors we want to create a string 
         let params = new URLSearchParams(POST);
-        response.redirect('register.html?' + order_str + params.toString()); // redirects back to login page if data is invalid
+        response.redirect('user_update.html?' + order_str + params.toString()); /// then we will redirect them to the register if they have errors
     }
  });
  
-
-// start server and if started correctly, display message on the console. 
 app.listen(8080, () => console.log(`listening on port 8080`));

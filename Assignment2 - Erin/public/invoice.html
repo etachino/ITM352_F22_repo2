@@ -101,6 +101,7 @@ if(quantities[i] = params.get(`quantity${i}`)){
   }
 
   }
+  
 
 // Computer Tax
 var tax_rate = 0.0575;
@@ -151,5 +152,6 @@ Subtotals over $100 will be charged 5% of the subtotal amount
 </body>
 <footer>
 <center><button onclick="window.location='products_display.html';">Logout</button></center>
+<center><button onclick="location.href=`user_update.html?${params.toString()}`;">Edit Credentials</button></center>
 </footer>
 </html>

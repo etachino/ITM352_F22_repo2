@@ -14,3 +14,10 @@ tr {
 div {
     text-align: center;
 }
+h4 {
+  padding: -40px;
+  margin-top: -10px;
+  font-family: 'system-ui';
+  text-transform: uppercase;
+  text-align: center;
+}
