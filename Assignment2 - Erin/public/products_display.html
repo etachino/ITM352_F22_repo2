@@ -25,7 +25,7 @@
                 if (queryString < 0) errors.push('Negative value!'); // Check if it is non-negative
                 if (parseInt(queryString) != queryString) errors.push('Not an integer!'); // Check that it is an integer
                 if (queryString == 0 && queryString == '') errors.push('Enter valid quantity'); //result in an error if values of 0 or no value are inputted in the textbox
-                if (queryString == 'underfined') errors.push('Need to enter quantity to purchase');
+               // if (queryString == 'underfined') errors.push('Need to enter quantity to purchase');
             }
             if (returnErrors) {
                 return errors;
@@ -105,7 +105,7 @@
                 button to submit_button (which has already been set to equal the desired error message on the server side)*/
                 if (params.get("submit_button") == 'Please Enter Valid Quantity!') {
                     document.getElementById("button").value = params.get("submit_button");
-                if(params.has(`quantity${i}` == 'undefined') == 'Need to enter quantity to purchase'){
+                /* if(params.has(`quantity${i}` == 'undefined') == 'Need to enter quantity to purchase'){
                     document.getElementById("button").value = params.get("submit_button")
                 }
                 /*If submit_button's parameter equals 'Not Enough Left In Stock', then set the button's value

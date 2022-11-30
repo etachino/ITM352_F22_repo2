@@ -249,9 +249,6 @@ app.post("/register", function (request, response) {
     /* case insensitive - format must be ex. erin@gmail.com */
      let email_valid_input = /^[A-Za-z0-9_.]+@([A-Za-z0-9_.]*\.)+([a-zA-Z]{2}|[a-zA-Z]{3})$/; 
     /* case sensitive - format must have at least special character "!", one number "2", and upper and lower case letters */
-     // let password_valid_input = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!#\$%&@;:])/;  ?????
-
-
      
       // using an if statement to validate what we call "name" from our user_data.json
     if(onlyletters.test(POST.name)) {  // calling the variable that has the rule for only letters, the name cannot be anything but letters

@@ -2,19 +2,19 @@ products = [
     {
     "name" : "Cat Tower with Ball Track",
     "price" : 164.99,
-    "image" : "https://raw.githubusercontent.com/etachino/ITM352_F22_repo2/master/Tachino_Erin_Assignment1/public/images/Playbox.png?token=GHSAT0AAAAAABYCZUNLTY6EWJSLR5M7RRJCY25S7CQ",
+    "image" : "Cozy Cat Tower.png",
     "quantity_available" : 20
     },
     {
     "name" : "Cozy Inn Cat Tower",
     "price" : 103.99,
-    "image" : "https://raw.githubusercontent.com/etachino/ITM352_F22_repo2/master/Tachino_Erin_Assignment1/public/images/Cozy%20Cat%20Tower.png?token=GHSAT0AAAAAABYCZUNLDNOICVOYVSRVX4T4Y25S4FA",
+    "image" : "Cream Grande Cat Tower.png",
     "quantity_available" : 15
     },
     {
     "name" : "Cream Grande Cat Tower",
     "price" : 75.99,
-    "image" : "https://raw.githubusercontent.com/etachino/ITM352_F22_repo2/master/Tachino_Erin_Assignment1/public/images/Cream%20Grande%20Cat%20Tower.png?token=GHSAT0AAAAAABYCZUNLQGM5PWPEH4Q4BW22Y25S4XQ",
+    "image" : "Playbox.png",
     "quantity_available" : 25
     },
     {
