@@ -1,0 +1,116 @@
+{
+"Knickknacks" : [
+    {
+        "name" : "Cats Toy Variety Pack",
+        "price" : 12.99,
+        "image" : "Knickknack1.png",
+        "quantity_available" : 50
+        },
+        {
+        "name" : "Crinkle Balls Indoor Cat Toy",
+        "price" : 3.71,
+        "image" : "Knickknack3.png",
+        "quantity_available" : 60
+        },
+        {
+        "name" : "Cat Variety Bell Balls",
+        "price" : 5.61,
+        "image" : "Knickknack4.png",
+        "quantity_available" : 50
+        },
+        {
+        "name" : "Variety Toys",
+        "price" : 3.99,
+        "image" : "Knickknack2.png",
+        "quantity_available" : 70
+        },
+        {
+        "name" : "Cat Toy Assortment",
+        "price" : 6.99,
+        "image" : "Knickknack5.png",
+        "quantity_available" : 70
+        },
+        {
+        "name" : "Cat Toy Pack",
+        "price" : 4.99,
+        "image" : "Knickknack6.png",
+        "quantity_available" : 70
+        }
+    ],
+    "Scratchers" : [
+        {
+            "name" : "Scratch Scroll Cat Scratcher",
+            "price" : 13.97,
+            "image" : "Scratcher4.png",
+            "quantity_available" : 50
+            },
+            {
+            "name" : "Scratch & Roll Scratcher Cat Toy",
+            "price" : 10.57,
+            "image" : "Scratcher3.png",
+            "quantity_available" : 40
+            },
+            {
+             "name" : "Fall Squirrel & Acorn Cat Toy",
+            "price" : 21.98,
+            "image" : "Scratcher1.png",
+            "quantity_available" : 30
+             },
+            {
+            "name" : "Vertical Scratcher Cat Toy",
+            "price" : 15.48,
+            "image" : "Scratcher2.png",
+            "quantity_available" : 20
+            },
+            {
+            "name" : "3 Prong Cat Scratcher",
+            "price" : 21.98,
+            "image" : "Scratcher5.png",
+            "quantity_available" : 30
+            },
+            {
+            "name" : "Catis Scratcher",
+            "price" : 25.98,
+            "image" : "Scratcher6.png",
+            "quantity_available" : 30
+            }
+    ],
+    "Towers" : [
+        {
+            "name" : "Cat Tower with Ball Track",
+            "price" : 125.99,
+            "image" : "Tower3.png",
+            "quantity_available" : 20
+            },
+            {
+            "name" : "Cozy Inn Cat Tower",
+            "price" : 103.99,
+            "image" : "Tower2.png",
+            "quantity_available" : 15
+            },
+            {
+            "name" : "Grey Grande Cat Tower",
+            "price" : 150.99,
+            "image" : "Tower4.png",
+            "quantity_available" : 25
+            },
+            {
+            "name" : "Plush Multi-Cat Kitten Tree & Condo",
+            "price" : 57.99,
+            "image" : "Tower1.png",
+            "quantity_available" : 20
+            },
+            {
+            "name" : "Multi Tier Cat Tower",
+            "price" : 164.99,
+            "image" : "Tower5.png",
+            "quantity_available" : 20
+            },
+            {
+            "name" : "Catis Tower",
+            "price" : 169.99,
+            "image" : "Tower6.png",
+            "quantity_available" : 20
+            }
+    ]
+}

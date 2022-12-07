@@ -43,6 +43,7 @@ app.get("/login", function (request, response) {
         login_time = "First login";
     }
     if (typeof request.cookies.username != "undefined") {
+        //gets cookie from client
         my_cookie_name = request.cookies["username"];
     } else {
         my_cookie_name = "No user";
@@ -80,6 +81,7 @@ app.post("/login", function (request, response) {
             }
         }
         request.session.last_login = now;
+        //sends cookie back to the client
         response.cookie('username', user_name).send(`${msg} <BR>${user_name} logged in ${now}`);
     } else {
         response.send('No such user');

@@ -1,0 +1,66 @@
+<head>
+    <script src="./functions.js"></script>
+    <link href="products-style.css" rel="stylesheet">
+    <script>
+
+    </script>
+    <script>
+        // get the query string
+        let params = (new URL(document.location)).searchParams;
+        if (params.has('products_key')) {
+            var this_product_key = params.get('products_key');
+            console.log('products key=' + this_product_key)
+        } else {
+            document.write('no products key in query string');
+            document.stop;
+        }
+
+        var products_data;
+        loadJSON('product_data.json', function (response) {
+            // Parsing JSON string into object
+           products_data = JSON.parse(response);
+        });
+    </script>
+</head>
+<center><h4>
+    <a href='index.html'>HOME<a>&nbsp&nbsp&nbsp;
+            <script>
+                // This makes a navigation bar to other product pages
+                for (products_key_temp in products_data) {
+                    if (products_key_temp == this_product_key) continue;
+                    document.write(`<a href='./products_display.html?products_key=${products_key_temp}'>${products_key_temp}<a>&nbsp&nbsp&nbsp;`);
+                }
+            </script>
+</center></h4>
+
+<script>
+
+    // This function takes a string assumed to be a key in the products array above to display and select the corresponding products
+    var order_str = '';
+    // get the particular products to display
+    var products = products_data[this_product_key];
+    if (params.has('Submit')) {
+        // grab the quantities from the query string
+        order_str = 'Your order is:<br>';
+        for (i = 0; i < products.length; i++) {
+            order_str += `You want ${params.get(`quantities${i}`)} of ${products[i]['name']}<br>`;
+        }
+    } else {
+        order_str += `<h1>Essentials for Your Cat ${this_products_key}</h1><br>`;
+        // We put the whole table in the form so that anything entered in it will get submitted
+        order_str += `
+            <FORM action="" method="GET">
+            <INPUT TYPE="HIDDEN" NAME="products_key" VALUE="${this_products_key}">
+                <TABLE BORDER>
+                    <TR><TD><B><BIG>Description</TD><TD><B><BIG>Price</TD><TD><B><BIG>Quantity Desired</TD></TR>`;
+
+        for (i = 0; i < products.length; i++) {
+            order_str += `<TR><TD><img src=./images/${products[i].image} WIDTH="100%"><h2>${products[i]['name']}</h2></TD><TD>${products[i]['price']}</TD><TD>
+                <INPUT TYPE="TEXT"  name="quantities${i}"></TD></TR>`;
+        }
+        order_str += `</TABLE><br>
+<INPUT TYPE="SUBMIT" name="Submit" value="View Cart">
+</FORM>`;
+    } // this closes the else for the form and table display
+    document.write(order_str);
+</script>
