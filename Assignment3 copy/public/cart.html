@@ -1,9 +1,8 @@
 <head>
     <script src="./functions.js"></script>
-    <link href="products-style.css" rel="stylesheet">
     <script>
         var products;
-        loadJSON('get_products', function (response) {
+        loadJSON('get_products_data', function (response) {
             // Parsing JSON string into object
             products = JSON.parse(response);
         });
@@ -16,7 +15,9 @@
 </head>
 <h2>You have in your shopping cart:</h2>
 <table border><th>Quantity</th><th>Item</th>
+
 <script>
+    `<form action="/get_to_cart" method="POST">`
   for(product_key in products) {
     for(i=0; i<products[product_key].length; i++) {
         if(typeof shopping_cart[product_key] == 'undefined') continue;
@@ -25,6 +26,6 @@
           document.write(`<tr><td>${qty}</td><td>${products[product_key][i].name}</td><tr>`);
         }
     }
-}
+} `</form>`
 </script>
 </table>

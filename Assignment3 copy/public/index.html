@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="products-style.css">
     <script>
     var products;
-    loadJSON('product_data.json', function(response) {
+    loadJSON('get_products_data', function(response) {
          // Parsing JSON string into object
          products = JSON.parse(response);
     });

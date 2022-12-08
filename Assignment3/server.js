@@ -7,14 +7,29 @@ var app = express(); //putting imported express files into function named app
 const qs=require('node:querystring');
 var fs = require('fs');
 const crypto = require('crypto');
-const { stringify } = require('node:querystring');
-var string= {};
 var order_str = "";
 let secretekey = 'secretekey'
 let myParser = require('body-parser');
+var session = require('express-session');
+
+// sets how the session will run 
+const sessionConfig = {
+    name: "Locked", // name I gave my cookie 
+    secret: "Coding", // secret puts hash on session ID and starts the cookies 
+    cookie: { 
+        maxAge: 50000, // how long I want the cookies to last while the client is on the page 
+        secure: false, // this allows it to work on local host
+        httpOnly: true, // cannot access cookies from javascript 
+    },
+    resave: false, // I set this to false since resave will reset the cookies every time a request is sent to the server 
+    saveUnititialized: true, // this saves the session without any mods that were put add by the client 
+}
 
 // sends information from the page to my directed request body 
 app.use(myParser.urlencoded({ extended: true }));
+
+// starts session with what I set in sessionConfig
+app.use(session(sessionConfig));
 
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
 // https://www.w3schools.com/nodejs/ref_crypto.asp
@@ -95,6 +110,15 @@ function isNonNegInt(quantityString, returnErrors = false) {
         return false;
     }
 };
+
+app.get("/cart", function(request, response) {
+    str = `
+    <body>
+        <h1> Cart </h1>
+    </body>
+    `
+}
+)
 
 // process POST request which will validate the quantities and check the qty_available. 
 //Code source: Worked with Erin Tachino and Professor Kazman, Lab13-Ex5. 

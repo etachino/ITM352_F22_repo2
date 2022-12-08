@@ -3,7 +3,7 @@
     margin: 20px;
 }
 body {
-    background-color: #fffdd0;
+    background-color: lightpink;
 }
 header {
     background-color: black;
@@ -52,6 +52,6 @@ h4 {
     border-radius: 100%;
     height: 40px;
     color: black;
-    background-color: #FDFD96;
+    background-color: lightblue;
     box-shadow: 3px 3px 1px black;
 }
