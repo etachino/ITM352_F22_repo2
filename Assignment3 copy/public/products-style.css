@@ -191,6 +191,7 @@ section p {
   z-index: 2000;
   white-space: normal;
   text-shadow: 1px 1px  black;
+  box-shadow: 5px 5px 6px black;
 }
 
 .submit_button {

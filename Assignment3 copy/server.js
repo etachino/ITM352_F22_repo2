@@ -7,7 +7,7 @@ const qs=require('node:querystring');
 var fs = require('fs');
 const crypto = require('crypto');
 var order_str = "";
-let secretekey = 'secretekey'
+let secretekey = 'secretekey';
 
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
 // https://www.w3schools.com/nodejs/ref_crypto.asp
@@ -32,7 +32,15 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
     return ciphermade;
   }
 
-
+  fname = __dirname + '/user_data.json'; // creating a variable to call the user_data.json file 
+  if (fs.existsSync(fname)) { // reads entire file 
+      var data = fs.readFileSync(fname, 'utf-8');
+      var users = JSON.parse(data); // var users lets the file parse through the data within the user_data.json 
+      console.log(users);
+  } else {
+      console.log("Sorry file " + fname + " does not exist.");
+  }
+  
 app.use(myParser.urlencoded({ extended: true }));
 
 app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: true}));
@@ -88,7 +96,7 @@ app.get("/get_to_login", function(request,response) {
             <br>
             <form action="/register" method="GET">
                 <h4><script>
-                document.write('<p class="register"> Not a member? <a href="/register.html"> Click here to register</a></p>')
+                document.write('<p class="register"> Not a member? <a href="/register"> Click here to register</a></p>')
             </script></h4>
                 </form>       
     </body>
@@ -98,6 +106,146 @@ app.get("/get_to_login", function(request,response) {
     </html>`;
     response.send(str);
 })
+
+// taken from lab14 and Assignment 2 examples 
+app.post("/get_to_login", function (request, response) {
+    // Process login form POST and redirect to logged in page if ok, back to login page if not
+    // User entered inputs are set to the variable POST
+    let POST = request.body; 
+    //User's entered email will be set to the variable entered_email. This value is set to all lowercase letters
+     entered_email = POST["email"].toLowerCase(); 
+     //IR1 we want to encrypt the password entered in the login page
+    var user_pass = generateCipher(POST['password']);
+    console.log("User email=" + entered_email + " password=" + user_pass);
+    //Validates the user's email/password by matching information to the user_data.json file
+    if (typeof users[entered_email] != 'undefined') { 
+        if(users[entered_email].password == user_pass) { 
+            // retrieves the parameters sent from the processing of the process_purchase form
+            let params = new URLSearchParams(request.query); 
+            // appends the user the username to the search parameters
+            params.append('name', users[entered_email].name); 
+           
+            //For Assignment 2: IR4 (Daniel)
+            //sets the json object's count of the times it was previously logged in to a string
+            TimesLoggedIn_str = users[entered_email].num_loggedIn;
+            console.log(users[entered_email].num_loggedIn);
+            
+            //sets the json string to a number
+            TimesLoggedIn_num = Number(TimesLoggedIn_str);
+            
+            //adds 1 to the number of times the user has previously logged in and sets the json file's object's property to this value
+            users[entered_email].num_loggedIn = 1 + TimesLoggedIn_num;
+            console.log("num= " + TimesLoggedIn_num);
+                       
+            //syncs the new object property value for the times logged in to the user_data.json
+            fs.writeFileSync(fname, JSON.stringify(users), 'utf-8'); 
+            
+            //redirects to the invoice page with the respective variables appended to the url string
+            response.redirect('/invoice.html?' + '&' + order_str + '&' + `email=${entered_email}` + '&' + `name=${users[entered_email].name}` + '&' + `LogCount=${users[entered_email].num_loggedIn}` + '&' + `date=${users[entered_email].last_date_loggin}`); // these appended variables are entered into the query string to bring that user input data to the next page
+            users[entered_email].last_date_loggin = Date();
+        } else {
+            // if the password is not valid, then will push the error to LoginError
+            request.query.LoginError = 'Password not valid!' 
+        }
+    } else { 
+        request.query.LoginError = 'Username not valid!';
+    }
+    params = new URLSearchParams(request.query);
+    // if error was detected, then redirect back to login page with the respective search parameters
+    response.redirect('./login.html?' + '&' + `errors=${request.query.LoginError}` + '&' + order_str + '&' + `email=${entered_email}`); 
+
+    });
+
+app.get("/register", function(request, response){
+    let str = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="register-style.css" rel="stylesheet">
+        <title>Register page</title>
+    </head>
+    <h1>Register Here!</h1>
+    <body>
+        <form action="/register" method="POST">
+           <h2><input type="text" name="name" size="40" placeholder="Enter full name" ><br />
+                <input type="password" name="password" size="40" placeholder="Enter password"><br />
+                    <input type="password" name="repeat_password" size="40" placeholder="Enter password again"><br />
+                        <input type="email" name="email" size="40" placeholder="Enter email"><br /></h2>
+                          <center><input class="submit" type="submit" value="Submit" id="submit"></center>
+        </form>
+    </body>
+    </html>`
+    response.send(str);
+})
+
+
+// A2 reference reading and writing user info to a JSON file 
+app.post("/register", function (request, response) {
+    // once users' information is entered into the register page, post then processes the register form
+    let POST = request.body; // Sets all the users' inputted information from their request into the POST variable 
+    console.log(POST); //Writes the user data into a variable
+    //The following 4 variables are set to individual attributes of the users' entered information
+    let encrpt_user_password = generateCipher(POST["password"]); // IR1 we want to encrypt the password the register user inputs
+     let reg_error = {}; // made this an open string for errors within the registation page 
+      user_name = POST["name"]; 
+      user_pass = POST["password"];
+      user_email = POST["email"];
+      user_pass2 = POST["repeat_password"];
+
+     let onlyletters = /^[A-Za-z]+$/; // only allows letters /* case insensitive - format must be ex. erin@gmail.com */
+     let email_valid_input = /^[A-Za-z0-9_.]+@([A-Za-z0-9_.]*\.)+([a-zA-Z]{2}|[a-zA-Z]{3})$/; 
+    /* case sensitive - format must have at least special character "!", one number "2", and upper and lower case letters */
+
+  
+     // using an if statement to validate what we call "name" from our user_data.json
+    if(onlyletters.test(POST.name)) { // calling the variable that has the rule for only letters, the name cannot be anything but letters
+    } else {
+        reg_error['name'] = 'Must only use valid letters'; // if there are any nonletter within name then the query string will have this message
+    }
+    // validating that name is at least 2 characters long and under 30 characters
+    if(POST.name > 30 || POST.name < 2) {
+        reg_error['name'] = 'Full name must be at least 2 characters long, no more than 30 character allowed'
+    } // if it is shorter than 2 or above 30 then this message will appear in the query string 
+
+    // if statement to check if email added is valid to the requirements called by the variable email_valid_input
+    if(email_valid_input.test(POST.email)) {
+    } else {
+        reg_error['email'] = 'Please enter valid email'; // if it does not meet the requirements for valid email then this message appears in query string 
+    }
+    if(typeof users[user_email] != 'undefined') { // if the email is already within the our user_data.json 
+        reg_error['email'] = 'Email already exsist' // then send this message to the query string 
+    }
+
+    // if statement to valid password length - required by A2 to have at least 10 characters
+    if((POST['password'].length) < 10) { // used .length so that it reads the length of password that is inputted
+        reg_error['password'] = 'Password must be longer than 10 characters' // message appears in query string
+    }
+    if((POST['password']) != POST['repeat_password']) { // make sure both password match 
+        reg_error['repeat_password']
+    }
+    // used object.keys for the array to check that errors equal to zero
+    // ref for objectkeys: https://www.w3schools.com/jsref/jsref_object_keys.asp
+    if (Object.keys(reg_error).length == 0) { 
+        var email = POST['email'].toLowerCase();
+        users[email] = {};
+        users[email].name = POST['name'];
+        users[email]["password"] = encrpt_user_password;
+        users[email]["email"] = POST['email'];
+        users[email].num_loggedIn = 0;
+        users[email].last_date_loggin = Date();
+        
+        // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
+        fs.writeFileSync(fname, JSON.stringify(users), "utf-8"); 
+        // redirect to login page if all registered data is good, we want to keep the name enter so that when they go to the invoice page after logging in with their new user account
+        response.redirect('/login?' + order_str + '&' + `name=${user_name}` + '&' + `date=${users[email].last_date_loggin}`); 
+    } else {
+        POST['reg_error'] = JSON.stringify(reg_error); // if there are errors we want to create a string 
+        let params = new URLSearchParams(POST);
+        response.redirect('register?' + order_str + params.toString()); // then we will redirect them to the register if they have errors
+    }
+ });
 
 app.get("/add_to_cart", function (request, response) {
     var products_key = request.query['products_key']; // get the product key sent from the form post
