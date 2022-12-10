@@ -45,6 +45,7 @@ app.use(myParser.urlencoded({ extended: true }));
 
 app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: true}));
 
+
 app.all('*', function (request, response, next) {
     // need to initialize an object to store the cart in the session. We do it when there is any request so that we don't have to check it exists
     // anytime it's used
@@ -57,17 +58,47 @@ app.get("/get_products_data", function (request, response) {
 });
 
 app.post("/get_to_cart", function (request, response){
-    var ValidCart = true;
-    var ErrorCart = true; 
-    for (i = 0; i < products.length; i++) {
+        // Get the input element
+        var quantityBox = document.getElementById("quantity-box");
+        // Get the value from the input element
+        var quantity = quantityBox.value;
+        // Set the value in the session storage
+        sessionStorage.setItem("quantity", quantity);
+        // Get the value from the session storage
+        // var quantity = sessionStorage.getItem("quantity");
+        var ValidCart = true;
+        var ErrorCart = true; 
+        for (i = 0; i < products.length; i++) {
 
-    }
-})
+            }
+        })
 
 app.get("/get_to_login", function(request,response) {
    
     var params = new URLSearchParams(request.query); // use search params to find the params within the document    
             console.log(params);
+            // Set the user's name in the session storage
+                sessionStorage.setItem("username", "John Doe");
+                // Get the user's name from the session storage
+                var username = sessionStorage.getItem("username");
+
+                // Get the element where the user's name will be displayed
+                var usernameElement = document.getElementById("username");
+
+                // Update the element with the user's name
+                usernameElement.innerHTML = username;
+            if (typeof request.session.username != "undefined") {
+                username = "Hi Welcome " + request.session.username;
+                request.session.shopping_cart;
+            } else {
+                username = "Last user";
+            }
+            if (typeof request.cookies.username != "undefined") {
+                //gets cookie from client
+                my_cookie_name = request.cookies["username"];
+            } else {
+                my_cookie_name = "No user";
+            }
 
     let str=
     
@@ -84,6 +115,7 @@ app.get("/get_to_login", function(request,response) {
     <h1>Login Page for Cat Essentials</h1>
     <body>
         <form action="./get_to_login" method="POST"> 
+        Login info: ${username} by ${my_cookie_name}<BR>
            <h2><input type="text" name="email" id="email" value="" size="40" placeholder="Enter email" ><br /></h2>
                <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
                 <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
@@ -249,7 +281,7 @@ app.post("/register", function (request, response) {
 
 app.get("/add_to_cart", function (request, response) {
     var products_key = request.query['products_key']; // get the product key sent from the form post
-    var quantities = request.query['quantities'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
+    var quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
     request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
     response.redirect('./cart.html');
 });

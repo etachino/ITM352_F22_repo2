@@ -73,16 +73,17 @@
     order_str += `<FORM action="/add_to_cart" method="GET">
                <INPUT TYPE="HIDDEN" NAME="products_key" VALUE="${this_product_key}">`;
     products = products[this_product_key];
+    console.log('products' + products);
     for (i = 0; i < products.length; i++) {
         order_str += `<section class="item">
             <h2>${products[i].name}</h2>
             <p>$${products[i].price}</p>
             <img src=./images/${products[i].image}>
-            <h6>Left in Stock: ${products[i].qty_available}</h6>
+            <h6>Left in Stock: ${products[i].quantity_available}</h6>
             <br>
             <h6>Total Sold: ${products[i].total_sold}</h6>
-            <input class= "error_msg" type="text" name="quantities[${i}]" value="${(typeof shopping_cart[this_product_key]!='undefined')?shopping_cart[this_product_key][i]:0}" placeholder="0" onkeyup="checkQuantityTextbox(this);"> 
-            <span class= "textbox" id="quantity${i}_message">Enter a quantity</span>
+            <input class= "error_msg" type="text" name="quantity[${i}]" value="${(typeof shopping_cart[this_product_key]!='undefined')?shopping_cart[this_product_key][i]:0}" placeholder="0" onkeyup="checkQuantityTextbox(this);"> 
+            <span class= "textbox" id="quantity[${i}]_message">Enter a quantity</span>
             </section>
     `;}
 

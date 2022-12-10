@@ -15,8 +15,29 @@
         nav_bar('', products);
     </script>
 </head>
+<body onload="cartFunction()">
+    <script>
+        function cartFunction(){
+                  // Get a reference to the text box and the buttons
+      var textBox = document.getElementById("quantity-box");
+      var increaseButton = document.getElementById("increaseButton");
+      var decreaseButton = document.getElementById("decreaseButton");
+
+      // Add event listeners to the buttons that will increment or decrement the value in the text box
+      increaseButton.onclick = function() {
+
+        textBox.value++;
+        
+        };
+
+        decreaseButton.onclick = function() {
+
+        textBox.value--;
+        };
+        }
+    </script>
 <center><h2>You have in your shopping cart:</h2></center>
-<center><table border><th>Quantity</th><th>Item</th><th>price</th><th>extended price</th></center>
+<center><table border><th>Quantity</th><th>Item</th><th>Price</th><th>Extended Price</th></center>
 
 <script>
     `<form action="/get_to_cart" method="POST">`
@@ -27,7 +48,7 @@
         extended_price = qty * products[product_key][i].price;
         (subtotal += extended_price)
         if(qty > 0) {
-          document.write(`<center><tr><td>${qty}</td>
+          document.write(`<center><tr><td><button id="increaseButton">+</button><input type="text" id="quantity-box" value="${qty}" style="width: 20px" name="quantity"><button id="decreaseButton">-</button></td>
             <td>${products[product_key][i].name} <img src="./images/${products[product_key][i].image}" WIDTH = 60px</td>
                 <td>\$${products[product_key][i].price.toFixed(2)}</td>
                 <td>\$${extended_price}</td></tr></center>`);
