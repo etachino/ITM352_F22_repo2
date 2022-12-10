@@ -92,6 +92,16 @@ app.get("/add_to_cart", function (request, response) {
     response.redirect('./cart.html');
 });
 
+app.post("/update_cart", function(request, response) {
+    if(request.cookies.loggedIn == "true"){
+        updated_qty = request.session.cart
+        response.cookie('cart', updated_qty);
+        response.redirect('./invoice.html')
+    } else {
+        response.redirect("/get_to_login")
+    }
+})
+
 // Define the increaseQuantity() function and pass the products_key variable as an argument
 function increaseQuantity(request, products_key, productId, product_key, products_data) {
 
@@ -231,10 +241,11 @@ app.post("/get_to_login", function (request, response) {
   let POST = request.body;
   entered_email = POST["email"].toLowerCase();
   var user_pass = generateCipher(POST['password']);
-
+  loggedIn = false;
   console.log("User name=" + entered_email + " password=" + user_pass);
 
   if (users[entered_email] != undefined) {
+    loggedIn=true;
       if (users[entered_email].password == user_pass) {
           if (typeof request.session.last_login != "undefined") {
             request.session.email = entered_email;
@@ -249,6 +260,7 @@ app.post("/get_to_login", function (request, response) {
       request.session.last_login = now;
       //sends cookie back to the client
       response.cookie('email', entered_email)
+      response.cookie('loggedIn', loggedIn)
       response.cookie('cart', request.session.cart)
       response.redirect(`index.html`);
   } else {

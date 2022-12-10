@@ -15,13 +15,13 @@
         nav_bar('', products);
     </script>
 </head>
+<form action="update_cart" method="post">
 <body>
 
 <center><h2>You have in your shopping cart:</h2></center>
 <center><table border><th>Quantity</th><th>Item</th><th>Price</th><th>Extended Price</th></center>
 
 <script>
-    //`<form action="" method="POST">`
   for(product_key in products) {
     for(i=0; i<products[product_key].length; i++) {
         if(typeof shopping_cart[product_key] == 'undefined') continue;
@@ -40,7 +40,8 @@
             <td>${products[product_key][i].name} <img src="./images/${products[product_key][i].image}" WIDTH = 60px</td>
                 <td>\$${products[product_key][i].price.toFixed(2)}</td>
                 <td>\$${extended_price}</td></tr></center>
-                <tr>`);
+                <tr>
+                  `);
 
         }
     }
@@ -62,7 +63,7 @@ var tax_rate = 0.0575;
 
     // Computer Grand total
     var total = subtotal + tax + shipping;
-`</form>`
+
 </script>
 
           <tr>
@@ -96,3 +97,8 @@ var tax_rate = 0.0575;
 </body>
 </footer>
 </table>
+<script>
+  document.write(
+    `<input type="submit" class="submit">
+                  </form>  `)
+</script>

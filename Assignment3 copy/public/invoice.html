@@ -1,9 +1,29 @@
     <script src="./product_data.js"></script>
+    <script src="./functions.js"></script>
     <link href="invoice-style.css" rel="stylesheet">
+
     
 
 
 <script>
+    var products;
+    var total = 0;
+    var cookie;
+    loadJSON('get_products_data', function(response) {
+         // Parsing JSON string into object
+         products = JSON.parse(response);
+    });
+    loadJSON('get_cart', function (response) {
+            // Parsing JSON string into object
+            shopping_cart = JSON.parse(response);
+            for (pk in shopping_cart) {
+                total += shopping_cart[pk].reduce((a, b) => a + b);
+            }
+        });
+        loadJSON('get_cookies', function(response) {
+         // Parsing JSON string into object
+         cookie = JSON.parse(response);
+    });
           //validation on the invoice
           //checks if entered values are valid and will return true or false
           //If returnErrors is true, then the generateItemRows function will proceed to generate the invoice table
@@ -36,7 +56,6 @@
         (subtotal += extended_price)
       } else {extended_price=0}
       
-
     document.write(`
           <tr>
             <td width="43%"><img src="/images/${products[i].image}" style="width: 20%; height: 20%">${products[i].name}</td>
