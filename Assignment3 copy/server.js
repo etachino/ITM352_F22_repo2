@@ -43,7 +43,7 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
   
 app.use(myParser.urlencoded({ extended: true }));
 
-app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: true}));
+app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: false}));
 
 
 app.all('*', function (request, response, next) {
@@ -77,28 +77,6 @@ app.get("/get_to_login", function(request,response) {
    
     var params = new URLSearchParams(request.query); // use search params to find the params within the document    
             console.log(params);
-            // Set the user's name in the session storage
-                sessionStorage.setItem("username", "John Doe");
-                // Get the user's name from the session storage
-                var username = sessionStorage.getItem("username");
-
-                // Get the element where the user's name will be displayed
-                var usernameElement = document.getElementById("username");
-
-                // Update the element with the user's name
-                usernameElement.innerHTML = username;
-            if (typeof request.session.username != "undefined") {
-                username = "Hi Welcome " + request.session.username;
-                request.session.shopping_cart;
-            } else {
-                username = "Last user";
-            }
-            if (typeof request.cookies.username != "undefined") {
-                //gets cookie from client
-                my_cookie_name = request.cookies["username"];
-            } else {
-                my_cookie_name = "No user";
-            }
 
     let str=
     
@@ -115,7 +93,6 @@ app.get("/get_to_login", function(request,response) {
     <h1>Login Page for Cat Essentials</h1>
     <body>
         <form action="./get_to_login" method="POST"> 
-        Login info: ${username} by ${my_cookie_name}<BR>
            <h2><input type="text" name="email" id="email" value="" size="40" placeholder="Enter email" ><br /></h2>
                <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
                 <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
@@ -148,43 +125,12 @@ app.post("/get_to_login", function (request, response) {
      entered_email = POST["email"].toLowerCase(); 
      //IR1 we want to encrypt the password entered in the login page
     var user_pass = generateCipher(POST['password']);
-    console.log("User email=" + entered_email + " password=" + user_pass);
-    //Validates the user's email/password by matching information to the user_data.json file
-    if (typeof users[entered_email] != 'undefined') { 
-        if(users[entered_email].password == user_pass) { 
-            // retrieves the parameters sent from the processing of the process_purchase form
-            let params = new URLSearchParams(request.query); 
-            // appends the user the username to the search parameters
-            params.append('name', users[entered_email].name); 
-           
-            //For Assignment 2: IR4 (Daniel)
-            //sets the json object's count of the times it was previously logged in to a string
-            TimesLoggedIn_str = users[entered_email].num_loggedIn;
-            console.log(users[entered_email].num_loggedIn);
-            
-            //sets the json string to a number
-            TimesLoggedIn_num = Number(TimesLoggedIn_str);
-            
-            //adds 1 to the number of times the user has previously logged in and sets the json file's object's property to this value
-            users[entered_email].num_loggedIn = 1 + TimesLoggedIn_num;
-            console.log("num= " + TimesLoggedIn_num);
-                       
-            //syncs the new object property value for the times logged in to the user_data.json
-            fs.writeFileSync(fname, JSON.stringify(users), 'utf-8'); 
-            
-            //redirects to the invoice page with the respective variables appended to the url string
-            response.redirect('/invoice.html?' + '&' + order_str + '&' + `email=${entered_email}` + '&' + `name=${users[entered_email].name}` + '&' + `LogCount=${users[entered_email].num_loggedIn}` + '&' + `date=${users[entered_email].last_date_loggin}`); // these appended variables are entered into the query string to bring that user input data to the next page
-            users[entered_email].last_date_loggin = Date();
-        } else {
-            // if the password is not valid, then will push the error to LoginError
-            request.query.LoginError = 'Password not valid!' 
-        }
-    } else { 
-        request.query.LoginError = 'Username not valid!';
+    if (authenticate(entered_email, user_pass)) {
+        request.session.entered_email;
+        response.send({success: true});
+    } else {
+        response.send({success: false, error: "Not a vaid username or password"})
     }
-    params = new URLSearchParams(request.query);
-    // if error was detected, then redirect back to login page with the respective search parameters
-    response.redirect('./login.html?' + '&' + `errors=${request.query.LoginError}` + '&' + order_str + '&' + `email=${entered_email}`); 
 
     });
 
