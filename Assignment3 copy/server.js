@@ -12,6 +12,20 @@ var cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
+
+app.get('/', function (req, res) {
+    // Cookies that have not been signed
+    console.log('Cookies: ', req.cookies)
+  
+    // Cookies that have been signed
+    console.log('Signed Cookies: ', req.signedCookies)
+  })
+
+  app.get("/get_cookies", function (request, response) {
+    response.json(request.cookies);
+});
+
+
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
 // https://www.w3schools.com/nodejs/ref_crypto.asp
 // https://stackoverflow.com/questions/60369148/how-do-i-replace-deprecated-crypto-createcipher-in-node-js
@@ -46,7 +60,18 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
   
 app.use(myParser.urlencoded({ extended: true }));
 
-app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: false}));
+app.use(session({
+    secret: 'they call me the cat mama',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 50000, 
+      httpOnly: true,
+      signed: true,
+      secure: false
+    }
+  }));
+  
 
 
 app.all('*', function (request, response, next) {
@@ -62,7 +87,7 @@ app.get("/get_products_data", function (request, response) {
 
 app.get("/add_to_cart", function (request, response) {
     products_key = request.query['products_key']; // get the product key sent from the form post
-    var quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
+    quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
     request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
     response.redirect('./cart.html');
 });
@@ -126,6 +151,8 @@ app.get("/get_cart", function (request, response) {
     response.json(request.session.cart);
 });
 
+
+
 app.post("/get_to_cart", function (request, response){
         // Get the input element
         var quantityBox = document.getElementById("quantity-box");
@@ -143,7 +170,19 @@ app.post("/get_to_cart", function (request, response){
         })
 
 app.get("/get_to_login", function(request,response) {
-   
+       // Give a simple login form
+       if (typeof request.session.last_date_loggin != "undefined") {
+        login_time = "Last login was " + request.session.last_date_loggin;
+        request.session.shopping_cart;
+    } else {
+        login_time = "First login";
+    }
+    if (typeof request.cookies.name != "undefined") {
+        //gets cookie from client
+        my_cookie_email = request.cookies["email"];
+    } else {
+        my_cookie_name = "No user";
+    }
     var params = new URLSearchParams(request.query); // use search params to find the params within the document    
             console.log(params);
 
@@ -162,14 +201,15 @@ app.get("/get_to_login", function(request,response) {
     <h1>Login Page for Cat Essentials</h1>
     <body>
         <form action="./get_to_login" method="POST"> 
+            Login info: ${login_time} by ${my_cookie_name}<BR>
            <h2><input type="text" name="email" id="email" value="" size="40" placeholder="Enter email" ><br /></h2>
                <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
                 <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
         </form>
         <script>
-                if (params.has("errors")) { // if params has/find errors 
+                if (${params.has("errors")}) { // if params has/find errors 
                     document.getElementById("error_button").value = "Invalid Login";}; // use the id to get the element to change the button to invalid login if there are any errors
-                console.log(params.get("errors"));
+                console.log(${params.get("errors")});
             </script>
             <br>
             <form action="/register" method="GET">
@@ -189,28 +229,31 @@ app.post("/get_to_login", function (request, response) {
   // Process login form POST and redirect to logged in page if ok, back to login page if not
   // User entered inputs are set to the variable POST
   let POST = request.body;
-  //User's entered email will be set to the variable entered_email. This value is set to all lowercase letters
-  entered_email = POST["email"].toLowerCase(); 
-  //IR1 we want to encrypt the password entered in the login page
+  entered_email = POST["email"].toLowerCase();
   var user_pass = generateCipher(POST['password']);
-  if (typeof users[entered_email] != 'undefined') { 
-    if(users[entered_email].password == user_pass) { 
-      request.session.email = entered_email;
-      request.session.lastlogin = new Date().toLocaleString();
-      response.redirect(`index.html`)
-    } else {
-      // Send a response indicating that the login was unsuccessful
-      response.send({success: false, error: "Invalid username or password"});
-    }
 
-    if (!request.session.num_loggedIn) {
-      // ...
-    }
+  console.log("User name=" + entered_email + " password=" + user_pass);
+
+  if (users[entered_email] != undefined) {
+      if (users[entered_email].password == user_pass) {
+          if (typeof request.session.last_login != "undefined") {
+            request.session.email = entered_email;
+            request.session.lastlogin = new Date().toLocaleString();
+              var msg = `You last logged in: ${request.session.last_login}`;
+              var now = new Date();
+          } else {
+              var msg = '';
+              var now = "First visit";
+          }
+        }
+      request.session.last_login = now;
+      //sends cookie back to the client
+      response.cookie('email', entered_email)
+      response.cookie('cart', request.session.cart)
+      response.redirect(`index.html`);
   } else {
-    // Send a response indicating that the login was unsuccessful
     response.send({success: false, error: "Invalid username or password"});
-  }
-})
+  }});
 
   
 
