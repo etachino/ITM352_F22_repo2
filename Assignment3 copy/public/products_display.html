@@ -3,11 +3,11 @@
     <link href="products-style.css" rel="stylesheet">
 
     <script>
-        var products;
+        var products_data;
         var total = 0;
         loadJSON('get_products_data', function (response) {
             // Parsing JSON string into object
-            products = JSON.parse(response);
+            products_data = JSON.parse(response);
         });
         loadJSON('get_cart', function (response) {
             // Parsing JSON string into object
@@ -25,7 +25,7 @@
             document.write('no products key in query string');
             document.stop;
         }
-        nav_bar(this_product_key, products);
+        nav_bar(this_product_key, products_data);
 
 
         //Taken from Lab13 order_page.new.html
@@ -70,7 +70,7 @@
     // We put the whole table in the form so that anything entered in it will get submitted
     order_str += `<FORM action="/add_to_cart" method="GET">
                <INPUT TYPE="HIDDEN" NAME="products_key" VALUE="${this_product_key}">`;
-    products = products[this_product_key];
+    products = products_data[this_product_key];
     console.log('products' + products);
     for (i = 0; i < products.length; i++) {
         order_str += `<section class="item">
@@ -90,6 +90,7 @@
     </FORM>`;
     document.write(order_str);
     console.log (order_str);
+    console.log("products" + products.length);
 </script>
 
 

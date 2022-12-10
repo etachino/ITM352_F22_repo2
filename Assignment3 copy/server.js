@@ -2,12 +2,15 @@ var express = require('express');
 var app = express();
 var myParser = require("body-parser");
 var session = require('express-session');
-var products = require('./product_data.json');
+var products_data = require('./product_data.json');
 const qs=require('node:querystring');
 var fs = require('fs');
 const crypto = require('crypto');
 var order_str = "";
 let secretekey = 'secretekey';
+var cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
 
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
 // https://www.w3schools.com/nodejs/ref_crypto.asp
@@ -54,7 +57,73 @@ app.all('*', function (request, response, next) {
 });
 
 app.get("/get_products_data", function (request, response) {
-    response.json(products);
+    response.json(products_data);
+});
+
+app.get("/add_to_cart", function (request, response) {
+    products_key = request.query['products_key']; // get the product key sent from the form post
+    var quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
+    request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
+    response.redirect('./cart.html');
+});
+
+// Define the increaseQuantity() function and pass the products_key variable as an argument
+function increaseQuantity(request, products_key, productId, product_key, products_data) {
+
+    // Use the passed product_key variable to access the correct array of products in the products object
+  var products = products_data[product_key];
+
+  var index = products.findIndex(product => product.id === productId);
+
+  // Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
+  request.session.cart[product_key][index] += 1;
+    }
+
+// Define the app.get() method and pass the products_key variable as an argument
+app.get("/increase_quantity", function(request, response) {
+  // Get the index of the item from the request query string
+  var productId = request.query.productId;
+
+  // Get the product_key of the selected product from the request query string
+  var product_key = request.query.product_key;
+
+  // Increase the value of the item in the array by 1
+  increaseQuantity(request, products_key, productId, product_key, products_data);
+
+  // Redirect the user back to the shopping cart page
+  response.redirect("./cart.html");
+});
+
+// Define the increaseQuantity() function and pass the products_key variable as an argument
+function decreaseQuantity(request, products_key, productId, product_key, products_data) {
+
+  // Use the passed product_key variable to access the correct array of products in the products object
+var products = products_data[product_key];
+
+var index = products.findIndex(product => product.id === productId);
+
+// Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
+request.session.cart[product_key][index] -= 1;
+  }
+
+// Define the app.get() method and pass the products_key variable as an argument
+app.get("/decrease_quantity", function(request, response) {
+// Get the index of the item from the request query string
+var productId = request.query.productId;
+
+// Get the product_key of the selected product from the request query string
+var product_key = request.query.product_key;
+
+// Increase the value of the item in the array by 1
+decreaseQuantity(request, products_key, productId, product_key, products_data);
+
+// Redirect the user back to the shopping cart page
+response.redirect("./cart.html");
+});
+
+
+app.get("/get_cart", function (request, response) {
+    response.json(request.session.cart);
 });
 
 app.post("/get_to_cart", function (request, response){
@@ -116,23 +185,34 @@ app.get("/get_to_login", function(request,response) {
     response.send(str);
 })
 
-// taken from lab14 and Assignment 2 examples 
 app.post("/get_to_login", function (request, response) {
-    // Process login form POST and redirect to logged in page if ok, back to login page if not
-    // User entered inputs are set to the variable POST
-    let POST = request.body; 
-    //User's entered email will be set to the variable entered_email. This value is set to all lowercase letters
-     entered_email = POST["email"].toLowerCase(); 
-     //IR1 we want to encrypt the password entered in the login page
-    var user_pass = generateCipher(POST['password']);
-    if (authenticate(entered_email, user_pass)) {
-        request.session.entered_email;
-        response.send({success: true});
+  // Process login form POST and redirect to logged in page if ok, back to login page if not
+  // User entered inputs are set to the variable POST
+  let POST = request.body;
+  //User's entered email will be set to the variable entered_email. This value is set to all lowercase letters
+  entered_email = POST["email"].toLowerCase(); 
+  //IR1 we want to encrypt the password entered in the login page
+  var user_pass = generateCipher(POST['password']);
+  if (typeof users[entered_email] != 'undefined') { 
+    if(users[entered_email].password == user_pass) { 
+      request.session.email = entered_email;
+      request.session.lastlogin = new Date().toLocaleString();
+      response.redirect(`index.html`)
     } else {
-        response.send({success: false, error: "Not a vaid username or password"})
+      // Send a response indicating that the login was unsuccessful
+      response.send({success: false, error: "Invalid username or password"});
     }
 
-    });
+    if (!request.session.num_loggedIn) {
+      // ...
+    }
+  } else {
+    // Send a response indicating that the login was unsuccessful
+    response.send({success: false, error: "Invalid username or password"});
+  }
+})
+
+  
 
 app.get("/register", function(request, response){
     let str = `<!DOCTYPE html>
@@ -224,17 +304,6 @@ app.post("/register", function (request, response) {
         response.redirect('register?' + order_str + params.toString()); // then we will redirect them to the register if they have errors
     }
  });
-
-app.get("/add_to_cart", function (request, response) {
-    var products_key = request.query['products_key']; // get the product key sent from the form post
-    var quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
-    request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
-    response.redirect('./cart.html');
-});
-
-app.get("/get_cart", function (request, response) {
-    response.json(request.session.cart);
-});
 
 
 app.use(express.static('./public'));

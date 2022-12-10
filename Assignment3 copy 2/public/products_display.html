@@ -8,6 +8,7 @@
         loadJSON('get_products_data', function (response) {
             // Parsing JSON string into object
             products = JSON.parse(response);
+            console.log('response=' + response);
         });
         loadJSON('get_cart', function (response) {
             // Parsing JSON string into object
@@ -57,11 +58,9 @@
     </script>
     </head>
         <a href='index.html'>HOME<a>&nbsp&nbsp&nbsp;
-    <h4><form action="/get_to_login" id="login" method="get">
-        <input type='submit' value="Login">
-        </form></h4>
+    <h4><a href="/get_to_login">Login</a></h4>
 </head>
-<h5>You have <span id="cart_total">0</span> items in your shopping cart: <a href='/get_to_cart'>View Cart</a></h5>
+<h5>You have <span id="cart_total">0</span> items in your shopping cart: <a href='./cart.html'>View Cart</a></h5>
 <script>
     
     cart_total.innerHTML = total;
@@ -82,8 +81,8 @@
             <h6>Left in Stock: ${products[i].quantity_available}</h6>
             <br>
             <h6>Total Sold: ${products[i].total_sold}</h6>
-            <input class= "error_msg" type="text" name="quantities[${i}]" value="${(typeof shopping_cart[this_product_key]!='undefined')?shopping_cart[this_product_key][i]:0}" placeholder="0" onkeyup="checkQuantityTextbox(this);"> 
-            <span class= "textbox" id="quantity${i}_message">Enter a quantity</span>
+            <input class= "error_msg" type="text" name="quantity[${i}]" value="${(typeof shopping_cart[this_product_key]!='undefined')?shopping_cart[this_product_key][i]:0}" placeholder="0" onkeyup="checkQuantityTextbox(this);"> 
+            <span class= "textbox" id="quantity[${i}]_message">Enter a quantity</span>
             </section>
     `;}
 

@@ -8,6 +8,9 @@ var fs = require('fs');
 const crypto = require('crypto');
 var order_str = "";
 let secretekey = 'secretekey';
+var cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
 
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
 // https://www.w3schools.com/nodejs/ref_crypto.asp
@@ -43,7 +46,7 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
   
 app.use(myParser.urlencoded({ extended: true }));
 
-app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: true}));
+app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: false}));
 
 
 app.all('*', function (request, response, next) {
@@ -57,99 +60,16 @@ app.get("/get_products_data", function (request, response) {
     response.json(products);
 });
 
-app.get("/get_to_cart"), function(request, response) {
-    var params = new URLSearchParams(request.query); 
-    console.log(params);
-    let str = `<head>
-    <script src="./functions.js"></script>
-    <link href="cart-style.css" rel="stylesheet">
-    <script>
-        var products;
-        var subtotal = 0;
-        loadJSON('get_products_data', function (response) {
-            // Parsing JSON string into object
-            products = JSON.parse(response);
-        });
-        loadJSON('get_cart', function (response) {
-            // Parsing JSON string into object
-            shopping_cart = JSON.parse(response);
-        });
-        nav_bar('', products);
-    </script>
-</head>
-<center><h2>You have in your shopping cart:</h2></center>
-<center><table border><th>Quantity</th><th>Item</th><th>price</th><th>extended price</th></center>
+app.get("/add_to_cart", function (request, response) {
+    products_key = request.query['products_key']; // get the product key sent from the form post
+    var quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
+    request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
+    response.redirect('./cart.html');
+});
 
-<script>
-    <form action="/get_to_cart" method="POST" onsubmit="return setQuantityInSession();">
-  for(product_key in products) {
-    for(i=0; i<products[product_key].length; i++) {
-        if(typeof shopping_cart[product_key] == 'undefined') continue;
-        qty = shopping_cart[product_key][i];
-        extended_price = qty * products[product_key][i].price;
-        (subtotal += extended_price)
-        if(qty > 0) {
-          document.write('<center><tr><td><input type="text" id="quantity-box" value="${qty}" name="quantity"></td>
-            <td>${products[product_key][i].name} <img src="./images/${products[product_key][i].image}" WIDTH = 60px</td>
-                <td>\$${products[product_key][i].price.toFixed(2)}</td>
-                <td>\$${extended_price}</td></tr></center>');
-
-        }
-    }
-} 
-// Computer Tax
-var tax_rate = 0.0575;
-    var tax = tax_rate*subtotal;
-
-    // Computer Shipping 
-    if(subtotal <= 50) (
-      shipping =2
-    )
-    else if(subtotal <= 100)(
-      shipping = 5
-    )
-    else (
-      shipping = 0.05*subtotal
-    )
-
-    // Computer Grand total
-    var total = subtotal + tax + shipping;
-</form>
-</script>
-
-          <tr>
-            <td colspan="4" width="100%">&nbsp;</td>
-          </tr>
-          <tr>
-            <td style="text-align: center;" colspan="3" width="67%">Sub-total</td>
-            <td width="54%">$<script>document.write(subtotal);</script></td>
-          </tr>
-          <tr>
-            <td style="text-align: center;" colspan="3" width="67%"><span style="font-family: arial;">Tax @ <script>document.write(100*tax_rate);</script>%</span></td>
-            <td width="54%">$<script>document.write(tax.toFixed(2));</script></td>
-          </tr>
-          <tr>
-            <td style="text-align: center;" colspan="3" width="67%">Shipping<span style="font-family: arial;">
-            <td width="54%">$<script>document.write(shipping.toFixed(2));</script></td>
-          </tr>
-          <tr>
-            <td style="text-align: center;" colspan="3" width="67%"><strong>Total</strong></td>
-            <td width="54%"><strong>$<script>document.write(total.toFixed(2));</script></strong></td>
-          </tr>
-        </tbody>
-      </table> 
-      <div style = "font-weight: bold;">
-        OUR SHIPPING POLICY IS:A subtotal $0 - $49.99 will be $2 shipping
-        <br>
-      A subtotal $50 - $99.99 will be $5 shipping
-      <br>
-    Subtotals over $100 will be charged 5% of the subtotal amount
-      </div>
-</body>
-</footer>
-</table>`;
-response.send(str);
-}
+app.get("/get_cart", function (request, response) {
+    response.json(request.session.cart);
+});
 
 app.post("/get_to_cart", function (request, response){
         // Get the input element
@@ -210,54 +130,34 @@ app.get("/get_to_login", function(request,response) {
     response.send(str);
 })
 
-// taken from lab14 and Assignment 2 examples 
 app.post("/get_to_login", function (request, response) {
-    // Process login form POST and redirect to logged in page if ok, back to login page if not
-    // User entered inputs are set to the variable POST
-    let POST = request.body; 
-    //User's entered email will be set to the variable entered_email. This value is set to all lowercase letters
-     entered_email = POST["email"].toLowerCase(); 
-     //IR1 we want to encrypt the password entered in the login page
-    var user_pass = generateCipher(POST['password']);
-    console.log("User email=" + entered_email + " password=" + user_pass);
-    //Validates the user's email/password by matching information to the user_data.json file
-    if (typeof users[entered_email] != 'undefined') { 
-        if(users[entered_email].password == user_pass) { 
-            // retrieves the parameters sent from the processing of the process_purchase form
-            let params = new URLSearchParams(request.query); 
-            // appends the user the username to the search parameters
-            params.append('name', users[entered_email].name); 
-           
-            //For Assignment 2: IR4 (Daniel)
-            //sets the json object's count of the times it was previously logged in to a string
-            TimesLoggedIn_str = users[entered_email].num_loggedIn;
-            console.log(users[entered_email].num_loggedIn);
-            
-            //sets the json string to a number
-            TimesLoggedIn_num = Number(TimesLoggedIn_str);
-            
-            //adds 1 to the number of times the user has previously logged in and sets the json file's object's property to this value
-            users[entered_email].num_loggedIn = 1 + TimesLoggedIn_num;
-            console.log("num= " + TimesLoggedIn_num);
-                       
-            //syncs the new object property value for the times logged in to the user_data.json
-            fs.writeFileSync(fname, JSON.stringify(users), 'utf-8'); 
-            
-            //redirects to the invoice page with the respective variables appended to the url string
-            response.redirect('/invoice.html?' + '&' + order_str + '&' + `email=${entered_email}` + '&' + `name=${users[entered_email].name}` + '&' + `LogCount=${users[entered_email].num_loggedIn}` + '&' + `date=${users[entered_email].last_date_loggin}`); // these appended variables are entered into the query string to bring that user input data to the next page
-            users[entered_email].last_date_loggin = Date();
-        } else {
-            // if the password is not valid, then will push the error to LoginError
-            request.query.LoginError = 'Password not valid!' 
-        }
-    } else { 
-        request.query.LoginError = 'Username not valid!';
+  // Process login form POST and redirect to logged in page if ok, back to login page if not
+  // User entered inputs are set to the variable POST
+  let POST = request.body;
+  //User's entered email will be set to the variable entered_email. This value is set to all lowercase letters
+  entered_email = POST["email"].toLowerCase(); 
+  //IR1 we want to encrypt the password entered in the login page
+  var user_pass = generateCipher(POST['password']);
+  if (typeof users[entered_email] != 'undefined') { 
+    if(users[entered_email].password == user_pass) { 
+      request.session.email = entered_email;
+      request.session.lastlogin = new Date().toLocaleString();
+      response.redirect('products_display.html?' + request.session.cart[products_key])
+    } else {
+      // Send a response indicating that the login was unsuccessful
+      response.send({success: false, error: "Invalid username or password"});
     }
-    params = new URLSearchParams(request.query);
-    // if error was detected, then redirect back to login page with the respective search parameters
-    response.redirect('./login.html?' + '&' + `errors=${request.query.LoginError}` + '&' + order_str + '&' + `email=${entered_email}`); 
 
-    });
+    if (!request.session.num_loggedIn) {
+      // ...
+    }
+  } else {
+    // Send a response indicating that the login was unsuccessful
+    response.send({success: false, error: "Invalid username or password"});
+  }
+})
+
+  
 
 app.get("/register", function(request, response){
     let str = `<!DOCTYPE html>
@@ -349,17 +249,6 @@ app.post("/register", function (request, response) {
         response.redirect('register?' + order_str + params.toString()); // then we will redirect them to the register if they have errors
     }
  });
-
-app.get("/add_to_cart", function (request, response) {
-    var products_key = request.query['products_key']; // get the product key sent from the form post
-    var quantities = request.query['quantities'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
-    request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
-    response.redirect('get_to_cart');
-});
-
-app.get("/get_cart", function (request, response) {
-    response.json(request.session.cart);
-});
 
 
 app.use(express.static('./public'));
