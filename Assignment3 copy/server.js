@@ -185,6 +185,34 @@ app.post("/get_to_cart", function (request, response){
             }
         })
 
+app.get("/get_to_logout", function(request, response){
+    request.session.destroy()
+    let loggedIn = false;
+
+    let str = `
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="logout" method="POST">
+        <script>
+            document.write(
+                'Thank you for shopping at Essential Cat Products! <br> You have been successfully logged out.' 
+                + '<br><a href="./index.html">Return to Homepage</a>'
+            );
+        </script>   
+    </form>
+</body>
+</html>`;
+response.cookie('loggedIn', loggedIn);
+response.send(str);
+})
+
 app.get("/get_to_login", function(request,response) {
        // Give a simple login form
        if (typeof request.session.last_date_loggin != "undefined") {
@@ -247,11 +275,11 @@ app.post("/get_to_login", function (request, response) {
   let POST = request.body;
   entered_email = POST["email"].toLowerCase();
   var user_pass = generateCipher(POST['password']);
-  loggedIn = false;
+  let loggedIn = false;
   console.log("User name=" + entered_email + " password=" + user_pass);
 
   if (users[entered_email] != undefined) {
-    loggedIn=true;
+    let loggedIn=true;
       if (users[entered_email].password == user_pass) {
           if (typeof request.session.last_login != "undefined") {
             request.session.email = entered_email;

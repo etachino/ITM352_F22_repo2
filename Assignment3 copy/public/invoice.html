@@ -9,6 +9,7 @@
     var products;
     var total = 0;
     var cookie;
+    var user_data;
     loadJSON('get_products_data', function(response) {
          // Parsing JSON string into object
          products = JSON.parse(response);
@@ -24,6 +25,10 @@
          // Parsing JSON string into object
          cookie = JSON.parse(response);
          console.log('cookie=' + cookie);
+    });
+    loadJSON('get_users', function(response) {
+         // Parsing JSON string into object
+         user_data = JSON.parse(response);
     });
           //validation on the invoice
           //checks if entered values are valid and will return true or false
@@ -56,17 +61,21 @@
         extended_price = product_quantities_array[i] * products[i].price;
         (subtotal += extended_price)
       } else {extended_price=0}
-      
-    document.write(`
-          <tr>
-            <td width="43%"><img src="/images/${products[i].image}" style="width: 20%; height: 20%">${products[i].name}</td>
-            <td align="center" width="11%">${quantities[i]}</div></td>
-            <td width="13%">\$${products[i].price}</td>
-            <td width="54%">\$${extended_price}</td>
-          </tr>
-          `);
-  }
-}
+    }
+  };
+
+//create dynamic login/logout button
+
+         user_email = cookie.email;
+         ifLoggedIn = cookie.loggedIn;
+         if(ifLoggedIn == 'true'){
+            document.write('<h4>Welcome ' + user_data[user_email].name + 
+            '<br> Number of Logins: ' + user_data[user_email].num_loggedIn +
+            '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>' + '<a href="get_to_logout">Logout</a>'
+            )
+         } else {
+            document.write('<h3><a href="get_to_login">Login</a></h3>');
+         }
     // Compute Subtotal
     var subtotal = 0;
 </script>
@@ -105,10 +114,31 @@ var quantities= [];
             <th style="text-align: center;" width="13%">price</th>
             <th style="text-align: center;" width="54%">extended price</th>
           </tr>
-          <script>
-            generate_item_rows(quantities); {
 
-            };
+  <script>
+  //write for loop to populate invoice table 
+  for(product_key in products) {
+    for(i=0; i<products[product_key].length; i++) {
+        if(typeof shopping_cart[product_key] == 'undefined') continue;
+        qty = shopping_cart[product_key][i];
+        extended_price = qty * products[product_key][i].price;
+        (subtotal += extended_price)
+        if(qty > 0) {
+          var product = products[product_key][i];
+          document.write(`
+          <tr>
+          <td><center>
+              <span id="textbox" value="${qty}" style="width: 20px">
+            </center></td>
+            <td>${products[product_key][i].name} <img src="./images/${products[product_key][i].image}" WIDTH = 60px</td>
+                <td>\$${products[product_key][i].price.toFixed(2)}</td>
+                <td>\$${extended_price}</td></tr></center>
+                <tr>
+                  `);
+
+        }
+    }
+}; 
       
             //write user's name and email address in the invoice
       function CustomizeInvoice(){
