@@ -1,11 +1,12 @@
 <head>
     <script src="./functions.js"></script> 
     <center><img src="images/download.jpg" alt="Cat Front Photo" width="80%" height="40%"></center>
-    <link rel="stylesheet" href="products-style.css">
+    <link rel="stylesheet" href="index-style.css">
     <script>
     var products;
     var total = 0;
     var cookie;
+    var user_data;
     loadJSON('get_products_data', function(response) {
          // Parsing JSON string into object
          products = JSON.parse(response);
@@ -21,6 +22,11 @@
          // Parsing JSON string into object
          cookie = JSON.parse(response);
     });
+    loadJSON('get_users', function(response) {
+         // Parsing JSON string into object
+         user_data = JSON.parse(response);
+    });
+
     var this_product_key = ''
     
     </script>
@@ -31,6 +37,13 @@
     <h5>You have <span id="cart_total">0</span> items in your shopping cart: <a href='./cart.html'>View Cart</a></h5>
     <script>
         cart_total.innerHTML = total;
+         user_email = cookie.email
+         if(user_email != 'undefined'){
+            document.write('<h4>Welcome ' + user_data[user_email].name + 
+            '<br> Number of Logins: ' + user_data[user_email].num_loggedIn +
+            '<br> Last date logged on: ' + user_data[user_email.last_date_loggin + '</h4>'])
+         };
     </script>
+    
     </body></center>
     </html>

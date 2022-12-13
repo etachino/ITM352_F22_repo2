@@ -3,6 +3,7 @@ var app = express();
 var myParser = require("body-parser");
 var session = require('express-session');
 var products_data = require('./product_data.json');
+var user_data = require("./user_data.json");
 const qs=require('node:querystring');
 var fs = require('fs');
 const crypto = require('crypto');
@@ -84,6 +85,11 @@ app.all('*', function (request, response, next) {
 app.get("/get_products_data", function (request, response) {
     response.json(products_data);
 });
+
+app.get("/get_users", function (request, response) {
+    response.json(user_data);
+});
+
 
 app.get("/add_to_cart", function (request, response) {
     products_key = request.query['products_key']; // get the product key sent from the form post

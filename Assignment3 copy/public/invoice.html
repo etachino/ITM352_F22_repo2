@@ -23,6 +23,7 @@
         loadJSON('get_cookies', function(response) {
          // Parsing JSON string into object
          cookie = JSON.parse(response);
+         console.log('cookie=' + cookie);
     });
           //validation on the invoice
           //checks if entered values are valid and will return true or false
