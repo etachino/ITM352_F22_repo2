@@ -2,15 +2,36 @@ var express = require('express');
 var app = express();
 var myParser = require("body-parser");
 var session = require('express-session');
-var products = require('./product_data.json');
+var user_data = require("./user_data.json");
 const qs=require('node:querystring');
 var fs = require('fs');
 const crypto = require('crypto');
 var order_str = "";
 let secretekey = 'secretekey';
 var cookieParser = require('cookie-parser');
+var nodemailer = require("nodemailer");
 
 app.use(cookieParser());
+
+//Taken from Lab13, Ex5 
+//Runs through each element in the product array and initiailly set the total_sold 0
+var products_data = require('./product_data.json');
+for (let key in products_data) {
+  products_data[key].forEach((prod) => { prod.total_sold = 0 });
+}
+
+app.get('/', function (req, res) {
+    // Cookies that have not been signed
+    console.log('Cookies: ', req.cookies)
+  
+    // Cookies that have been signed
+    console.log('Signed Cookies: ', req.signedCookies)
+  })
+// calls cookies into the session from Lab15 Ex4.js
+  app.get("/get_cookies", function (request, response) {
+    response.json(request.cookies);
+});
+
 
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
 // https://www.w3schools.com/nodejs/ref_crypto.asp
@@ -43,10 +64,24 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
   } else {
       console.log("Sorry file " + fname + " does not exist.");
   }
-  
+
+// From Lab15 Ex4.js - allows me to parse through data 
 app.use(myParser.urlencoded({ extended: true }));
 
-app.use(session({secret: "ITM352 rocks!",resave: false, saveUninitialized: false}));
+// Youtube creating a session with cookies and https://stackoverflow.com/questions/69951392/prevent-express-session-from-sending-cookie-from-a-particular-route
+// I used thses two resources to help me build this session I also used Lab15 to help
+app.use(session({
+    secret: 'cat mama', // this allows us to access the session, we don't want just anyone to be able to access the session so by having the secret is the key to getting to the session data
+    resave: false, // we dont want the session to start if there are no changes made to the webpage 
+    saveUninitialized: true, // only want to save session if it is a valid log in 
+    cookie: { // creates a cookie for the session 
+      maxAge: 500000, // sets how long we want the cookies to last
+      httpOnly: true, 
+      signed: true,
+      secure: false,
+    }
+  }));
+  
 
 
 app.all('*', function (request, response, next) {
@@ -56,51 +91,196 @@ app.all('*', function (request, response, next) {
     next();
 });
 
+// get the products data from the .js file 
 app.get("/get_products_data", function (request, response) {
-    response.json(products);
+    response.json(products_data);
 });
-
-app.get("/add_to_cart", function (request, response) {
-    products_key = request.query['products_key']; // get the product key sent from the form post
-    var quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
-    request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
-    response.redirect('./cart.html');
+ // gets user name from the user name from the user data.js
+app.get("/get_users", function (request, response) {
+    response.json(user_data);
 });
 
 app.get("/get_cart", function (request, response) {
     response.json(request.session.cart);
 });
 
-app.post("/get_to_cart", function (request, response){
-        // Get the input element
-        var quantityBox = document.getElementById("quantity-box");
-        // Get the value from the input element
-        var quantity = quantityBox.value;
-        // Set the value in the session storage
-        sessionStorage.setItem("quantity", quantity);
-        // Get the value from the session storage
-        // var quantity = sessionStorage.getItem("quantity");
-        var ValidCart = true;
-        var ErrorCart = true; 
-        for (i = 0; i < products.length; i++) {
+//Taken from the Stor1 WOD
+//check if there are any invalid quantity inputs
+function isNonNegInt(quantityString, returnErrors = false) {
+    errors = []; // assume no errors at first
+    if (Number(quantityString) != quantityString) {
+        errors.push('Not a number!'); // Check if string is a number value
+} else {
+    if (quantityString < 0) errors.push('Negative value!'); // Check if it is non-negative
+    if (parseInt(quantityString) != quantityString) errors.push('Not an integer!'); // Check that it is an integer
+}
+    if (returnErrors) {
+        return errors;
+    } else if (errors.length == 0) {
+        return true;
+    } else {
+        return false;
+    }
+};
 
+// creates the cart for the sesison
+app.get("/add_to_cart", function (request, response) {
+    let valid = true;  //going to use the boolean to verify if the quantity entered is less than the quantity_available 
+    let valid_num= true;   
+    let qty_name = 'quantity'; //name of textbox in products_data.html
+    let qtys = request.query[qty_name]; //gets the quantities of the entered data 
+    let product = request.query['products_key'];
+    for (i = 0; i < products_data[product].length; i++) { // Runs loop for all products and their respective entered quantities
+        let qty = qtys[i];
+        if(qtys == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
+            if (isNonNegInt(qty) && Number(qty) <= products_data[product][i].quantity_available && Number(qty)>0) {
+            //if the qty meets the above criteria, then update the product's qty sold and available with the respective product quantities entered   
+            } else if(isNonNegInt(qty) != true) { // if quantities is not equal to a valid number than it is false 
+                valid_num = false;
+            } else if(Number(qty) >= products_data[product][i].quantity_available) { // If the quantities enter are greater then the quantity_available, then valid = false (returns)
+                valid = false;
+             } if(qty > 0) { //if quantities is greater than 0 than this statement returns true
+                var zero_qty = true;
+             }
             }
-        })
+    //from Lab 13 info_server.new.js. For Individual Requirement 4 Assignment 1 (Erin)
+    /*if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement,
+    then redirect user back to the products_display page and set the submit_button parameter to the respective error message*/
+    if(valid_num == false){ 
+        response.redirect(`products_display.html?products_key=${product}?submit_button=Please Enter Valid Quantity!`);
+    /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
+    and set the submit_button parameter to the respective error message*/
+    }else if(typeof zero_qty == false) {
+        response.redirect(`products_display.html?products_key=${product}?submit_button=Need to select quantity to purchase`);
+    }
+    else if (valid == false) {
+        response.redirect('products_display.html?submit_button=Not Enough Left In Stock!');
+    } else if (typeof qtys == "") {
+        response.redirect('products_display.html?submit_button=Enter Quantity To Continue!');
+    } else {
+        // If no errors are found, then redirect to the invoice page.
+        products_key= request.query['products_key'];
+        quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
+        request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
+        response.redirect('./cart.html');
+}});
+// updates the cart 
+app.post("/update_cart", function(request, response) {
+    if(request.cookies.LogStatus == "true"){
+        newqty = request.session.cart
+        console.log('newqty = ' + newqty);
+        for(i=0; i<newqty.length; i++){
+        products_data[products_key][i].quantity_available -= Number(newqty[i]);//subtracts quantities from quantity_available
+        products_data[products_key][i].total_sold += Number(newqty[i]); //increments quantities to quantities sold 
+        fs.writeFileSync(fname, JSON.stringify(products_data), "utf-8");
+    }
+        response.cookie('cart', newqty);
+        response.redirect('./invoice.html')
+    } else {
+        response.redirect("/get_to_login")
+    }
+})
 
-app.get("/get_to_login", function(request,response) {
-   
+// Code help from Justin Enoki 
+// Define the increaseQuantity() function and pass the products_key variable as an argument
+function increaseQuantity(request, products_key, prodID, product_key, products_data) {
+    // Use the passed product_key variable to access the correct array of products in the products object
+    var products = products_data[product_key];
+    var index = products.findIndex(product => product.id === prodID);
+    // Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
+    request.session.cart[product_key][index] += 1;
+}
+
+// Define the app.get() method and pass the products_key variable as an argument
+app.get("/increase_quantity", function (request, response) {
+    // Get the index of the item from the request query string
+    var prodID = request.query.prodID;
+    // Get the product_key of the selected product from the request query string
+    var product_key = request.query.product_key;
+    // Increase the value of the item in the array by 1
+    increaseQuantity(request, products_key, prodID, product_key, products_data);
+    // Redirect the user back to the shopping cart page
+    response.redirect("./cart.html");
+});
+
+// Define the increaseQuantity() function and pass the products_key variable as an argument
+function decreaseQuantity(request, products_key, prodID, product_key, products_data) {
+    // Use the passed product_key variable to access the correct array of products in the products object
+    var products = products_data[product_key];
+    var index = products.findIndex(product => product.id === prodID);
+    // Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
+    request.session.cart[product_key][index] -= 1;
+}
+
+// Define the app.get() method and pass the products_key variable as an argument
+app.get("/decrease_quantity", function (request, response) {
+    // Get the index of the item from the request query string
+    var prodID = request.query.prodID;
+    // Get the product_key of the selected product from the request query string
+    var product_key = request.query.product_key;
+    // Increase the value of the item in the array by 1
+    decreaseQuantity(request, products_key, prodID, product_key, products_data);
+    // Redirect the user back to the shopping cart page
+    response.redirect("./cart.html");
+});
+
+
+
+app.get("/get_to_logout", function (request, response) {
+    request.session.destroy()
+    let LogStatus = false;
+
+    let str = `
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="logout" method="POST">
+        <script>
+            document.write(
+                'Thank you for shopping at Essential Cat Products! <br> You have been successfully logged out.' 
+                + '<br><a href="./index.html">Return to Homepage</a>'
+            );
+        </script>   
+    </form>
+</body>
+</html>`;
+    response.cookie('LogStatus', LogStatus);
+    response.send(str);
+})
+
+app.get("/get_to_login", function (request, response) {
+    // Give a simple login form
+    if (typeof request.session.last_date_loggin != "undefined") {
+        login_time = "Last login was " + request.session.last_date_loggin;
+        request.session.shopping_cart;
+    } else {
+        login_time = "First login";
+    }
+    if (typeof request.cookies.name != "undefined") {
+        //gets cookie from client
+        my_cookie_email = request.cookies["email"];
+    } else {
+        my_cookie_name = "No user";
+    }
     var params = new URLSearchParams(request.query); // use search params to find the params within the document    
-            console.log(params);
+    console.log(params);
 
-    let str=
-    
-    `<!DOCTYPE html>
+    let str =
+
+        `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="login-style.css" rel="stylesheet">
+        <center><img src="images/download.jpg" alt="Cat Front Photo" width="30%" height="10%"></center>
         <title>Login Page</title>
        
     </head>
@@ -112,15 +292,15 @@ app.get("/get_to_login", function(request,response) {
                 <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
         </form>
         <script>
-                if (params.has("errors")) { // if params has/find errors 
+                if (${params.has("errors")}) { // if params has/find errors 
                     document.getElementById("error_button").value = "Invalid Login";}; // use the id to get the element to change the button to invalid login if there are any errors
-                console.log(params.get("errors"));
+                console.log(${params.get("errors")});
             </script>
             <br>
             <form action="/register" method="GET">
                 <h4><script>
-                document.write('<p class="register"> Not a member? <a href="/register"> Click here to register</a></p>')
-            </script></h4>
+                document.write('<p class="register"> Not a member?<br></h4><h3><a href="/register"> Click here to register</a></p><br></h3>')
+            </script>
                 </form>       
     </body>
     <script>
@@ -131,35 +311,44 @@ app.get("/get_to_login", function(request,response) {
 })
 
 app.post("/get_to_login", function (request, response) {
-  // Process login form POST and redirect to logged in page if ok, back to login page if not
-  // User entered inputs are set to the variable POST
-  let POST = request.body;
-  //User's entered email will be set to the variable entered_email. This value is set to all lowercase letters
-  entered_email = POST["email"].toLowerCase(); 
-  //IR1 we want to encrypt the password entered in the login page
-  var user_pass = generateCipher(POST['password']);
-  if (typeof users[entered_email] != 'undefined') { 
-    if(users[entered_email].password == user_pass) { 
-      request.session.email = entered_email;
-      request.session.lastlogin = new Date().toLocaleString();
-      response.redirect('products_display.html?' + request.session.cart[products_key])
+    // Process login form POST and redirect to logged in page if ok, back to login page if not
+    // User entered inputs are set to the variable POST
+    let POST = request.body;
+    entered_email = POST["email"].toLowerCase();
+    var user_pass = generateCipher(POST['password']);
+    let LogStatus = false;
+    console.log("User name=" + entered_email + " password=" + user_pass);
+
+    if (users[entered_email] != undefined) {
+        let LogStatus = true;
+        if (users[entered_email].password == user_pass) {
+            if (typeof request.session.last_login != "undefined") {
+                request.session.email = entered_email;
+                request.session.lastlogin = new Date().toLocaleString();
+                var msg = `You last logged in: ${request.session.last_login}`;
+                var now = new Date();
+            } else {
+                var msg = '';
+                var now = "First visit";
+            }
+        }
+        request.session.last_login = now;
+        //sends cookie back to the client
+        response.cookie('email', entered_email)
+        response.cookie('LogStatus', LogStatus)
+        response.cookie('cart', request.session.cart)
+    } if(request.query['products_key'] != undefined) {
+        response.redirect(`products_display.html?products_key=${request.query['products_key']}`);
+    } else if (request.query['products_key'] == undefined) {
+        response.redirect('index.html')
     } else {
-      // Send a response indicating that the login was unsuccessful
-      response.send({success: false, error: "Invalid username or password"});
+        response.send({ success: false, error: "Invalid username or password" });
     }
+});
 
-    if (!request.session.num_loggedIn) {
-      // ...
-    }
-  } else {
-    // Send a response indicating that the login was unsuccessful
-    response.send({success: false, error: "Invalid username or password"});
-  }
-})
 
-  
 
-app.get("/register", function(request, response){
+app.get("/register", function (request, response) {
     let str = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -191,65 +380,147 @@ app.post("/register", function (request, response) {
     console.log(POST); //Writes the user data into a variable
     //The following 4 variables are set to individual attributes of the users' entered information
     let encrpt_user_password = generateCipher(POST["password"]); // IR1 we want to encrypt the password the register user inputs
-     let reg_error = {}; // made this an open string for errors within the registation page 
-      user_name = POST["name"]; 
-      user_pass = POST["password"];
-      user_email = POST["email"];
-      user_pass2 = POST["repeat_password"];
+    let reg_error = {}; // made this an open string for errors within the registation page 
+    user_name = POST["name"];
+    user_pass = POST["password"];
+    user_email = POST["email"];
+    user_pass2 = POST["repeat_password"];
 
-     let onlyletters = /^[A-Za-z]+$/; // only allows letters /* case insensitive - format must be ex. erin@gmail.com */
-     let email_valid_input = /^[A-Za-z0-9_.]+@([A-Za-z0-9_.]*\.)+([a-zA-Z]{2}|[a-zA-Z]{3})$/; 
+    let onlyletters = /^[A-Za-z]+$/; // only allows letters /* case insensitive - format must be ex. erin@gmail.com */
+    let email_valid_input = /^[A-Za-z0-9_.]+@([A-Za-z0-9_.]*\.)+([a-zA-Z]{2}|[a-zA-Z]{3})$/;
     /* case sensitive - format must have at least special character "!", one number "2", and upper and lower case letters */
 
-  
-     // using an if statement to validate what we call "name" from our user_data.json
-    if(onlyletters.test(POST.name)) { // calling the variable that has the rule for only letters, the name cannot be anything but letters
+
+    // using an if statement to validate what we call "name" from our user_data.json
+    if (onlyletters.test(POST.name)) { // calling the variable that has the rule for only letters, the name cannot be anything but letters
     } else {
         reg_error['name'] = 'Must only use valid letters'; // if there are any nonletter within name then the query string will have this message
     }
     // validating that name is at least 2 characters long and under 30 characters
-    if(POST.name > 30 || POST.name < 2) {
+    if (POST.name > 30 || POST.name < 2) {
         reg_error['name'] = 'Full name must be at least 2 characters long, no more than 30 character allowed'
     } // if it is shorter than 2 or above 30 then this message will appear in the query string 
 
     // if statement to check if email added is valid to the requirements called by the variable email_valid_input
-    if(email_valid_input.test(POST.email)) {
+    if (email_valid_input.test(POST.email)) {
     } else {
         reg_error['email'] = 'Please enter valid email'; // if it does not meet the requirements for valid email then this message appears in query string 
     }
-    if(typeof users[user_email] != 'undefined') { // if the email is already within the our user_data.json 
+    if (typeof users[user_email] != 'undefined') { // if the email is already within the our user_data.json 
         reg_error['email'] = 'Email already exsist' // then send this message to the query string 
     }
 
     // if statement to valid password length - required by A2 to have at least 10 characters
-    if((POST['password'].length) < 10) { // used .length so that it reads the length of password that is inputted
+    if ((POST['password'].length) < 10) { // used .length so that it reads the length of password that is inputted
         reg_error['password'] = 'Password must be longer than 10 characters' // message appears in query string
     }
-    if((POST['password']) != POST['repeat_password']) { // make sure both password match 
+    if ((POST['password']) != POST['repeat_password']) { // make sure both password match 
         reg_error['repeat_password']
     }
     // used object.keys for the array to check that errors equal to zero
     // ref for objectkeys: https://www.w3schools.com/jsref/jsref_object_keys.asp
-    if (Object.keys(reg_error).length == 0) { 
+    if (Object.keys(reg_error).length == 0) {
         var email = POST['email'].toLowerCase();
-        users[email] = {};
-        users[email].name = POST['name'];
-        users[email]["password"] = encrpt_user_password;
-        users[email]["email"] = POST['email'];
-        users[email].num_loggedIn = 0;
-        users[email].last_date_loggin = Date();
-        
+        user_data[email] = {};
+        user_data[email].name = POST['name'];
+        user_data[email]["password"] = encrpt_user_password;
+        user_data[email]["email"] = POST['email'];
+        user_data[email].num_loggedIn = 0;
+        user_data[email].last_date_loggin = Date();
+
         // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
-        fs.writeFileSync(fname, JSON.stringify(users), "utf-8"); 
+        fs.writeFileSync(fname, JSON.stringify(user_data), "utf-8");
         // redirect to login page if all registered data is good, we want to keep the name enter so that when they go to the invoice page after logging in with their new user account
-        response.redirect('/login?' + order_str + '&' + `name=${user_name}` + '&' + `date=${users[email].last_date_loggin}`); 
+        response.redirect('/get_to_login');
     } else {
         POST['reg_error'] = JSON.stringify(reg_error); // if there are errors we want to create a string 
         let params = new URLSearchParams(POST);
         response.redirect('register?' + order_str + params.toString()); // then we will redirect them to the register if they have errors
     }
- });
+});
 
+app.post("/sent_email", function (request, response){
+    // Generate HTML invoice string
+subtotal = 0;
+var invoice_str = `Thank you for your order!
+<table border><th style="width:10%">Item</th>
+<th class="text-right" style="width:15%">Quantity</th>
+<th class="text-right" style="width:15%">Price</th>
+<th class="text-right" style="width:15%">Extended Price</th>`;
+var shopping_cart = request.session.cart;
+for (product_key in shopping_cart) {
+   for (i = 0; i < shopping_cart[product_key].length; i++) {
+      if (typeof shopping_cart[product_key] == 'undefined') continue;
+      qty = shopping_cart[product_key][i];
+      let extended_price = qty * products_data[product_key][i].price;
+      subtotal += extended_price;
+      if (qty > 0) {
+         invoice_str += `<tr><td>${products_data[product_key][i].item}</td>
+         <td>${qty}</td>
+         <td>$${products_data[product_key][i].price}</td>
+         <td>$${extended_price}
+         <tr>`;
+      }
+   }
+}
+// Compute tax
+var tax_rate = 0.045;
+var tax = tax_rate * subtotal;
+
+// Compute shipping
+if (subtotal <= 20) {
+   shipping = 5;
+}
+else if (subtotal <= 50) {
+   shipping = 8;
+}
+else {
+   shipping = 0.1 * subtotal; // 10% of subtotal
+}
+// Compute grand total
+var total = subtotal + tax + shipping;
+
+invoice_str += `<tr>
+     <tr><td colspan="4" align="right">Subtotal: $${subtotal.toFixed(2)}</td></tr>
+     <tr><td colspan="4" align="right">Shipping: $${shipping.toFixed(2)}</td></tr>
+     <tr><td colspan="4" align="right">Tax: $${tax.toFixed(2)}</td></tr>
+     <tr><td colspan="4" align="right">Grand Total: $${total.toFixed(2)}</td></tr>
+     </table>`;
+
+// from assignment 3 code examples
+// Set up mail server. Only will work on UH Network due to security restrictions
+var transporter = nodemailer.createTransport({
+   host: "mail.hawaii.edu",
+   port: 25,
+   secure: false, // use TLS
+   tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false
+   }
+});
+
+var user_email = request.session.email;
+var mailOptions = {
+   from: 'enokij@hawaii.edu',
+   to: user_email,
+   subject: `Your invoice from Justin's Keyboard Store `,
+   html: invoice_str
+};
+
+transporter.sendMail(mailOptions, function (error, info) {
+   if (error) {
+      invoice_str += `<br>Error: Invoice failed to deliver to ${user_email}`;
+   } else {
+      invoice_str += `<br>Your invoice was emailed to ${user_email}`;
+   }
+   response.clearCookie('email');
+   response.clearCookie('loggedIn');
+   response.clearCookie('cart'); // log out
+   response.send(`<script>alert('Your invoice has been sent!'); location.href="/index.html"</script>`);
+   //response.send(invoice_str);
+   request.session.destroy(); // clear cart
+ });
+});
 
 app.use(express.static('./public'));
 app.listen(8080, () => console.log('listening on port 8080'))

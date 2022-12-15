@@ -146,11 +146,11 @@ app.get("/add_to_cart", function (request, response) {
     /*if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement,
     then redirect user back to the products_display page and set the submit_button parameter to the respective error message*/
     if(valid_num == false){ 
-        response.redirect(`products_display.html?products_key=${product}?submit_button=Please Enter Valid Quantity!`);
+        response.redirect(`products_display.html?products_key=${'products_key'}?submit_button=Please Enter Valid Quantity!`);
     /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
     and set the submit_button parameter to the respective error message*/
     }else if(typeof zero_qty == false) {
-        response.redirect(`products_display.html?products_key=${product}?submit_button=Need to select quantity to purchase`);
+        response.redirect(`products_display.html?products_key=${'products_key'}?submit_button=Need to select quantity to purchase`);
     }
     else if (valid == false) {
         response.redirect('products_display.html?submit_button=Not Enough Left In Stock!');
@@ -170,15 +170,16 @@ app.post("/update_cart", function(request, response) {
         console.log('newqty = ' + newqty);
         for(i=0; i<newqty.length; i++){
         products_data[products_key][i].quantity_available -= Number(newqty[i]);//subtracts quantities from quantity_available
+        console.log('products' + products_data[products_key][i].quantity_available)
         products_data[products_key][i].total_sold += Number(newqty[i]); //increments quantities to quantities sold 
         fs.writeFileSync(fname, JSON.stringify(products_data), "utf-8");
     }
         response.cookie('cart', newqty);
         response.redirect('./invoice.html')
     } else {
-        response.redirect("/get_to_login")
+        response.redirect("/login")
     }
-})
+});
 
 // Code help from Justin Enoki 
 // Define the increaseQuantity() function and pass the products_key variable as an argument
@@ -253,7 +254,7 @@ app.get("/get_to_logout", function (request, response) {
     response.send(str);
 })
 
-app.get("/get_to_login", function (request, response) {
+app.get("/login", function (request, response) {
     // Give a simple login form
     if (typeof request.session.last_date_loggin != "undefined") {
         login_time = "Last login was " + request.session.last_date_loggin;
@@ -285,7 +286,7 @@ app.get("/get_to_login", function (request, response) {
     </head>
     <h1>Login Page for Cat Essentials</h1>
     <body>
-        <form action="./get_to_login" method="POST"> 
+        <form action="./login" method="POST"> 
            <h2><input type="text" name="email" id="email" value="" size="40" placeholder="Enter email" ><br /></h2>
                <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
                 <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
@@ -309,7 +310,7 @@ app.get("/get_to_login", function (request, response) {
     response.send(str);
 })
 
-app.post("/get_to_login", function (request, response) {
+app.post("/login", function (request, response) {
     // Process login form POST and redirect to logged in page if ok, back to login page if not
     // User entered inputs are set to the variable POST
     let POST = request.body;
@@ -430,7 +431,7 @@ app.post("/register", function (request, response) {
         // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
         fs.writeFileSync(fname, JSON.stringify(user_data), "utf-8");
         // redirect to login page if all registered data is good, we want to keep the name enter so that when they go to the invoice page after logging in with their new user account
-        response.redirect('/get_to_login');
+        response.redirect('/login');
     } else {
         POST['reg_error'] = JSON.stringify(reg_error); // if there are errors we want to create a string 
         let params = new URLSearchParams(POST);

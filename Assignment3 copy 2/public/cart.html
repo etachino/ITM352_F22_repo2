@@ -13,34 +13,25 @@
             shopping_cart = JSON.parse(response);
         });
         nav_bar('', products);
+
+        loadJSON('get_cookies', function(response) {
+         // Parsing JSON string into object
+         cookie = JSON.parse(response);
+    });
+    loadJSON('get_users', function(response) {
+         // Parsing JSON string into object
+         user_data = JSON.parse(response);
+    });
     </script>
 </head>
-<body onload="cartFunction()">
-    <script>
-        function cartFunction(){
-                  // Get a reference to the text box and the buttons
-      var textBox = document.getElementById("quantity-box");
-      var increaseButton = document.getElementById("increaseButton");
-      var decreaseButton = document.getElementById("decreaseButton");
+<form action="update_cart" method="post">
+<body>
 
-      // Add event listeners to the buttons that will increment or decrement the value in the text box
-      increaseButton.onclick = function() {
-
-        textBox.value++;
-        
-        };
-
-        decreaseButton.onclick = function() {
-
-        textBox.value--;
-        };
-        }
-    </script>
 <center><h2>You have in your shopping cart:</h2></center>
 <center><table border><th>Quantity</th><th>Item</th><th>Price</th><th>Extended Price</th></center>
 
+
 <script>
-    `<form action="/get_to_cart" method="POST">`
   for(product_key in products) {
     for(i=0; i<products[product_key].length; i++) {
         if(typeof shopping_cart[product_key] == 'undefined') continue;
@@ -48,10 +39,19 @@
         extended_price = qty * products[product_key][i].price;
         (subtotal += extended_price)
         if(qty > 0) {
-          document.write(`<center><tr><td><button id="increaseButton">+</button><input type="text" id="quantity-box" value="${qty}" style="width: 20px" name="quantity"><button id="decreaseButton">-</button></td>
+          var product = products[product_key][i];
+          document.write(`
+          <tr>
+          <td><center>
+                <button type="button" id="increaseButton" onclick="window.location.href = '/increase_quantity?prodID=${product.id}&product_key=${product_key}'">+</button>
+              <input type="text" id="textbox" value="${qty}" style="width: 20px">
+              <button type="button" id="decreaseButton" onclick="window.location.href = '/decrease_quantity?prodID=${product.id}&product_key=${product_key}'">-</button>
+            </center></td>
             <td>${products[product_key][i].name} <img src="./images/${products[product_key][i].image}" WIDTH = 60px</td>
                 <td>\$${products[product_key][i].price.toFixed(2)}</td>
-                <td>\$${extended_price}</td></tr></center>`);
+                <td>\$${extended_price.toFixed(2)}</td></tr></center>
+                <tr>
+                  `);
 
         }
     }
@@ -62,10 +62,10 @@ var tax_rate = 0.0575;
 
     // Computer Shipping 
     if(subtotal <= 50) (
-      shipping =2
+      shipping = 5
     )
     else if(subtotal <= 100)(
-      shipping = 5
+      shipping = 10
     )
     else (
       shipping = 0.05*subtotal
@@ -73,7 +73,7 @@ var tax_rate = 0.0575;
 
     // Computer Grand total
     var total = subtotal + tax + shipping;
-`</form>`
+
 </script>
 
           <tr>
@@ -81,7 +81,7 @@ var tax_rate = 0.0575;
           </tr>
           <tr>
             <td style="text-align: center;" colspan="3" width="67%">Sub-total</td>
-            <td width="54%">$<script>document.write(subtotal);</script></td>
+            <td width="54%">$<script>document.write(subtotal.toFixed(2));</script></td>
           </tr>
           <tr>
             <td style="text-align: center;" colspan="3" width="67%"><span style="font-family: arial;">Tax @ <script>document.write(100*tax_rate);</script>%</span></td>
@@ -98,12 +98,17 @@ var tax_rate = 0.0575;
         </tbody>
       </table> 
       <div style = "font-weight: bold;">
-        OUR SHIPPING POLICY IS:A subtotal $0 - $49.99 will be $2 shipping
+        OUR SHIPPING POLICY IS:A subtotal $0 - $49.99 will be $5 shipping
         <br>
-      A subtotal $50 - $99.99 will be $5 shipping
+      A subtotal $50 - $99.99 will be $10 shipping
       <br>
     Subtotals over $100 will be charged 5% of the subtotal amount
       </div>
 </body>
 </footer>
 </table>
+<script>
+  document.write(
+    `<input type="submit" class="submit">
+                  </form>  `)
+</script>

@@ -43,11 +43,11 @@ h2 {
 }
 
 h4 {
-  font-size: 2.1rem;
+  font-size: 1.5rem;
   color: white;
-  text-align: right;
+  text-align: left;
   position: absolute;
-  right: 32px;
+  left: 32px;
   z-index: 3000;
   line-height: 4rem;
   padding-top: 0.2rem;
@@ -64,7 +64,8 @@ h5 {
   right: 30px;
   z-index: 3000;
   line-height: 4rem;
-  padding-top: 0.3rem;
+  top: -15;
+  padding-top: 0.5rem;
   display: block; 
   font-family: 'serif';
 }
@@ -81,7 +82,6 @@ div.item {
   display: block;
   position: absolute;
   bottom: 0px;
-  border-radius: 20%;
 }
 h6 {
   font-size: 1rem;
@@ -173,7 +173,6 @@ section {
   background-color: lightblue;
   position: sticky;
   height: 230px;
-  border-radius: 20%;
   box-shadow: 5px 5px 6px black;
 }
 
@@ -184,7 +183,6 @@ section p {
   height: 45px;
   line-height: 50px;
   text-align: center;
-  border-radius: 5%;
   position: absolute;
   right: 90px;
   bottom: 65px;
@@ -195,7 +193,6 @@ section p {
 }
 
 .submit_button {
-  border-radius: 100%;
   height: 40px;
   color: black;
   background-color: lightblue;
