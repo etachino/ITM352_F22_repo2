@@ -131,7 +131,7 @@ app.get("/add_to_cart", function (request, response) {
     let product = request.query['products_key'];
     for (i = 0; i < products_data[product].length; i++) { // Runs loop for all products and their respective entered quantities
         let qty = qtys[i];
-        if(qtys == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
+        if(qty == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
             if (isNonNegInt(qty) && Number(qty) <= products_data[product][i].quantity_available && Number(qty)>0) {
             //if the qty meets the above criteria, then update the product's qty sold and available with the respective product quantities entered   
             } else if(isNonNegInt(qty) != true) { // if quantities is not equal to a valid number than it is false 
@@ -146,11 +146,11 @@ app.get("/add_to_cart", function (request, response) {
     /*if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement,
     then redirect user back to the products_display page and set the submit_button parameter to the respective error message*/
     if(valid_num == false){ 
-        response.redirect(`products_display.html?products_key=${'products_key'}?submit_button=Please Enter Valid Quantity!`);
+        response.redirect(`products_display.html?products_key=${'products_key[i]'}?submit_button=Please Enter Valid Quantity!`);
     /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
     and set the submit_button parameter to the respective error message*/
     }else if(typeof zero_qty == false) {
-        response.redirect(`products_display.html?products_key=${'products_key'}?submit_button=Need to select quantity to purchase`);
+        response.redirect(`products_display.html?products_key=${product}?submit_button=Need to select quantity to purchase`);
     }
     else if (valid == false) {
         response.redirect('products_display.html?submit_button=Not Enough Left In Stock!');
