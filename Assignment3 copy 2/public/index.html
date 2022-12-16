@@ -37,6 +37,11 @@
         Cat Essentials Home Page <br></h1>
     <center><h3><script>nav_bar(this_product_key, products);</script></h3></center>
     <script>
+
+var params = (new URL(document.location)).searchParams;
+if (params.has("message")) {
+            document.getElementById("error_message").innerHTML=params.get("message");
+        }
         cart_total.innerHTML = total;
          user_email = cookie.email;
          ifLoggedIn = cookie.LogStatus;

@@ -111,6 +111,16 @@ app.get("/get_cart", function (request, response) {
     response.json(request.session.cart);
 });
 
+// Add a route to set the user's last visited page
+app.get('/set-last-page', (req, res) => {
+    req.session.lastPage = req.path;
+    res.send('Last visited page has been set');
+  });
+  
+  // Add a route to get the user's last visited page
+  app.get('/last-page', (req, res) => {
+    res.send(`Last visited page: ${req.session.lastPage}`);
+  });
 //Taken from the Stor1 WOD
 //check if there are any invalid quantity inputs
 function isNonNegInt(quantityString, returnErrors = false) {
@@ -319,7 +329,7 @@ app.get("/login", function (request, response) {
     </script>
     </html>`;
     response.send(str);
-})
+});
 
 app.post("/login", function (request, response) {
     // Process login form POST and redirect to logged in page if ok, back to login page if not
@@ -327,7 +337,6 @@ app.post("/login", function (request, response) {
     let POST = request.body;
     entered_email = POST["email"].toLowerCase();
     var user_pass = generateCipher(POST['password']);
-    let LogStatus = false;
     console.log("User name=" + entered_email + " password=" + user_pass);
 
     if (users[entered_email] != undefined) {
@@ -336,17 +345,7 @@ app.post("/login", function (request, response) {
             users[entered_email].num_loggedIn += 1;
             data = JSON.stringify(users);
             fs.writeFileSync(fname, data, 'utf-8');
-            if (typeof request.session.last_date_loggin != "undefined") {
-                request.session.email = entered_email;
-                request.session.last_date_loggin = Date();
-                var msg = `You last logged in: ${request.session.last_date_loggin}`;
-                var now = Date();
-            } else {
-                var msg = '';
-                var now = "First visit";
-            }
         }
-        request.session.last_date_loggin = now;
         //sends cookie back to the client
         response.cookie('email', entered_email, {maxAge: 50000});
         response.cookie('LogStatus', LogStatus, {maxAge: 50000})
@@ -354,12 +353,11 @@ app.post("/login", function (request, response) {
     } if(request.query['products_key'] != undefined) {
         response.redirect(`products_display.html?products_key=${request.query['products_key']}`);
     } else if (request.query['products_key'] == undefined) {
-        response.redirect('index.html')
+        response.redirect('/last-page')
     } else {
         response.send({ success: false, error: "Invalid username or password" });
     }
 });
-
 
 
 app.get("/register", function (request, response) {
@@ -441,11 +439,15 @@ app.post("/register", function (request, response) {
         user_data[email]["email"] = POST['email'];
         user_data[email].num_loggedIn = 1;
         user_data[email].last_date_loggin = Date();
+        LogStatus = true;
 
         // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
         fs.writeFileSync(fname, JSON.stringify(user_data), "utf-8");
+        response.cookie('email', email, {maxAge: 50000});
+        response.cookie('LogStatus', LogStatus, {maxAge: 50000});
+        response.cookie('cart', request.session.cart, {maxAge: 50000});
         // redirect to login page if all registered data is good, we want to keep the name enter so that when they go to the invoice page after logging in with their new user account
-        response.redirect('/login');
+        response.redirect('/index.html');
     } else {
         POST['reg_error'] = JSON.stringify(reg_error); // if there are errors we want to create a string 
         let params = new URLSearchParams(POST);
