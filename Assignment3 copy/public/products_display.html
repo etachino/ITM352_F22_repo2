@@ -36,7 +36,7 @@
             document.write('no products key in query string');
             document.stop;
         }
-        nav_bar(this_product_key, products_data);
+        nav_bar(this_product_key, products_data); 
 
 
         //Taken from Lab13 order_page.new.html
@@ -70,9 +70,8 @@
         <a href='index.html'>HOME<a>&nbsp&nbsp&nbsp;
 </head>
 <h5>You have <span id="cart_total">0</span> items in your shopping cart: <a href='./cart.html'>View Cart</a></h5>
-
 <script>
-    cart_total.innerHTML = total;
+       cart_total.innerHTML = total;
     user_email = cookie.email;
          ifLoggedIn = cookie.LogStatus;
          if(ifLoggedIn == 'true'){
@@ -81,8 +80,11 @@
             '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>' + '<a href="get_to_logout">Logout</a>'
             )
          } else {
-            document.write('<h3><a href="login">Login</a></h3>');
+            document.write('<a href="login">Login</a>');
          }
+</script>
+
+<script>
 // This function takes a string assumed to be a key in the products array above to display and select the corresponding products
     var order_str = '';
 
@@ -93,7 +95,6 @@
     products = products_data[this_product_key];
     console.log('products' + products);
     for (i = 0; i < products.length; i++) {
-        console.log('products' + products);
         order_str += `<center><section class="item">
             <h2>${products[i].name}</h2>
             <p>$${products[i].price}</p>
@@ -119,23 +120,24 @@
                 //Taken from Lab13 order_page.new.html
                 // changes what the button text value 
                 //Sets the URL string of the window's search to the variable params
+                window.addEventListener('load', function(){
                 let params = (new URL(window.location)).searchParams;
-                console.log(params);
                 //For Individual Requirement 4 of Assignment 1
                 //Searches through the params string and parses out the submit_button parameter from the string
                 /*If the parameter is set to equal 'Please Enter Valid Quantity', then change the value of the 
                 button to submit_button (which has already been set to equal the desired error message on the server side)*/
-                if (params.get("submit_button") == 'Please Enter Valid Quantity!') {
+                if (params.get("submit_button") == 'Please Enter Valid Quantity') {
                     document.getElementById("button").value = params.get("submit_button");
                 /*If submit_button's parameter equals 'Not Enough Left In Stock', then set the button's value
                 to equal submit_button (Same explanation as above)*/
-                } else if (params.get("submit_button") == 'Not Enough Left In Stock!') {
+                } else if (params.get("submit_button") == 'Not Enough Left In Stock') {
                     document.getElementById("button").value = params.get("submit_button");
                 } else if (params.get("submit_button") == 'Need to select quantity to purchase'){
                     document.getElementById("button").value = params.get("submit_button");
                 };
                 //Parses out the submit_button's parameter and displays its value in the console
                 console.log(params.get("submit_button"));
+            });
                 
 //////////////////////////////////////////////
 //comment section for the following for loop//

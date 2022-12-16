@@ -79,8 +79,10 @@
   if (ifLoggedIn == 'true') {
     document.write('<h4>Welcome ' + user_data[user_email].name +
       '<br> Number of Logins: ' + user_data[user_email].num_loggedIn +
-      '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>' + '<center><form action="/sent_email" method="POST"><button "submit"="/sent_email">Send Invoice</a></form></center>'
+      '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>' + '<center><form action="get_to_logout"><button "submit"="get_to_logout">Logout</a></form></center>'
     )
+  } else {
+    document.write('<h3><a href="login">Login</a></h3>');
   }
   // Compute Subtotal
   var subtotal = 0;

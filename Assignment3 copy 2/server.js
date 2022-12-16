@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var myParser = require("body-parser");
 var session = require('express-session');
 var user_data = require("./user_data.json");
 const qs=require('node:querystring');
@@ -9,9 +8,15 @@ const crypto = require('crypto');
 var order_str = "";
 let secretekey = 'secretekey';
 var cookieParser = require('cookie-parser');
-var nodemailer = require("nodemailer");
 
 app.use(cookieParser());
+
+app.use(express.static(__dirname + '/public'));
+
+  // From Lab15 Ex4.js - allows me to parse through data 
+app.use(express.urlencoded({ extended: true }));
+
+
 
 //Taken from Lab13, Ex5 
 //Runs through each element in the product array and initiailly set the total_sold 0
@@ -31,6 +36,8 @@ app.get('/', function (req, res) {
   app.get("/get_cookies", function (request, response) {
     response.json(request.cookies);
 });
+
+
 
 
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
@@ -56,7 +63,9 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
     return ciphermade;
   }
 
-  fname = __dirname + '/user_data.json'; // creating a variable to call the user_data.json file 
+  var fname = 'user_data.json'; // creating a variable to call the user_data.json file 
+
+
   if (fs.existsSync(fname)) { // reads entire file 
       var data = fs.readFileSync(fname, 'utf-8');
       var users = JSON.parse(data); // var users lets the file parse through the data within the user_data.json 
@@ -65,8 +74,6 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
       console.log("Sorry file " + fname + " does not exist.");
   }
 
-// From Lab15 Ex4.js - allows me to parse through data 
-app.use(myParser.urlencoded({ extended: true }));
 
 // Youtube creating a session with cookies and https://stackoverflow.com/questions/69951392/prevent-express-session-from-sending-cookie-from-a-particular-route
 // I used thses two resources to help me build this session I also used Lab15 to help
@@ -130,9 +137,10 @@ app.get("/add_to_cart", function (request, response) {
     let qty_name = 'quantity'; //name of textbox in products_data.html
     let qtys = request.query[qty_name]; //gets the quantities of the entered data 
     let product = request.query['products_key'];
+    let zero_qty = false;
     for (i = 0; i < products_data[product].length; i++) { // Runs loop for all products and their respective entered quantities
         let qty = qtys[i];
-        if(qtys == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
+        if(qty == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
             if (isNonNegInt(qty) && Number(qty) <= products_data[product][i].quantity_available && Number(qty)>0) {
             //if the qty meets the above criteria, then update the product's qty sold and available with the respective product quantities entered   
             } else if(isNonNegInt(qty) != true) { // if quantities is not equal to a valid number than it is false 
@@ -140,23 +148,23 @@ app.get("/add_to_cart", function (request, response) {
             } else if(Number(qty) >= products_data[product][i].quantity_available) { // If the quantities enter are greater then the quantity_available, then valid = false (returns)
                 valid = false;
              } if(qty > 0) { //if quantities is greater than 0 than this statement returns true
-                var zero_qty = true;
+                zero_qty = true;
              }
             }
     //from Lab 13 info_server.new.js. For Individual Requirement 4 Assignment 1 (Erin)
     /*if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement,
     then redirect user back to the products_display page and set the submit_button parameter to the respective error message*/
     if(valid_num == false){ 
-        response.redirect(`products_display.html?products_key=${product}?submit_button=Please Enter Valid Quantity!`);
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Please Enter Valid Quantity`);
     /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
     and set the submit_button parameter to the respective error message*/
-    }else if(typeof zero_qty == false) {
-        response.redirect(`products_display.html?products_key=${product}?submit_button=Need to select quantity to purchase`);
+    }else if(zero_qty == false) {
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Need to select quantity to purchase`);
     }
     else if (valid == false) {
-        response.redirect('products_display.html?submit_button=Not Enough Left In Stock!');
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Not Enough Left In Stock`);
     } else if (typeof qtys == "") {
-        response.redirect('products_display.html?submit_button=Enter Quantity To Continue!');
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Enter Quantity To Continue`);
     } else {
         // If no errors are found, then redirect to the invoice page.
         products_key= request.query['products_key'];
@@ -171,15 +179,16 @@ app.post("/update_cart", function(request, response) {
         console.log('newqty = ' + newqty);
         for(i=0; i<newqty.length; i++){
         products_data[products_key][i].quantity_available -= Number(newqty[i]);//subtracts quantities from quantity_available
+        console.log('products' + products_data[products_key][i].quantity_available)
         products_data[products_key][i].total_sold += Number(newqty[i]); //increments quantities to quantities sold 
         fs.writeFileSync(fname, JSON.stringify(products_data), "utf-8");
     }
         response.cookie('cart', newqty);
         response.redirect('./invoice.html')
     } else {
-        response.redirect("/get_to_login")
+        response.redirect("/login")
     }
-})
+});
 
 // Code help from Justin Enoki 
 // Define the increaseQuantity() function and pass the products_key variable as an argument
@@ -237,24 +246,26 @@ app.get("/get_to_logout", function (request, response) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="logout-style.css" rel="stylesheet">
     <title>Document</title>
 </head>
 <body>
     <form action="logout" method="POST">
-        <script>
+       <h1><script>
             document.write(
-                'Thank you for shopping at Essential Cat Products! <br> You have been successfully logged out.' 
+                'Thank you for shopping at Essential Cat Products! <br> You are now logged out.'
                 + '<br><a href="./index.html">Return to Homepage</a>'
             );
-        </script>   
+        </script></h1>
     </form>
+
 </body>
 </html>`;
     response.cookie('LogStatus', LogStatus);
     response.send(str);
 })
 
-app.get("/get_to_login", function (request, response) {
+app.get("/login", function (request, response) {
     // Give a simple login form
     if (typeof request.session.last_date_loggin != "undefined") {
         login_time = "Last login was " + request.session.last_date_loggin;
@@ -286,7 +297,7 @@ app.get("/get_to_login", function (request, response) {
     </head>
     <h1>Login Page for Cat Essentials</h1>
     <body>
-        <form action="./get_to_login" method="POST"> 
+        <form action="./login" method="POST"> 
            <h2><input type="text" name="email" id="email" value="" size="40" placeholder="Enter email" ><br /></h2>
                <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
                 <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
@@ -310,7 +321,7 @@ app.get("/get_to_login", function (request, response) {
     response.send(str);
 })
 
-app.post("/get_to_login", function (request, response) {
+app.post("/login", function (request, response) {
     // Process login form POST and redirect to logged in page if ok, back to login page if not
     // User entered inputs are set to the variable POST
     let POST = request.body;
@@ -322,21 +333,28 @@ app.post("/get_to_login", function (request, response) {
     if (users[entered_email] != undefined) {
         let LogStatus = true;
         if (users[entered_email].password == user_pass) {
+            users[entered_email].num_loggedIn += 1;
+            data = JSON.stringify(users);
+            fs.writeFileSync(fname, data, 'utf-8');
             if (typeof request.session.last_login != "undefined") {
-                request.session.email = entered_email;
-                request.session.lastlogin = new Date().toLocaleString();
-                var msg = `You last logged in: ${request.session.last_login}`;
-                var now = new Date();
-            } else {
-                var msg = '';
-                var now = "First visit";
+                var date = new Date();
+            hours = date.getHours();
+            time = (hours < 12) ? 'AM' : 'PM';
+                hours = ((hours + 11) % 12 + 1);
+                minutes = date.getMinutes();
+                minutes = ((minutes < 10) ? `0${minutes}` : `${minutes}`);
+                new_date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + " " + hours + ":" + minutes + time;
+                users[request.cookies["username"]].last_login = new_date;
+                data = JSON.stringify(users);
+                fs.writeFileSync(fname, data, 'utf-8');
+                users = JSON.parse(data);
             }
         }
-        request.session.last_login = now;
+        request.session.last_login = new_date;
         //sends cookie back to the client
-        response.cookie('email', entered_email)
-        response.cookie('LogStatus', LogStatus)
-        response.cookie('cart', request.session.cart)
+        response.cookie('email', entered_email, {maxAge: 50000});
+        response.cookie('LogStatus', LogStatus, {maxAge: 50000})
+        response.cookie('cart', request.session.cart, {maxAge: 50000})
     } if(request.query['products_key'] != undefined) {
         response.redirect(`products_display.html?products_key=${request.query['products_key']}`);
     } else if (request.query['products_key'] == undefined) {
@@ -386,7 +404,7 @@ app.post("/register", function (request, response) {
     user_email = POST["email"];
     user_pass2 = POST["repeat_password"];
 
-    let onlyletters = /^[A-Za-z]+$/; // only allows letters /* case insensitive - format must be ex. erin@gmail.com */
+    let onlyletters = /^[A-Za-z\s]+$/; // only allows letters /* case insensitive - format must be ex. erin@gmail.com */
     let email_valid_input = /^[A-Za-z0-9_.]+@([A-Za-z0-9_.]*\.)+([a-zA-Z]{2}|[a-zA-Z]{3})$/;
     /* case sensitive - format must have at least special character "!", one number "2", and upper and lower case letters */
 
@@ -425,13 +443,13 @@ app.post("/register", function (request, response) {
         user_data[email].name = POST['name'];
         user_data[email]["password"] = encrpt_user_password;
         user_data[email]["email"] = POST['email'];
-        user_data[email].num_loggedIn = 0;
+        user_data[email].num_loggedIn = 1;
         user_data[email].last_date_loggin = Date();
 
         // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
         fs.writeFileSync(fname, JSON.stringify(user_data), "utf-8");
         // redirect to login page if all registered data is good, we want to keep the name enter so that when they go to the invoice page after logging in with their new user account
-        response.redirect('/get_to_login');
+        response.redirect('/login');
     } else {
         POST['reg_error'] = JSON.stringify(reg_error); // if there are errors we want to create a string 
         let params = new URLSearchParams(POST);
@@ -439,88 +457,5 @@ app.post("/register", function (request, response) {
     }
 });
 
-app.post("/sent_email", function (request, response){
-    // Generate HTML invoice string
-subtotal = 0;
-var invoice_str = `Thank you for your order!
-<table border><th style="width:10%">Item</th>
-<th class="text-right" style="width:15%">Quantity</th>
-<th class="text-right" style="width:15%">Price</th>
-<th class="text-right" style="width:15%">Extended Price</th>`;
-var shopping_cart = request.session.cart;
-for (product_key in shopping_cart) {
-   for (i = 0; i < shopping_cart[product_key].length; i++) {
-      if (typeof shopping_cart[product_key] == 'undefined') continue;
-      qty = shopping_cart[product_key][i];
-      let extended_price = qty * products_data[product_key][i].price;
-      subtotal += extended_price;
-      if (qty > 0) {
-         invoice_str += `<tr><td>${products_data[product_key][i].item}</td>
-         <td>${qty}</td>
-         <td>$${products_data[product_key][i].price}</td>
-         <td>$${extended_price}
-         <tr>`;
-      }
-   }
-}
-// Compute tax
-var tax_rate = 0.045;
-var tax = tax_rate * subtotal;
 
-// Compute shipping
-if (subtotal <= 20) {
-   shipping = 5;
-}
-else if (subtotal <= 50) {
-   shipping = 8;
-}
-else {
-   shipping = 0.1 * subtotal; // 10% of subtotal
-}
-// Compute grand total
-var total = subtotal + tax + shipping;
-
-invoice_str += `<tr>
-     <tr><td colspan="4" align="right">Subtotal: $${subtotal.toFixed(2)}</td></tr>
-     <tr><td colspan="4" align="right">Shipping: $${shipping.toFixed(2)}</td></tr>
-     <tr><td colspan="4" align="right">Tax: $${tax.toFixed(2)}</td></tr>
-     <tr><td colspan="4" align="right">Grand Total: $${total.toFixed(2)}</td></tr>
-     </table>`;
-
-// from assignment 3 code examples
-// Set up mail server. Only will work on UH Network due to security restrictions
-var transporter = nodemailer.createTransport({
-   host: "mail.hawaii.edu",
-   port: 25,
-   secure: false, // use TLS
-   tls: {
-      // do not fail on invalid certs
-      rejectUnauthorized: false
-   }
-});
-
-var user_email = request.session.email;
-var mailOptions = {
-   from: 'enokij@hawaii.edu',
-   to: user_email,
-   subject: `Your invoice from Justin's Keyboard Store `,
-   html: invoice_str
-};
-
-transporter.sendMail(mailOptions, function (error, info) {
-   if (error) {
-      invoice_str += `<br>Error: Invoice failed to deliver to ${user_email}`;
-   } else {
-      invoice_str += `<br>Your invoice was emailed to ${user_email}`;
-   }
-   response.clearCookie('email');
-   response.clearCookie('loggedIn');
-   response.clearCookie('cart'); // log out
-   response.send(`<script>alert('Your invoice has been sent!'); location.href="/index.html"</script>`);
-   //response.send(invoice_str);
-   request.session.destroy(); // clear cart
- });
-});
-
-app.use(express.static('./public'));
 app.listen(8080, () => console.log('listening on port 8080'))

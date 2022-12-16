@@ -1,0 +1,133 @@
+{
+    "Best Sellers": [
+    {
+        
+        "name": "Snake Plant",
+        "price": 20.00,
+        "image": "./images/SnakePlant.jpg",
+        "quantity_available": 10
+        
+    },
+    {
+       
+        "name": "ZZ Plant",
+        "price": 15.00,
+        "image": "./images/ZzPlant.jpg",
+        "quantity_available": 10
+    },
+    {
+      
+        "name": "Pothos",
+        "price": 10.00,
+        "image": "./images/Pothos.jpg",
+        "quantity_available": 10
+    },
+    {
+        
+        "name": "Monstera",
+        "price": 40.00,
+        "image": "./images/Monstera.jpg",
+        "quantity_available": 10
+    },
+    
+    {
+        
+        "name": "Spider Plant",
+        "price": 25.00,
+        "image": "./images/SpiderPlant.jpg",
+        "quantity_available": 10
+    },
+    {
+        
+        "name": "Philodendron",
+        "price": 15.00,
+        "image": "./images/Philodendron.jpg",
+        "quantity_available": 10
+    }
+    ],
+    "Tools": [
+    
+        {
+            
+            "name": "Carekit",
+            "price": 45.00,
+            "image": "./images/carekit.jpg",
+            "quantity_available": 20
+            
+        },
+        {
+           
+            "name": "Neem Oil",
+            "price": 20.00,
+            "image": "./images/oil.jpg",
+            "quantity_available": 10
+        },
+        {
+          
+            "name": "Plant Food",
+            "price": 10.00,
+            "image": "./images/plantfood.jpg",
+            "quantity_available": 10
+        },
+        {
+            
+            "name": "Mister",
+            "price": 5.00,
+            "image": "./images/mister.jpg",
+            "quantity_available": 10
+        },
+        
+        {
+            
+            "name": "Gardening Glooves",
+            "price": 12.00,
+            "image": "./images/glooves.jpg",
+            "quantity_available": 10
+        },
+        {
+            
+            "name": "Pruning Sheers",
+            "price": 20.00,
+            "image": "./images/sheers.jpg",
+            "quantity_available": 10
+        }
+        ],
+    "Succulents": [
+        {
+            "name": "Aloe Plant",
+            "price": 10.00,
+            "image": "./images/aloe.jpg",
+            "quantity_available": 10
+        },
+        {
+            "name": "Jade Plant",
+            "price": 12.00,
+            "image": "./images/Jade.jpg",
+            "quantity_available": 10
+        },
+        {
+            "name": "Zebra",
+            "price": 12.00,
+            "image": "./images/zebra.jpg",
+            "quantity_available": 10
+        },
+        {
+            "name": "Encheveria Succulent",
+            "price": 25.00,
+            "image": "./images/echeveria.jpg",
+            "quantity_available": 10
+        },
+        {
+            "name": "String of Pearls",
+            "price": 20.00,
+            "image": "./images/pearls.jpg",
+            "quantity_available": 10
+        },
+        {
+            "name": "Heart Hoya",
+            "price": 30.00,
+            "image": "./images/hoya.jpg",
+            "quantity_available": 10
+        }
+    ]
+    }

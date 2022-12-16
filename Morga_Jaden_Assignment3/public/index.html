@@ -1,0 +1,151 @@
+<!--
+Jaden Morga
+Oct 17 2022
+This code creates the website user interface that will show theome page for store with navigation bar to cart, product pages, and log in page
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- author: ww3 schools -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="products-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karma">
+    
+    <script type="text/javascript" src="./function.js"></script>
+    <script type="text/javascript" src="./products.js"></script>
+
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Karma", sans-serif
+        }
+
+        .w3-bar-block .w3-bar-item {
+            padding: 20px
+        }
+
+        /* Nav bar */
+        .w3-bar-block .w3-bar-item {
+            padding: 20px;
+        }
+    </style>
+
+    <script>
+        var products_data;
+        loadJSON('get_products_data', function (response) {
+            // Parsing JSON string into object
+            products_data = JSON.parse(response);
+        });
+        var this_product_key = '';
+    </script>
+</head>
+
+<body>
+      <!-- !PAGE CONTENT! -->
+    <div class="w3-main w3-content w3-padding" style="max-width:1200px;margin-top:100px"></div>
+
+    <!-- Top menu -->
+    <div class="w3-top">
+
+        <!-- Sidebar (hidden by default) -->
+        <nav class="w3-sidebar w3-bar-block w3-card w3-top w3-xlarge w3-animate-left"
+            style="display:none;z-index:2;width:40%;min-width:300px" id="mySidebar">
+            <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button">Close Menu</a>
+            <script>
+                //Creates product navigation
+                nav_bar(this_product_key, products_data);
+              </script>
+            <a href="./index.html" onclick="w3_close()" class="w3-bar-item w3-button">Home</a>
+            <a href="./login.html" onclick="w3_close()" class="w3-bar-item w3-button">Log In</a>
+            <a href="./register.html" onclick="w3_close()" class="w3-bar-item w3-button">Register</a>
+            <a href="./cart.html" onclick="w3_close()" class="w3-bar-item w3-button">My Cart</a>
+        </nav>
+
+
+        <div class="w3-white w3-xlarge" style="max-width:1200px;margin:auto">
+            <div class="w3-button w3-padding-16 w3-left" onclick="w3_open()">☰</div>
+            <div class="w3-center w3-padding-16">The Plant Collective &#127793</div>
+        </div>
+    </div>
+
+    </div>
+    <form action="process_form" method="POST" id="inputForm">
+
+        <ul>
+    
+         
+</div>
+<!-- About Section -->
+    <img src= "./images/Homepage.jpg" alt="Me" class="w3-image" style="display:block;margin:auto" width="800" height="533">
+    <div class="w3-padding-32">
+      <h4><b>Plant Love</b></h4>
+      <h6><i>Trust the seeds you are planting</i></h6>
+      <p>Hello and welcome to Plant Collective. Use the side bar to navigate your way through the website. As a company we specialize in house plants, plant food, and tools. This company grew out of my passion from gardening and watching my plants grow throughout the years. I grow plants for many reason: to please my soul to challenge my patience, for novelty, or for nostalgia, but mostly for the job in seeing them grow. I hope you find the same joy and find everything plant related you little heart desires. Happy shopping! </p>
+    </div>
+  </div>
+  <hr>
+</form>
+
+ <!-- Footer -->
+ <footer class="w3-row-padding w3-padding-32">
+    <div class="w3-third">
+      <h3>FUTURE SALE!</h3>
+      <p>Stay tuned for our yearly end of year sale. This will be the biggest sale </p>
+      <p>Powered by <a href="https://www.flowerpowerfundraising.com" target="_blank">Flowers for Fundraising</a></p>
+    </div>
+  
+    <div class="w3-third">
+        <h3>BLOG POSTS</h3>
+        <ul class="w3-ul w3-hoverable">
+          <li class="w3-padding-16">
+            <img src="./images/succuelnts.jpg" class="w3-left w3-margin-right" style="width:80px; height: 80px">
+            <span class="w3-large">Plants & Mental Health</span><br>
+            <span>Stress & Anxiety</span>
+          </li>
+          <li class="w3-padding-16">
+            <img src="./images/tools.jpg" class="w3-left w3-margin-right" style="width:80px; height: 80px">
+            <span class="w3-large">Yearly Favorites</span><br>
+            <span>Your plants will thank you </span>
+          </li> 
+        </ul>
+      </div>
+
+    <div class="w3-third w3-serif">
+      <h3>POPULAR TAGS</h3>
+      <p>
+        <span class="w3-tag w3-black w3-margin-bottom">Soil</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Pots</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Dinner</span>
+        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Fertilizer</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Roots</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Drinks</span>
+        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Gardening</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Succulents</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Cuisine</span>
+        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Bugs</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Flowers</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Fried</span>
+        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Stems</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Seasonal</span>
+      </p>
+    </div>
+  </footer>
+
+
+    <script>
+        // Script to open and close sidebar
+        function w3_open() {
+            document.getElementById("mySidebar").style.display = "block";
+        }
+
+        function w3_close() {
+            document.getElementById("mySidebar").style.display = "none";
+        }
+    </script>
+
+    </form>
+    
+</body>
+ 
+ 
+</html>
+    
+<br>

@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var myParser = require("body-parser");
 var session = require('express-session');
 var user_data = require("./user_data.json");
 const qs=require('node:querystring');
@@ -11,6 +10,13 @@ let secretekey = 'secretekey';
 var cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
+
+app.use(express.static(__dirname + '/public'));
+
+  // From Lab15 Ex4.js - allows me to parse through data 
+app.use(express.urlencoded({ extended: true }));
+
+
 
 //Taken from Lab13, Ex5 
 //Runs through each element in the product array and initiailly set the total_sold 0
@@ -30,6 +36,8 @@ app.get('/', function (req, res) {
   app.get("/get_cookies", function (request, response) {
     response.json(request.cookies);
 });
+
+
 
 
 // reference sites for crypto: I used w3schools for the structure to create the function that will encrypt users password. When running the code I noticed that it would output in my terminal that is depreciated. I used my second reference to find out whether or not createCipher nodejs works. It does so therefore I kept using createCipher. Lastly, found other examples of ways to create crypto in node.js. 
@@ -55,7 +63,9 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
     return ciphermade;
   }
 
-  fname = __dirname + '/user_data.json'; // creating a variable to call the user_data.json file 
+  var fname = 'user_data.json'; // creating a variable to call the user_data.json file 
+
+
   if (fs.existsSync(fname)) { // reads entire file 
       var data = fs.readFileSync(fname, 'utf-8');
       var users = JSON.parse(data); // var users lets the file parse through the data within the user_data.json 
@@ -64,8 +74,6 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
       console.log("Sorry file " + fname + " does not exist.");
   }
 
-// From Lab15 Ex4.js - allows me to parse through data 
-app.use(myParser.urlencoded({ extended: true }));
 
 // Youtube creating a session with cookies and https://stackoverflow.com/questions/69951392/prevent-express-session-from-sending-cookie-from-a-particular-route
 // I used thses two resources to help me build this session I also used Lab15 to help
@@ -129,6 +137,7 @@ app.get("/add_to_cart", function (request, response) {
     let qty_name = 'quantity'; //name of textbox in products_data.html
     let qtys = request.query[qty_name]; //gets the quantities of the entered data 
     let product = request.query['products_key'];
+    let zero_qty = false;
     for (i = 0; i < products_data[product].length; i++) { // Runs loop for all products and their respective entered quantities
         let qty = qtys[i];
         if(qty == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
@@ -139,23 +148,23 @@ app.get("/add_to_cart", function (request, response) {
             } else if(Number(qty) >= products_data[product][i].quantity_available) { // If the quantities enter are greater then the quantity_available, then valid = false (returns)
                 valid = false;
              } if(qty > 0) { //if quantities is greater than 0 than this statement returns true
-                var zero_qty = true;
+                zero_qty = true;
              }
             }
     //from Lab 13 info_server.new.js. For Individual Requirement 4 Assignment 1 (Erin)
     /*if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement,
     then redirect user back to the products_display page and set the submit_button parameter to the respective error message*/
     if(valid_num == false){ 
-        response.redirect(`products_display.html?products_key=${'products_key[i]'}?submit_button=Please Enter Valid Quantity!`);
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Please Enter Valid Quantity`);
     /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
     and set the submit_button parameter to the respective error message*/
-    }else if(typeof zero_qty == false) {
-        response.redirect(`products_display.html?products_key=${product}?submit_button=Need to select quantity to purchase`);
+    }else if(zero_qty == false) {
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Need to select quantity to purchase`);
     }
     else if (valid == false) {
-        response.redirect('products_display.html?submit_button=Not Enough Left In Stock!');
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Not Enough Left In Stock`);
     } else if (typeof qtys == "") {
-        response.redirect('products_display.html?submit_button=Enter Quantity To Continue!');
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Enter Quantity To Continue`);
     } else {
         // If no errors are found, then redirect to the invoice page.
         products_key= request.query['products_key'];
@@ -237,17 +246,19 @@ app.get("/get_to_logout", function (request, response) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="logout-style.css" rel="stylesheet">
     <title>Document</title>
 </head>
 <body>
     <form action="logout" method="POST">
-        <script>
+       <h1><script>
             document.write(
-                'Thank you for shopping at Essential Cat Products! <br> You have been successfully logged out.' 
+                'Thank you for shopping at Essential Cat Products! <br> You are now logged out.'
                 + '<br><a href="./index.html">Return to Homepage</a>'
             );
-        </script>   
+        </script></h1>
     </form>
+
 </body>
 </html>`;
     response.cookie('LogStatus', LogStatus);
@@ -322,21 +333,24 @@ app.post("/login", function (request, response) {
     if (users[entered_email] != undefined) {
         let LogStatus = true;
         if (users[entered_email].password == user_pass) {
-            if (typeof request.session.last_login != "undefined") {
+            users[entered_email].num_loggedIn += 1;
+            data = JSON.stringify(users);
+            fs.writeFileSync(fname, data, 'utf-8');
+            if (typeof request.session.last_date_loggin != "undefined") {
                 request.session.email = entered_email;
-                request.session.lastlogin = new Date().toLocaleString();
-                var msg = `You last logged in: ${request.session.last_login}`;
-                var now = new Date();
+                request.session.last_date_loggin = Date();
+                var msg = `You last logged in: ${request.session.last_date_loggin}`;
+                var now = Date();
             } else {
                 var msg = '';
                 var now = "First visit";
             }
         }
-        request.session.last_login = now;
+        request.session.last_date_loggin = now;
         //sends cookie back to the client
-        response.cookie('email', entered_email)
-        response.cookie('LogStatus', LogStatus)
-        response.cookie('cart', request.session.cart)
+        response.cookie('email', entered_email, {maxAge: 50000});
+        response.cookie('LogStatus', LogStatus, {maxAge: 50000})
+        response.cookie('cart', request.session.cart, {maxAge: 50000})
     } if(request.query['products_key'] != undefined) {
         response.redirect(`products_display.html?products_key=${request.query['products_key']}`);
     } else if (request.query['products_key'] == undefined) {
@@ -386,7 +400,7 @@ app.post("/register", function (request, response) {
     user_email = POST["email"];
     user_pass2 = POST["repeat_password"];
 
-    let onlyletters = /^[A-Za-z]+$/; // only allows letters /* case insensitive - format must be ex. erin@gmail.com */
+    let onlyletters = /^[A-Za-z\s]+$/; // only allows letters /* case insensitive - format must be ex. erin@gmail.com */
     let email_valid_input = /^[A-Za-z0-9_.]+@([A-Za-z0-9_.]*\.)+([a-zA-Z]{2}|[a-zA-Z]{3})$/;
     /* case sensitive - format must have at least special character "!", one number "2", and upper and lower case letters */
 
@@ -425,7 +439,7 @@ app.post("/register", function (request, response) {
         user_data[email].name = POST['name'];
         user_data[email]["password"] = encrpt_user_password;
         user_data[email]["email"] = POST['email'];
-        user_data[email].num_loggedIn = 0;
+        user_data[email].num_loggedIn = 1;
         user_data[email].last_date_loggin = Date();
 
         // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
@@ -440,5 +454,4 @@ app.post("/register", function (request, response) {
 });
 
 
-app.use(express.static('./public'));
 app.listen(8080, () => console.log('listening on port 8080'))
