@@ -9,28 +9,34 @@
     var total = 0;
     var cookie;
     var user_data;
-    loadJSON('get_products_data', function(response) {
+    // Cited: Multi nav bar 
+    loadJSON('get_products_data', function(response) { // loadsJSON file of products_data from server
          // Parsing JSON string into object
          products = JSON.parse(response);
     });
-    loadJSON('get_cart', function (response) {
+    loadJSON('get_cart', function (response) { // loadsJSON file of get_cart from server
             // Parsing JSON string into object
             shopping_cart = JSON.parse(response);
             for (pk in shopping_cart) {
                 total += shopping_cart[pk].reduce((a, b) => a + b);
             }
         });
-        loadJSON('get_cookies', function(response) {
+        loadJSON('get_cookies', function(response) { //loadsJSON file of get_cookies from server
          // Parsing JSON string into object
          cookie = JSON.parse(response);
     });
-    loadJSON('get_users', function(response) {
+    loadJSON('get_users', function(response) { // loadsJSON file of get_users from server
          // Parsing JSON string into object
          user_data = JSON.parse(response);
     });
 
-    var this_product_key = ''
+    var this_product_key = '' // empty string value
     
+    </script>
+    <script>
+        // Cited: Multinav bar 
+        // gets cookie email saved in session and writes name and num logged in of user (IR4 OLD Partner DANIEL LOTT A2)
+        // changes logged in status 
     </script>
     </head>
     <center><body><h1>

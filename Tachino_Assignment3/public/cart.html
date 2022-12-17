@@ -4,21 +4,23 @@
     <script>
         var products;
         var subtotal = 0;
-        loadJSON('get_products_data', function (response) {
+        // Cited: Simple Shopping cart 
+        loadJSON('get_products_data', function (response) { // loadsJSON file of products_data from server
             // Parsing JSON string into object
-            products = JSON.parse(response);
+            products = JSON.parse(response); 
         });
-        loadJSON('get_cart', function (response) {
+        loadJSON('get_cart', function (response) { // loadsJSON file of get_cart from server
             // Parsing JSON string into object
             shopping_cart = JSON.parse(response);
         });
         nav_bar('', products);
 
-        loadJSON('get_cookies', function(response) {
+        // use this to create cookies for the cart
+        loadJSON('get_cookies', function(response) { // loadsJSON file of get_cookies from server
          // Parsing JSON string into object
          cookie = JSON.parse(response);
     });
-    loadJSON('get_users', function(response) {
+    loadJSON('get_users', function(response) { // loadsJSON file of get_users from server
          // Parsing JSON string into object
          user_data = JSON.parse(response);
     });
@@ -34,13 +36,16 @@
 
 
 <script>
-  for(product_key in products) {
-    for(i=0; i<products[product_key].length; i++) {
-        if(typeof shopping_cart[product_key] == 'undefined') continue;
-        qty = shopping_cart[product_key][i];
-        extended_price = qty * products[product_key][i].price;
-        (subtotal += extended_price)
-        if(qty > 0) {
+  // taken from Simple Shopping cart (cart.html)
+  for(product_key in products) { // Java allows to iterate over the properties of an object
+    for(i=0; i<products[product_key].length; i++) { // standard 4 loop
+        if(typeof shopping_cart[product_key] == 'undefined') continue; 
+        /* if statement is checking whether the value of the shopping_cart[product_key] 
+        property is 'undefined'. If it is, the continue statement is executed, which causes the loop to skip the remaining code in the current iteration and move on to the next iteration. */
+        qty = shopping_cart[product_key][i]; 
+        extended_price = qty * products[product_key][i].price; // calculates extended price in the cart
+        (subtotal += extended_price) // add a value to a variable and assign the result to the variable
+        if(qty > 0) { // if qty is greater than 0 document.write this 
           var product = products[product_key][i];
           document.write(`
           <tr>
@@ -54,7 +59,13 @@
                 <td>\$${extended_price.toFixed(2)}</td></tr></center>
                 <tr>
                   `);
-
+              /* Comments for code in document.write
+              Cited: Justin Enoki for the button increase and decrease 
+              increase/decrease button: onclick loads reference from server /increase_quantity or /decrease_quantity "whatever user wants"
+              created a product id for each product that which allows the code to know which products are being increased or decrease 
+              END of cited
+              products[product_key[i].name gets product name and image of product 
+              writes out extended price and price */
         }
     }
 } 
@@ -110,14 +121,15 @@ var tax_rate = 0.0575;
 </footer>
 </table>
 <input type="submit" class="submit" value="Update"><br>
-<script>
-  if(cookie.LogStatus != 'true') {
+<script> // IR1 A3 Keep user on last page visited - users last page is the cart.html if not signed in, only shows if user is not logged in. If logged it will not write this message
+  if(cookie.LogStatus != 'true') { 
     document.write(`Please login first, you have been returned to previous page
   `)}
 </script>
 </form>
 
 <script>
+  // Creates button for check out once user logs in, or if already logged 
   if(cookie.LogStatus == "true") {
   document.write(`
   <br>

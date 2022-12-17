@@ -7,7 +7,7 @@
         var total = 0;
         var user_data;
         var cookie;
-
+        // Cited: Multinav bar 
         loadJSON('get_products_data', function (response) {
             // Parsing JSON string into object
             products_data = JSON.parse(response);
@@ -71,6 +71,7 @@
 </head>
 <h5>You have <span id="cart_total">0</span> items in your shopping cart: <a href='./cart.html'>View Cart</a></h5>
 <script>
+    // gets cookie email saved in session and writes name and num logged in of user (IR4 OLD Partner DANIEL LOTT A2)
        cart_total.innerHTML = total;
         user_email = cookie.email;
          ifLoggedIn = cookie.LogStatus;
@@ -116,13 +117,13 @@
 
 
 <script>
-          //Taken from Lab13 order_page.new.html
+          //Taken from Lab13 order_page.new.html 
                 //Taken from Lab13 order_page.new.html
                 // changes what the button text value 
                 //Sets the URL string of the window's search to the variable params
                 window.addEventListener('load', function(){
                 let params = (new URL(window.location)).searchParams;
-                //For Individual Requirement 4 of Assignment 1
+                //For ERIN TACHINO Individual Requirement 4 of Assignment 1
                 //Searches through the params string and parses out the submit_button parameter from the string
                 /*If the parameter is set to equal 'Please Enter Valid Quantity', then change the value of the 
                 button to submit_button (which has already been set to equal the desired error message on the server side)*/

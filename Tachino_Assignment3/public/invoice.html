@@ -18,6 +18,7 @@
   var total = 0;
   var cookie;
   var user_data;
+  // Cited: Multinav bar 
   loadJSON('get_products_data', function (response) {
     // Parsing JSON string into object
     products = JSON.parse(response);
@@ -41,6 +42,7 @@
   //validation on the invoice
   //checks if entered values are valid and will return true or false
   //If returnErrors is true, then the generateItemRows function will proceed to generate the invoice table
+  // function from Lab and A1
   function isNonNegInt(queryString, returnErrors = false) {
     errors = []; // assume no errors at first
     if (Number(queryString) != queryString) {
@@ -59,6 +61,7 @@
     }
   }
   //generates table item rows 
+  // Cited: A2
   function generate_item_rows(product_quantities_array) {
     for (i = 0; i < product_quantities_array.length; i++) {
       if (quantities[i] == 0) {
@@ -72,7 +75,6 @@
     }
   };
 
-  //create dynamic login/logout button
 
   // Compute Subtotal
   var subtotal = 0;
@@ -89,7 +91,9 @@
     }
   };
 </script>
-
+<script>
+  // Cited: A2
+</script>
 <body onload="CustomizeInvoice()">
   <center>
     <h1> Products You Purchased!</h1>
@@ -107,7 +111,7 @@
   </center>
 
   <script>
-    //write for loop to populate invoice table 
+    //writes for loop to populate invoice table 
     for (product_key in products) {
       for (i = 0; i < products[product_key].length; i++) {
         qty = [];
@@ -199,6 +203,7 @@ var tax_rate = 0.0575;
 </body>
 <footer>
   <script>;
+  // sends user to server /sent_email 
   </script>
 </footer> 
 <form action='/sent_email' method="POST"><INPUT TYPE="submit" NAME="submit" VALUE="Sent email"></form>
