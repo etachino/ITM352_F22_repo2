@@ -37,18 +37,13 @@
         Cat Essentials Home Page <br></h1>
     <center><h3><script>nav_bar(this_product_key, products);</script></h3></center>
     <script>
-
-var params = (new URL(document.location)).searchParams;
-if (params.has("message")) {
-            document.getElementById("error_message").innerHTML=params.get("message");
-        }
         cart_total.innerHTML = total;
          user_email = cookie.email;
          ifLoggedIn = cookie.LogStatus;
          if(ifLoggedIn == 'true'){
             document.write('<h2>Welcome ' + user_data[user_email].name + 
             '<br> Number of Logins: ' + user_data[user_email].num_loggedIn +
-            '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h2>' + '<a href="get_to_logout">Logout</a>'
+            '</h2>' + '<a href="get_to_logout">Logout</a>'
             )
          } else {
             document.write('<h3><a href="login">Login</a></h3>');

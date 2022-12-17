@@ -2,8 +2,6 @@
     <script src="./functions.js"></script> 
     <center><img src="images/download.jpg" alt="Cat Front Photo" width="80%" height="40%"></center>
     <link rel="stylesheet" href="index-style.css">
-    <h5>You have <span id="cart_total">0</span> items in your shopping cart: <a href='./cart.html'>View Cart</a></h5>
-
     <script>
     var products;
     var total = 0;
@@ -36,17 +34,18 @@
     <center><body><h1>
         Cat Essentials Home Page <br></h1>
     <center><h3><script>nav_bar(this_product_key, products);</script></h3></center>
+    <h5>You have <span id="cart_total">0</span> items in your shopping cart: <a href='./cart.html'>View Cart</a></h5>
     <script>
         cart_total.innerHTML = total;
          user_email = cookie.email;
-         ifLoggedIn = cookie.LogStatus;
+         ifLoggedIn = cookie.loggedIn;
          if(ifLoggedIn == 'true'){
-            document.write('<h2>Welcome ' + user_data[user_email].name + 
+            document.write('<h4>Welcome ' + user_data[user_email].name + 
             '<br> Number of Logins: ' + user_data[user_email].num_loggedIn +
-            '</h2>' + '<a href="get_to_logout">Logout</a>'
+            '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>' + '<a href="get_to_logout">Logout</a>'
             )
          } else {
-            document.write('<h3><a href="login">Login</a></h3>');
+            document.write('<h3><a href="get_to_login">Login</a></h3>');
          }
     </script>
     

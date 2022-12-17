@@ -2,7 +2,6 @@ var express = require('express');
 var app = express();
 var session = require('express-session');
 var user_data = require("./user_data.json");
-const qs=require('node:querystring');
 var fs = require('fs');
 const crypto = require('crypto');
 var order_str = "";
@@ -15,7 +14,6 @@ app.use(express.static(__dirname + '/public'));
 
   // From Lab15 Ex4.js - allows me to parse through data 
 app.use(express.urlencoded({ extended: true }));
-
 
 
 //Taken from Lab13, Ex5 
@@ -111,6 +109,20 @@ app.get("/get_cart", function (request, response) {
     response.json(request.session.cart);
 });
 
+// Add a route to set the user's last visited page
+app.get('/set-last-page', (req, res, next) => {
+    req.session.lastPage = req.path;
+    next();
+  });
+  
+  // Add a route to redirect the user back to their last visited page
+  app.get('/go-back', (req, res) => {
+    // Redirect the user back to the last page they visited
+    res.redirect(req.session.lastPage || '/');
+  });
+
+  
+
 //Taken from the Stor1 WOD
 //check if there are any invalid quantity inputs
 function isNonNegInt(quantityString, returnErrors = false) {
@@ -176,13 +188,6 @@ app.get("/add_to_cart", function (request, response) {
 app.post("/update_cart", function(request, response) {
     if(request.cookies.LogStatus == "true"){
         newqty = request.session.cart
-        console.log('newqty = ' + newqty);
-        for(i=0; i<newqty.length; i++){
-        products_data[products_key][i].quantity_available -= Number(newqty[i]);//subtracts quantities from quantity_available
-        console.log('products' + products_data[products_key][i].quantity_available)
-        products_data[products_key][i].total_sold += Number(newqty[i]); //increments quantities to quantities sold 
-        fs.writeFileSync(fname, JSON.stringify(products_data), "utf-8");
-    }
         response.cookie('cart', newqty);
         response.redirect('./invoice.html')
     } else {
@@ -292,9 +297,43 @@ app.get("/login", function (request, response) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="login-style.css" rel="stylesheet">
         <center><img src="images/download.jpg" alt="Cat Front Photo" width="30%" height="10%"></center>
-        <title>Login Page</title>
-       
+        <script src="./functions.js"></script>
+        <title>Login Page</title>       
     </head>
+    <script>
+        var products_data;
+        var total = 0;
+        var user_data;
+        var cookie;
+
+        loadJSON('get_products_data', function (response) {
+            // Parsing JSON string into object
+            products_data = JSON.parse(response);
+        });
+        loadJSON('get_cart', function (response) {
+            // Parsing JSON string into object
+            shopping_cart = JSON.parse(response);
+            for (pk in shopping_cart) {
+                total += shopping_cart[pk].reduce((a, b) => a + b);
+            }
+        });
+        loadJSON('get_cookies', function(response) {
+         // Parsing JSON string into object
+         cookie = JSON.parse(response);
+    });
+    loadJSON('get_users', function(response) {
+         // Parsing JSON string into object
+         user_data = JSON.parse(response);
+    });
+
+        // get the query string
+         var params = (new URL(document.location)).searchParams;
+        if (params.has('products_key')) {
+            var this_product_key = params.get('products_key');
+        } 
+        nav_bar(this_product_key, products_data); 
+
+    </script>
     <h1>Login Page for Cat Essentials</h1>
     <body>
         <form action="./login" method="POST"> 
@@ -302,11 +341,6 @@ app.get("/login", function (request, response) {
                <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
                 <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
         </form>
-        <script>
-                if (${params.has("errors")}) { // if params has/find errors 
-                    document.getElementById("error_button").value = "Invalid Login";}; // use the id to get the element to change the button to invalid login if there are any errors
-                console.log(${params.get("errors")});
-            </script>
             <br>
             <form action="/register" method="GET">
                 <h4><script>
@@ -319,7 +353,7 @@ app.get("/login", function (request, response) {
     </script>
     </html>`;
     response.send(str);
-})
+});
 
 app.post("/login", function (request, response) {
     // Process login form POST and redirect to logged in page if ok, back to login page if not
@@ -332,31 +366,22 @@ app.post("/login", function (request, response) {
     if (users[entered_email] != undefined) {
         let LogStatus = true;
         if (users[entered_email].password == user_pass) {
-            if (typeof request.session.last_date_loggin != 'undefined') {
-                var now = new Date();
-            } else {
-                var now = 'First visit';
-            }
             users[entered_email].num_loggedIn += 1;
-            request.session.last_date_loggin = now;
             data = JSON.stringify(users);
             fs.writeFileSync(fname, data, 'utf-8');
         }
-        
-        
         //sends cookie back to the client
-        response.cookie('email', entered_email, {maxAge: 50000});
-        response.cookie('LogStatus', LogStatus, {maxAge: 50000});
-        response.cookie('cart', request.session.cart, {maxAge: 50000});
+        response.cookie('email', entered_email, {maxAge: 500000});
+        response.cookie('LogStatus', LogStatus, {maxAge: 500000})
+        response.cookie('cart', request.session.cart, {maxAge: 500000})
     } if(request.query['products_key'] != undefined) {
         response.redirect(`products_display.html?products_key=${request.query['products_key']}`);
     } else if (request.query['products_key'] == undefined) {
-        response.redirect(`index.html`);
+        response.redirect('/go-back');
     } else {
         response.send({ success: false, error: "Invalid username or password" });
     }
 });
-
 
 
 app.get("/register", function (request, response) {

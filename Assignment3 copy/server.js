@@ -11,10 +11,15 @@ var cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
-app.use(express.static(__dirname + '/public'));
+// Youtube creating a session with cookies and https://stackoverflow.com/questions/69951392/prevent-express-session-from-sending-cookie-from-a-particular-route
+// I used thses two resources to help me build this session I also used Lab15 to help
+app.use(session({
+    secret: 'cat mama', // this allows us to access the session, we don't want just anyone to be able to access the session so by having the secret is the key to getting to the session data
+    resave: true, // we dont want the session to start if there are no changes made to the webpage 
+    saveUninitialized: true // only want to save session if it is a valid log in 
+  }));
 
-  // From Lab15 Ex4.js - allows me to parse through data 
-app.use(express.urlencoded({ extended: true }));
+
 
 
 
@@ -24,18 +29,6 @@ var products_data = require('./product_data.json');
 for (let key in products_data) {
   products_data[key].forEach((prod) => { prod.total_sold = 0 });
 }
-
-app.get('/', function (req, res) {
-    // Cookies that have not been signed
-    console.log('Cookies: ', req.cookies)
-  
-    // Cookies that have been signed
-    console.log('Signed Cookies: ', req.signedCookies)
-  })
-// calls cookies into the session from Lab15 Ex4.js
-  app.get("/get_cookies", function (request, response) {
-    response.json(request.cookies);
-});
 
 
 
@@ -66,62 +59,8 @@ function generateCipher(TextInputted) { // Created a function using crypto so th
   var fname = 'user_data.json'; // creating a variable to call the user_data.json file 
 
 
-  if (fs.existsSync(fname)) { // reads entire file 
-      var data = fs.readFileSync(fname, 'utf-8');
-      var users = JSON.parse(data); // var users lets the file parse through the data within the user_data.json 
-      console.log(users);
-  } else {
-      console.log("Sorry file " + fname + " does not exist.");
-  }
 
-
-// Youtube creating a session with cookies and https://stackoverflow.com/questions/69951392/prevent-express-session-from-sending-cookie-from-a-particular-route
-// I used thses two resources to help me build this session I also used Lab15 to help
-app.use(session({
-    secret: 'cat mama', // this allows us to access the session, we don't want just anyone to be able to access the session so by having the secret is the key to getting to the session data
-    resave: false, // we dont want the session to start if there are no changes made to the webpage 
-    saveUninitialized: true, // only want to save session if it is a valid log in 
-    cookie: { // creates a cookie for the session 
-      maxAge: 500000, // sets how long we want the cookies to last
-      httpOnly: true, 
-      signed: true,
-      secure: false,
-    }
-  }));
-  
-
-
-app.all('*', function (request, response, next) {
-    // need to initialize an object to store the cart in the session. We do it when there is any request so that we don't have to check it exists
-    // anytime it's used
-    if(typeof request.session.cart == 'undefined') { request.session.cart = {}; } 
-    next();
-});
-
-// get the products data from the .js file 
-app.get("/get_products_data", function (request, response) {
-    response.json(products_data);
-});
- // gets user name from the user name from the user data.js
-app.get("/get_users", function (request, response) {
-    response.json(user_data);
-});
-
-app.get("/get_cart", function (request, response) {
-    response.json(request.session.cart);
-});
-
-// Add a route to set the user's last visited page
-app.get('/set-last-page', (req, res) => {
-    req.session.lastPage = req.path;
-    res.send('Last visited page has been set');
-  });
-  
-  // Add a route to get the user's last visited page
-  app.get('/last-page', (req, res) => {
-    res.send(`Last visited page: ${req.session.lastPage}`);
-  });
-//Taken from the Stor1 WOD
+  //Taken from the Stor1 WOD
 //check if there are any invalid quantity inputs
 function isNonNegInt(quantityString, returnErrors = false) {
     errors = []; // assume no errors at first
@@ -140,114 +79,133 @@ function isNonNegInt(quantityString, returnErrors = false) {
     }
 };
 
-// creates the cart for the sesison
-app.get("/add_to_cart", function (request, response) {
-    let valid = true;  //going to use the boolean to verify if the quantity entered is less than the quantity_available 
-    let valid_num= true;   
-    let qty_name = 'quantity'; //name of textbox in products_data.html
-    let qtys = request.query[qty_name]; //gets the quantities of the entered data 
-    let product = request.query['products_key'];
-    let zero_qty = false;
-    for (i = 0; i < products_data[product].length; i++) { // Runs loop for all products and their respective entered quantities
-        let qty = qtys[i];
-        if(qty == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
-            if (isNonNegInt(qty) && Number(qty) <= products_data[product][i].quantity_available && Number(qty)>0) {
-            //if the qty meets the above criteria, then update the product's qty sold and available with the respective product quantities entered   
-            } else if(isNonNegInt(qty) != true) { // if quantities is not equal to a valid number than it is false 
-                valid_num = false;
-            } else if(Number(qty) >= products_data[product][i].quantity_available) { // If the quantities enter are greater then the quantity_available, then valid = false (returns)
-                valid = false;
-             } if(qty > 0) { //if quantities is greater than 0 than this statement returns true
-                zero_qty = true;
-             }
-            }
-    //from Lab 13 info_server.new.js. For Individual Requirement 4 Assignment 1 (Erin)
-    /*if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement,
-    then redirect user back to the products_display page and set the submit_button parameter to the respective error message*/
-    if(valid_num == false){ 
-        response.redirect(`products_display.html?products_key=${product}&submit_button=Please Enter Valid Quantity`);
-    /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
-    and set the submit_button parameter to the respective error message*/
-    }else if(zero_qty == false) {
-        response.redirect(`products_display.html?products_key=${product}&submit_button=Need to select quantity to purchase`);
-    }
-    else if (valid == false) {
-        response.redirect(`products_display.html?products_key=${product}&submit_button=Not Enough Left In Stock`);
-    } else if (typeof qtys == "") {
-        response.redirect(`products_display.html?products_key=${product}&submit_button=Enter Quantity To Continue`);
-    } else {
-        // If no errors are found, then redirect to the invoice page.
-        products_key= request.query['products_key'];
-        quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
-        request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
-        response.redirect('./cart.html');
-}});
-// updates the cart 
-app.post("/update_cart", function(request, response) {
-    if(request.cookies.LogStatus == "true"){
-        newqty = request.session.cart
-        console.log('newqty = ' + newqty);
-        for(i=0; i<newqty.length; i++){
-        products_data[products_key][i].quantity_available -= Number(newqty[i]);//subtracts quantities from quantity_available
-        console.log('products' + products_data[products_key][i].quantity_available)
-        products_data[products_key][i].total_sold += Number(newqty[i]); //increments quantities to quantities sold 
-        fs.writeFileSync(fname, JSON.stringify(products_data), "utf-8");
-    }
-        response.cookie('cart', newqty);
-        response.redirect('./invoice.html')
-    } else {
-        response.redirect("/login")
-    }
-});
+app.use(express.static(__dirname + '/public'));
 
-// Code help from Justin Enoki 
-// Define the increaseQuantity() function and pass the products_key variable as an argument
-function increaseQuantity(request, products_key, prodID, product_key, products_data) {
-    // Use the passed product_key variable to access the correct array of products in the products object
-    var products = products_data[product_key];
-    var index = products.findIndex(product => product.id === prodID);
-    // Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
-    request.session.cart[product_key][index] += 1;
+  // From Lab15 Ex4.js - allows me to parse through data 
+app.use(express.urlencoded({ extended: true }));
+
+if (fs.existsSync(fname)) { // reads entire file 
+    var data = fs.readFileSync(fname, 'utf-8');
+    var users = JSON.parse(data); // var users lets the file parse through the data within the user_data.json 
+    console.log(users);
+} else {
+    console.log("Sorry file " + fname + " does not exist.");
 }
 
-// Define the app.get() method and pass the products_key variable as an argument
-app.get("/increase_quantity", function (request, response) {
-    // Get the index of the item from the request query string
-    var prodID = request.query.prodID;
-    // Get the product_key of the selected product from the request query string
-    var product_key = request.query.product_key;
-    // Increase the value of the item in the array by 1
-    increaseQuantity(request, products_key, prodID, product_key, products_data);
-    // Redirect the user back to the shopping cart page
-    response.redirect("./cart.html");
+app.all('*', function (request, response, next) {
+    // need to initialize an object to store the cart in the session. We do it when there is any request so that we don't have to check it exists
+    // anytime it's used
+    if(typeof request.session.cart == 'undefined') { request.session.cart = {}; } 
+    next();
 });
 
-// Define the increaseQuantity() function and pass the products_key variable as an argument
-function decreaseQuantity(request, products_key, prodID, product_key, products_data) {
-    // Use the passed product_key variable to access the correct array of products in the products object
-    var products = products_data[product_key];
-    var index = products.findIndex(product => product.id === prodID);
-    // Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
-    request.session.cart[product_key][index] -= 1;
-}
+ // gets user name from the user name from the user data.js
+app.get("/get_users", function (request, response) {
+    response.json(user_data);
+});
 
-// Define the app.get() method and pass the products_key variable as an argument
-app.get("/decrease_quantity", function (request, response) {
-    // Get the index of the item from the request query string
-    var prodID = request.query.prodID;
-    // Get the product_key of the selected product from the request query string
-    var product_key = request.query.product_key;
-    // Increase the value of the item in the array by 1
-    decreaseQuantity(request, products_key, prodID, product_key, products_data);
-    // Redirect the user back to the shopping cart page
-    response.redirect("./cart.html");
+// calls cookies into the session from Lab15 Ex4.js
+app.get("/get_cookies", function (request, response) {
+    response.json(request.cookies);
+});
+
+
+
+
+app.get("/get_to_login", function (request, response) {
+    // Give a simple login form
+    if (typeof request.session.last_date_loggin != "undefined") {
+        login_time = "Last login was " + request.session.last_date_loggin;
+        request.session.cart;
+    } else {
+        login_time = "First login";
+    }
+    if (typeof request.cookies.email != "undefined") {
+        //gets cookie from client
+        my_cookie_email = request.cookies["email"];
+    } else {
+        my_cookie_name = "No user";
+    }
+
+    let str =
+
+        `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="login-style.css" rel="stylesheet">
+        <center><img src="images/download.jpg" alt="Cat Front Photo" width="30%" height="10%"></center>
+        <title>Login Page</title>
+       
+    </head>
+    <h1>Login Page for Cat Essentials</h1>
+    <body>
+        <form action="/get_to_login" method="POST"> 
+           <h2><input type="text" name="email" id="email" value="" size="40" placeholder="Enter email" ><br /></h2>
+               <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
+                <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
+        </form>
+            <br>
+            <form action="/register" method="GET">
+                <h4><script>
+                document.write('<p class="register"> Not a member?<br></h4><h3><a href="/register"> Click here to register</a></p><br></h3>')
+            </script>
+                </form>       
+    </body>
+    <script>
+    
+    </script>
+    </html>`;
+    response.send(str);
+});
+
+app.post("/get_to_login", function (request, response) {
+    // Process login form POST and redirect to logged in page if ok, back to login page if not
+    // User entered inputs are set to the variable POST
+    let POST = request.body;
+    entered_email = POST["email"].toLowerCase();
+    var user_pass = generateCipher(POST['password']);
+    LogStatus = false;
+    console.log("User name=" + entered_email + " password=" + user_pass);
+
+    if (users[entered_email] != undefined) {
+        if (users[entered_email].password == user_pass) {
+            users[entered_email].num_loggedIn += 1;
+            data = JSON.stringify(users);
+            fs.writeFileSync(fname, data, 'utf-8');
+            if (typeof request.session.last_date_loggin != "undefined") {
+                request.session.email = users[entered_email].last_date_loggin;
+                request.session.last_date_loggin = Date();
+                var msg = `You last logged in: ${request.session.last_date_loggin}`;
+                var now = Date();
+                LogStatus = true;
+            } else {
+                var msg = '';
+                var now = "First visit";
+                LogStatus=true;
+            
+        }
+        request.session.last_date_loggin = now;
+        //sends cookie back to the client
+        response.cookie('email', entered_email);
+        response.cookie('LogStatus', LogStatus);
+        response.cookie('cart', request.session.cart);
+        response.redirect('./index.html');
+
+    } else {
+        response.send({ success: false, error: "Invalid username or password" });
+    }
+}
 });
 
 
 
 app.get("/get_to_logout", function (request, response) {
-    request.session.destroy()
-    let LogStatus = false;
+    response.clearCookie('email');
+    response.clearCookie('LogStatus')
+    response.clearCookie('cart');
 
     let str = `
     <!DOCTYPE html>
@@ -271,94 +229,11 @@ app.get("/get_to_logout", function (request, response) {
 
 </body>
 </html>`;
-    response.cookie('LogStatus', LogStatus);
-    response.send(str);
-})
-
-app.get("/login", function (request, response) {
-    // Give a simple login form
-    if (typeof request.session.last_date_loggin != "undefined") {
-        login_time = "Last login was " + request.session.last_date_loggin;
-        request.session.shopping_cart;
-    } else {
-        login_time = "First login";
-    }
-    if (typeof request.cookies.name != "undefined") {
-        //gets cookie from client
-        my_cookie_email = request.cookies["email"];
-    } else {
-        my_cookie_name = "No user";
-    }
-    var params = new URLSearchParams(request.query); // use search params to find the params within the document    
-    console.log(params);
-
-    let str =
-
-        `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="login-style.css" rel="stylesheet">
-        <center><img src="images/download.jpg" alt="Cat Front Photo" width="30%" height="10%"></center>
-        <title>Login Page</title>
-       
-    </head>
-    <h1>Login Page for Cat Essentials</h1>
-    <body>
-        <form action="./login" method="POST"> 
-           <h2><input type="text" name="email" id="email" value="" size="40" placeholder="Enter email" ><br /></h2>
-               <h2><input type="password" name="password" size="40" placeholder="Enter password"><br /></h2>
-                <h3><input class="submit" type="submit" value="Submit" id="error_button"></h3>
-        </form>
-        <script>
-                if (${params.has("errors")}) { // if params has/find errors 
-                    document.getElementById("error_button").value = "Invalid Login";}; // use the id to get the element to change the button to invalid login if there are any errors
-                console.log(${params.get("errors")});
-            </script>
-            <br>
-            <form action="/register" method="GET">
-                <h4><script>
-                document.write('<p class="register"> Not a member?<br></h4><h3><a href="/register"> Click here to register</a></p><br></h3>')
-            </script>
-                </form>       
-    </body>
-    <script>
+    request.session.destroy(() => {
+        response.send(str);
+    });
     
-    </script>
-    </html>`;
-    response.send(str);
 });
-
-app.post("/login", function (request, response) {
-    // Process login form POST and redirect to logged in page if ok, back to login page if not
-    // User entered inputs are set to the variable POST
-    let POST = request.body;
-    entered_email = POST["email"].toLowerCase();
-    var user_pass = generateCipher(POST['password']);
-    console.log("User name=" + entered_email + " password=" + user_pass);
-
-    if (users[entered_email] != undefined) {
-        let LogStatus = true;
-        if (users[entered_email].password == user_pass) {
-            users[entered_email].num_loggedIn += 1;
-            data = JSON.stringify(users);
-            fs.writeFileSync(fname, data, 'utf-8');
-        }
-        //sends cookie back to the client
-        response.cookie('email', entered_email, {maxAge: 50000});
-        response.cookie('LogStatus', LogStatus, {maxAge: 50000})
-        response.cookie('cart', request.session.cart, {maxAge: 50000})
-    } if(request.query['products_key'] != undefined) {
-        response.redirect(`products_display.html?products_key=${request.query['products_key']}`);
-    } else if (request.query['products_key'] == undefined) {
-        response.redirect('/last-page')
-    } else {
-        response.send({ success: false, error: "Invalid username or password" });
-    }
-});
-
 
 app.get("/register", function (request, response) {
     let str = `<!DOCTYPE html>
@@ -455,5 +330,100 @@ app.post("/register", function (request, response) {
     }
 });
 
+// get the products data from the .js file 
+app.get("/get_products_data", function (request, response) {
+    response.json(products_data);
+});
 
+// creates the cart for the sesison
+app.get("/add_to_cart", function (request, response) {
+    let valid = true;  //going to use the boolean to verify if the quantity entered is less than the quantity_available 
+    let valid_num= true;   
+    let qty_name = 'quantity'; //name of textbox in products_data.html
+    let qtys = request.query[qty_name]; //gets the quantities of the entered data 
+    let product = request.query['products_key'];
+    let zero_qty = false;
+    for (i = 0; i < products_data[product].length; i++) { // Runs loop for all products and their respective entered quantities
+        let qty = qtys[i];
+        if(qty == 0) continue; //if no inputs are entered into a product quantity textbox, then continue to the next product in the qty array.
+            if (isNonNegInt(qty) && Number(qty) <= products_data[product][i].quantity_available && Number(qty)>0) {
+            //if the qty meets the above criteria, then update the product's qty sold and available with the respective product quantities entered   
+            } else if(isNonNegInt(qty) != true) { // if quantities is not equal to a valid number than it is false 
+                valid_num = false;
+            } else if(Number(qty) >= products_data[product][i].quantity_available) { // If the quantities enter are greater then the quantity_available, then valid = false (returns)
+                valid = false;
+             } if(qty > 0) { //if quantities is greater than 0 than this statement returns true
+                zero_qty = true;
+             }
+            }
+    //from Lab 13 info_server.new.js. For Individual Requirement 4 Assignment 1 (Erin)
+    /*if the number entered is not a valid number as identified through the isNonNegInt(qty) or did not meet the other conditions set in the if statement,
+    then redirect user back to the products_display page and set the submit_button parameter to the respective error message*/
+    if(valid_num == false){ 
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Please Enter Valid Quantity`);
+    /*if quantity available is less then the amount of quantity ordered, then redirect user back to the products_display page
+    and set the submit_button parameter to the respective error message*/
+    }else if(zero_qty == false) {
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Need to select quantity to purchase`);
+    }
+    else if (valid == false) {
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Not Enough Left In Stock`);
+    } else if (typeof qtys == "") {
+        response.redirect(`products_display.html?products_key=${product}&submit_button=Enter Quantity To Continue`);
+    } else {
+        // If no errors are found, then redirect to the invoice page.
+        products_key= request.query['products_key'];
+        quantities = request.query['quantity'].map(Number); // Get quantities from the form post and convert strings from form post to numbers
+        request.session.cart[products_key] = quantities; // store the quantities array in the session cart object with the same products_key. 
+        response.redirect('./cart.html');
+}});
+
+// Code help from Justin Enoki 
+// Define the increaseQuantity() function and pass the products_key variable as an argument
+function increaseQuantity(request, products_key, prodID, product_key, products_data) {
+    // Use the passed product_key variable to access the correct array of products in the products object
+    var products = products_data[product_key];
+    var index = products.findIndex(product => product.id === prodID);
+    // Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
+    request.session.cart[product_key][index] += 1;
+}
+
+// Define the app.get() method and pass the products_key variable as an argument
+app.get("/increase_quantity", function (request, response) {
+    // Get the index of the item from the request query string
+    var prodID = request.query.prodID;
+    // Get the product_key of the selected product from the request query string
+    var product_key = request.query.product_key;
+    // Increase the value of the item in the array by 1
+    increaseQuantity(request, products_key, prodID, product_key, products_data);
+    // Redirect the user back to the shopping cart page
+    response.redirect("./cart.html");
+});
+
+// Define the increaseQuantity() function and pass the products_key variable as an argument
+function decreaseQuantity(request, products_key, prodID, product_key, products_data) {
+    // Use the passed product_key variable to access the correct array of products in the products object
+    var products = products_data[product_key];
+    var index = products.findIndex(product => product.id === prodID);
+    // Use the passed products_key variable inside the function to update the quantity of the selected product in the request.session.cart array
+    request.session.cart[product_key][index] -= 1;
+}
+
+// Define the app.get() method and pass the products_key variable as an argument
+app.get("/decrease_quantity", function (request, response) {
+    // Get the index of the item from the request query string
+    var prodID = request.query.prodID;
+    // Get the product_key of the selected product from the request query string
+    var product_key = request.query.product_key;
+    // Increase the value of the item in the array by 1
+    decreaseQuantity(request, products_key, prodID, product_key, products_data);
+    // Redirect the user back to the shopping cart page
+    response.redirect("./cart.html");
+});
+
+app.get("/get_cart", function (request, response) {
+    response.json(request.session.cart);
+});
+
+app.use(express.static('./public'));
 app.listen(8080, () => console.log('listening on port 8080'))
