@@ -1,0 +1,37 @@
+html {
+    background-color: lightpink;
+}
+tr:hover {
+    background-color: lightblue;
+  }
+tr {
+    text-align: center;
+}
+  .shipping_info {
+    position: center;
+  }
+  
+  a:link {
+    background-color: lightblue;
+    color: white;
+    padding: 14px 25px;
+    text-align: right;
+    position: right;
+    right: 30px;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+div {
+    text-align: center;
+}
+.submit {
+  padding: -40px;
+  font-family: 'system-ui';
+  text-transform: uppercase;
+  text-align: center;
+  height: 40px;
+  color: black;
+  background-color: lightblue;
+
+}

@@ -1,0 +1,37 @@
+* {
+    padding: 10px;
+    margin: 20px;
+}
+
+body {
+    background-color: lightpink;
+}
+header {
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 15vh;
+    box-shadow: 5px 5px 10px rgb(0,0,0,0.3);
+}
+h1 {
+    font-size: 3rem;
+    color: white;
+    font-family: 'Cherry Swash';
+    text-align: center;
+    text-shadow: 1px 1px 1px black;
+}
+
+a:link{
+    text-shadow: .5px .5px .5px black;
+    font-size: 1rem;
+    font-family: 'system-ui';
+    letter-spacing: 0rem;
+    text-transform: uppercase;
+    text-align: center;
+    height: 10px;
+    color: black;
+    background-color: lightblue;
+    box-shadow: 3px 3px 1px black;
+}

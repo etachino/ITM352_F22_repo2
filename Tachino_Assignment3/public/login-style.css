@@ -1,0 +1,67 @@
+* {
+    padding: 10px;
+    margin: 20px;
+}
+a:link {
+    background-color: lightblue;
+    color: white;
+    padding: 14px 25px;
+    text-align: left;
+    text-decoration: none;
+    display: inline-block;
+}
+  
+body {
+    background-color: lightpink;
+}
+header {
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 15vh;
+    box-shadow: 5px 5px 10px rgb(0,0,0,0.3);
+}
+h1 {
+    letter-spacing: 1vw;
+    font-size: 3rem;
+    color: white;
+    font-family: 'Cherry Swash';
+    text-align: center;
+     text-shadow: 5px 5px 1px black;
+}
+
+h2 {
+    margin: -20px;
+    font-family: 'system-ui';
+    text-transform: uppercase;
+    text-align: center;
+}
+
+h3 {
+    padding: -40px;
+    margin-top: -50px;
+    color: white;
+    font-family: 'Cherry Swash';
+    text-align: center;
+}
+
+h4 {
+    font-size: 1.8rem;
+    color: white;
+    font-family: 'Cherry Swash';
+    text-align: center;
+    padding: -40px;
+    margin-top: -150px;
+    text-shadow: 2px 2px 1px black;
+}
+.submit {
+    font-family: 'system-ui';
+    text-transform: uppercase;
+    text-align: center;
+    height: 40px;
+    color: black;
+    background-color: lightblue;
+    box-shadow: 3px 3px 1px black;
+}
