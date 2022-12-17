@@ -7,6 +7,7 @@ const crypto = require('crypto');
 var order_str = "";
 let secretekey = 'secretekey';
 var cookieParser = require('cookie-parser');
+const url = require('url');
 
 app.use(cookieParser());
 
@@ -92,7 +93,15 @@ app.use(session({
 app.all('*', function (request, response, next) {
     // need to initialize an object to store the cart in the session. We do it when there is any request so that we don't have to check it exists
     // anytime it's used
-    if(typeof request.session.cart == 'undefined') { request.session.cart = {}; } 
+    if(typeof request.session.cart == 'undefined') { request.session.cart = {}; }
+    referer = request.headers.referer;
+    if (referer) {
+      const parsedReferer = url.parse(referer);
+      if (parsedReferer.pathname.endsWith('.html')) {
+        // Update the previousPage session variable with the current URL
+        request.session.previousPage = referer;
+        console.log('die' + referer);
+          }}
     next();
 });
 
@@ -108,19 +117,7 @@ app.get("/get_users", function (request, response) {
 app.get("/get_cart", function (request, response) {
     response.json(request.session.cart);
 });
-
-// Add a route to set the user's last visited page
-app.get('/set-last-page', (req, res, next) => {
-    req.session.lastPage = req.path;
-    next();
-  });
   
-  // Add a route to redirect the user back to their last visited page
-  app.get('/go-back', (req, res) => {
-    // Redirect the user back to the last page they visited
-    res.redirect(req.session.lastPage || '/');
-  });
-
   
 
 //Taken from the Stor1 WOD
@@ -297,8 +294,6 @@ app.get("/login", function (request, response) {
     } else {
         my_cookie_name = "No user";
     }
-    var params = new URLSearchParams(request.query); // use search params to find the params within the document    
-    console.log(params);
 
     let str =
 
@@ -375,6 +370,8 @@ app.post("/login", function (request, response) {
     entered_email = POST["email"].toLowerCase();
     var user_pass = generateCipher(POST['password']);
     console.log("User name=" + entered_email + " password=" + user_pass);
+    referrer = request.session.previousPage;
+    lastpage = referrer; 
 
     if (users[entered_email] != undefined) {
         let LogStatus = true;
@@ -385,12 +382,10 @@ app.post("/login", function (request, response) {
         }
         //sends cookie back to the client
         response.cookie('email', entered_email, {maxAge: 500000});
-        response.cookie('LogStatus', LogStatus, {maxAge: 500000})
-        response.cookie('cart', request.session.cart, {maxAge: 500000})
-    } if(request.query['products_key'] != undefined) {
-        response.redirect(`products_display.html?products_key=${request.query['products_key']}`);
-    } else if (request.query['products_key'] == undefined) {
-        response.redirect('/go-back');
+        response.cookie('LogStatus', LogStatus, {maxAge: 500000});
+        response.cookie('cart', request.session.cart, {maxAge: 500000});
+        response.cookie('Lastpage', request.session.previousPage, {maxAge: 500000});
+        response.redirect(lastpage);
     } else {
         response.send({ success: false, error: "Invalid username or password" });
     }
@@ -477,14 +472,16 @@ app.post("/register", function (request, response) {
         user_data[email].num_loggedIn = 1;
         user_data[email].last_date_loggin = Date();
         LogStatus = true;
+        referrer = request.session.previousPage;
+        lastpage = referrer; 
 
         // this creates a string using are variable fname which is from users and then JSON will stringify the data "users"
         fs.writeFileSync(fname, JSON.stringify(user_data), "utf-8");
         response.cookie('email', email, {maxAge: 50000});
         response.cookie('LogStatus', LogStatus, {maxAge: 50000});
         response.cookie('cart', request.session.cart, {maxAge: 50000});
-        // redirect to login page if all registered data is good, we want to keep the name enter so that when they go to the invoice page after logging in with their new user account
-        response.redirect('/index.html');
+        response.cookie('Lastpage', request.session.previousPage, {maxAge: 500000});
+        response.redirect(lastpage);
     } else {
         POST['reg_error'] = JSON.stringify(reg_error); // if there are errors we want to create a string 
         let params = new URLSearchParams(POST);

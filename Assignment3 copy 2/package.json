@@ -5,6 +5,7 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "nodemailer": "^6.8.0",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "url": "^0.11.0"
   }
 }
