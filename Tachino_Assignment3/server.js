@@ -27,16 +27,16 @@ app.use(express.urlencoded({ extended: true }));
 var products_data = require('./product_data.json');
 for (let key in products_data) {
   products_data[key].forEach((prod) => { prod.total_sold = 0 });
-}
+};
 
 // Cited" Lab15 Ex5.js
-app.get('/', function (req, res) {
+app.get('/', function (request, respnose) {
     // Cookies that have not been signed
-    console.log('Cookies: ', req.cookies)
+    console.log('Cookies: ', request.cookies)
   
     // Cookies that have been signed
-    console.log('Signed Cookies: ', req.signedCookies)
-  })
+    console.log('Signed Cookies: ', request.signedCookies)
+  });
 // calls cookies into the session from Lab15 Ex4.js
   app.get("/get_cookies", function (request, response) {
     response.json(request.cookies);
