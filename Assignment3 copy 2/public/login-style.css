@@ -2,7 +2,15 @@
     padding: 10px;
     margin: 20px;
 }
-
+a:link {
+    background-color: lightblue;
+    color: white;
+    padding: 14px 25px;
+    text-align: left;
+    text-decoration: none;
+    display: inline-block;
+}
+  
 body {
     background-color: lightpink;
 }

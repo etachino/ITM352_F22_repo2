@@ -10,7 +10,16 @@ tr {
   .shipping_info {
     position: center;
   }
-
+  
+  a:link {
+    background-color: lightblue;
+    color: white;
+    padding: 14px 25px;
+    text-align: left;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
 div {
     text-align: center;
 }

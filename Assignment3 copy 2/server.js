@@ -185,15 +185,28 @@ app.get("/add_to_cart", function (request, response) {
         response.redirect('./cart.html');
 }});
 // updates the cart 
-app.post("/update_cart", function(request, response) {
+app.post("/update_cart",function(request, response){
+    updated_qty = request.session.cart
+    response.cookie('cart', updated_qty, {
+        expires: new Date(Date.now() + 3600000), // Expire in 1 hour
+          });
     if(request.cookies.LogStatus == "true"){
-        newqty = request.session.cart
-        response.cookie('cart', newqty);
-        response.redirect('./invoice.html')
+        response.redirect('./cart.html?update=Cart Has Been Updated!')
     } else {
         response.redirect("/login")
     }
 });
+
+app.post("/checkout", function(request, response) {
+    if(request.cookies.LogStatus == "true"){
+        updated_qty = request.session.cart
+        response.cookie('cart', updated_qty, {
+            expires: new Date(Date.now() + 3600000), // Expire in 1 hour
+              });
+        response.redirect('./invoice.html')
+    }
+});
+
 
 // Code help from Justin Enoki 
 // Define the increaseQuantity() function and pass the products_key variable as an argument

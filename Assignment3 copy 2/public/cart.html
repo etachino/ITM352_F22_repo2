@@ -107,8 +107,16 @@ var tax_rate = 0.0575;
 </body>
 </footer>
 </table>
+<input type="submit" class="submit" value="Update"><br>
+</form>
+
 <script>
-  document.write(
-    `<input type="submit" class="submit">
-                  </form>  `)
+  if(cookie.LogStatus == "true") {
+  document.write(`
+  <br>
+  <form action="checkout" method=post>
+    <input type="submit" class="checkout" value="Checkout"></input>
+  </form>
+  `)
+}
 </script>
