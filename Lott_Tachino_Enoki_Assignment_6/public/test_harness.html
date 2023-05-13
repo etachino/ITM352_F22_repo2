@@ -9,6 +9,7 @@
 
     <script>
         const products = {
+            // hard coded array of products 
             "Bikes": [
         {
             "id": "B1",
@@ -130,6 +131,7 @@
 
 
 const sales_record = [
+    // hard coded sales_record array 
     {
         item_id: 'B1',
         Customer_Id: '0000',
@@ -165,9 +167,13 @@ const sales_record = [
 
 function updatePrice() {
             const item_id = document.getElementById('item_id').value;
+            // Retrieve the value of the element with the ID 'item_id' from the document and assign it to the variable item_id.
             const discount = Number(document.getElementById('discount').value);
+            // Retrieve the value of the element with the ID 'discount' from the document, convert it to a number using the Number function, and assign it to the variable discount.
             const dynamic = document.getElementById('dynamic').checked;
+            // Retrieve the checked state of the element with the ID 'dynamic' from the document and assign it to the variable dynamic.
             let results = setPrice(item_id, products, sales_record, discount, dynamic);
+            // Call the setPrice function with the parameters item_id, products, sales_record, discount, and dynamic, and assign the returned value to the variable results.
             document.getElementById('test_results').innerHTML = results.join('<br>');
             displayProducts();
         }
@@ -175,11 +181,14 @@ function updatePrice() {
 
         function displayProducts() {
             const output = document.getElementById('products');
+            // Retrieve the element with the ID 'products' from the document and assign it to the variable output.
             output.innerHTML = JSON.stringify(products, null, 2);
+            // Set the innerHTML property of the output element to a pretty-printed JSON representation of the products object.
         }
        
         document.addEventListener("DOMContentLoaded", function() {
             displayProducts();
+            // "DOMContentLoaded" event, which fires when the initial HTML document has been completely loaded and parsed. When the event occurs, invoke the function "displayProducts()" to display the products.
         });
 
 
@@ -192,7 +201,7 @@ function updatePrice() {
 function setPrice(item_id, products, sales_record, discount, dynamic) {
   const now = new Date();
   const results = [];
-
+  //function named setPrice that takes parameters item_id, products, sales_record, discount, and dynamic. Inside the function, creates new Date object named now to store the current date and time. Empty array named results to store the calculated results.
 
   const discountRates = {
     24: 10,
@@ -202,10 +211,14 @@ function setPrice(item_id, products, sales_record, discount, dynamic) {
   };
   for (let category in products) {
     products[category].forEach((product) => {
+        // Iterates through each product in the category using the forEach method of the products[category] array.
       if (item_id === '*' || product.id === item_id) {
+        // Check if the item ID is equal to '*' (indicating a wildcard) or if the product ID matches the item ID.
         if (dynamic) {
     const sales = sales_record.filter((record) =>
+    // Filter the sales_record array using the filter method and store the result in the constant sales.
         record.item_id === product.id &&
+       //check if the item_id property of each record matches the product ID, qty sold, and date
         record.Customer_Id &&
         record.Quantity_sold > 0 &&
         record.date &&
@@ -213,18 +226,24 @@ function setPrice(item_id, products, sales_record, discount, dynamic) {
     );
     let dynamicDiscount = 0;
     let lastSaleDate = sales.length > 0 ? new Date(sales[0].date) : null;
+    // lastSaleDate and assign it a value based on the condition: if the sales array has a length greater than 0, create a new Date object using the date property of the first element in the sales array; otherwise, assign null to lastSaleDate.
     for (let hours in discountRates) {
+        // iterate through each hour using discountRates
         if (!lastSaleDate || now - lastSaleDate >= Number(hours) * 60 * 60 * 1000) {
+            // if lastSaleDate is falsy (null or undefined) or if the difference between the current date (now) and lastSaleDate is greater than or equal to the specified number of hours (converted to milliseconds).
             dynamicDiscount = discountRates[hours];
+            // Retrieve the discount rate associated with the current hour from the discountRates object and assign it to the variable dynamicDiscount.
         }
     }
     let oldPrice = product.price;
     product.price = Number((product.price * (1 - dynamicDiscount / 100)).toFixed(2));
+    // Update the price of the current product by applying the dynamicDiscount as a percentage discount. The new price is calculated by multiplying the current price by (1 - dynamicDiscount / 100) and then rounding it to 2 decimal places using the toFixed(2) method.
     results.push(`Applied dynamic pricing to ${product.name}. Price went from $${oldPrice} to $${product.price}`);
     results.push(`Sales record: ${product.name}. Current date: ${now}. Last purchased: ${new Date(sales[0].date)}`);
 } else {
     let oldPrice = product.price;
     product.price = Number((product.price * (1 - discount / 100)).toFixed(2));
+    // Update the price of the current product by applying the discount as a percentage discount.
     results.push(`Applied a ${discount}% discount to ${product.name}. Price went from $${oldPrice} to $${product.price}`);
 }
       }
@@ -233,7 +252,7 @@ function setPrice(item_id, products, sales_record, discount, dynamic) {
   return results;
 }
 
-
+// How test harness will look on html page includes textboxes to input test numbers, the hour table the discount is going by, and results.
     </script>
         <h1>Test Harness</h1>
         <form onsubmit="event.preventDefault(); updatePrice();">
