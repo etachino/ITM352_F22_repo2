@@ -2,58 +2,60 @@ body {
     background-color: lightgray;
 }
 header {
-    background-color: #333; /* Set the background color of the header */
-    display: flex; /* Display the header as a flex container */
-    align-items: center; /* Center the header items vertically */
-    padding: 20px; /* Add some padding to the header */
-    height: 10px;
-  }
-      /* Style the logo */
-      header img {
-          height: 50px; /* Set the height of the logo image */
-      }
-  
-      
-  /* Style the navigation bar */
-  nav {
-    margin-left: auto; /* Move the navigation bar to the right side of the header */
-    width: 100%; /* Set the width of the navbar to 100% of the container */
-  }
-  
-  /* Style the links inside the navbar */
-  nav ul {
-    list-style-type: none; /* Remove the default bullet points from the list */
-    margin: 0; /* Remove the default margin */
-    padding: 0; /* Remove the default padding */
-    overflow: hidden; /* Hide any elements that overflow the navbar */
-    display: flex; /* Display the navbar as a flex container */
-    align-items: center; /* Center the navbar items vertically */
-    justify-content: space-between; /* Spread the navbar items evenly across the container */
-  }
-  
-  /* Style the links inside the navbar */
-  nav ul li a {
-    color: white; /* Set the text color of the links */
-    text-decoration: none;
-    padding: 10px; /* Add some padding to the links */
-  }
-  
-  /* Style the home link */
-  nav ul li a:first-child {
-    /* The first-child pseudo-class selects the first link in the navbar */
-    float: left; /* Float the home link to the left */
-  }
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  height: 10px;
+}
 
-  nav ul li:last-child a {
-    float: right;
-    margin-right: 10px;
-  }
-  
-  /* Add a hover effect to the links */
-  nav ul li a:hover {
-    background-color: #555; /* Change the background color of the link on hover */
-    border-radius: 4px; /* Add rounded corners to the link */
-  }
+/* Style the logo */
+header img {
+  height: 50px;
+}
+
+
+/* Style the navigation bar */
+nav {
+  margin-left: auto;
+  width: 100%;
+}
+
+/* Style the links inside the navbar */
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Hide any elements that overflow the navbar */
+  display: flex;
+  align-items: center;
+}
+
+/* Style the links inside the navbar */
+nav ul li a {
+  color: white;
+  font-family: "Segoe UI";
+  text-decoration: none;
+  padding: 10px;
+  float: left;
+}
+
+/* Style the home link */
+nav ul li a:first-child {
+  float: left;
+}
+
+/* Style the cart link */
+nav ul li a:last-child {
+  float: right;
+}
+
+/* Add a hover effect to the links */
+nav ul li a:hover {
+  background-color: #555;
+  border-radius: 4px;
+}
 
   
 h1 {

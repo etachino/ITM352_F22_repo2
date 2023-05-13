@@ -1,34 +1,99 @@
-* {
-    padding: 10px;
-    margin: 20px;
-}
 body {
     background-color: lightgray;
 }
 header {
-    background-color: black;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 15vh;
-    box-shadow: 5px 5px 10px rgb(0,0,0,0.3);
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  height: 10px;
 }
+
+/* Style the logo */
+header img {
+  height: 50px;
+}
+
+
+/* Style the navigation bar */
+nav {
+  margin-left: auto;
+  width: 100%;
+}
+
+/* Style the links inside the navbar */
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Hide any elements that overflow the navbar */
+  display: flex;
+  align-items: center;
+}
+
+/* Style the links inside the navbar */
+nav ul li a {
+  color: white;
+  font-family: "Segoe UI";
+  text-decoration: none;
+  padding: 10px;
+  float: left;
+}
+
+/* Style the home link */
+nav ul li a:first-child {
+  float: left;
+}
+
+/* Style the cart link */
+nav ul li a:last-child {
+  float: right;
+}
+
+/* Add a hover effect to the links */
+nav ul li a:hover {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+  
 h1 {
     letter-spacing: 1.5vw;
     font-family: 'system-ui';
     text-transform: uppercase;
     text-align: center;
+    padding: 10px;
+    margin: 20px;
 }
 
 h2 {
-    margin: -20px;
     font-family: 'system-ui';
     text-transform: uppercase;
     text-align: center;
 }
 
-.submit{
+h3 {
+    padding: -40px;
+    margin-top: -50px;
+    letter-spacing: 1.5vw;
+    font-family: 'system-ui';
+    text-transform: uppercase;
+    text-align: center;
+    padding: 10px;
+    margin:1px;
+}
+
+h4 {
+    margin-top: -50px;
+    font-family: 'system-ui';
+    text-transform: uppercase;
+    text-align: center;
+    padding: 10px;
+    margin: 20px;
+}
+.submit {
+
     font-family: 'system-ui';
     text-transform: uppercase;
     text-align: center;
@@ -37,4 +102,6 @@ h2 {
     color: white;
     background-color: #331;
     box-shadow: 3px 3px 1px black;
+    padding: 10px;
+    margin: 20px;
 }

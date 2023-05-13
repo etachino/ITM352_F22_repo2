@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,6 +34,7 @@
     // Parsing JSON string into object
     user_data = JSON.parse(response);
   });
+
   //validation on the invoice
   //checks if entered values are valid and will return true or false
   //If returnErrors is true, then the generateItemRows function will proceed to generate the invoice table
@@ -67,17 +69,7 @@
     }
   };
 
-  //create dynamic login/logout button
-  user_email = cookie.email;
-  ifLoggedIn = cookie.loggedIn;
-  if (ifLoggedIn == 'true') {
-    document.write('<h4>Welcome ' + user_data[user_email].name +
-      '<br> Number of Logins: ' + user_data[user_email].num_loggedIn +
-      '</h4>' + '<center><form action="/email_inv" method="POST"><button "submit"="email_inv">Confirm</a></form></center>'
-    )
-  } else {
-    document.write('<h3><a href="get_to_login">Login</a></h3>');
-  }
+
   // Compute Subtotal
   subtotal = 0;
 
@@ -93,12 +85,23 @@
     }
   };
 </script>
+<div class="container">
 <body>
   <center>
     <h1> Products You Purchased!</h1>
   </center>
-    <center><table border><th>Quantity</th><th>Item</th><th>Price</th><th>Extended Price</th></center>
-
+  <script>
+      //create dynamic login/logout button
+  user_email = cookie.email;
+  ifLoggedIn = cookie.loggedIn;
+  if (ifLoggedIn == 'true') {
+    document.write('<h4>Welcome ' + user_data[cookie.email].name +
+      '<br> Number of Logins: ' + user_data[user_email].num_loggedIn + 
+      '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>'
+      )
+  } 
+  </script>
+  <table border><th>Quantity</th><th>Item</th><th>Price</th><th>Extended Price</th></center>
   <script>
     //write for loop to populate invoice table 
     for (header in products) {
@@ -110,13 +113,13 @@
         (subtotal += extended_price)
         if (qty > 0) {
           var product = products[header][i];
-          document.write(`
+          document.write(`<center>
           <tr>
           <td><center>${qty}</center></td>
             <td>${products[header][i].name} <img src="./images/${products[header][i].image}" WIDTH = 60px</td>
                 <td>\$${products[header][i].price}</td>
                 <td>\$${extended_price}</td></tr></center>
-                <tr>
+                <tr></center>
                   `);
         }
       } 
@@ -140,17 +143,18 @@
     // Computer Grand total
     var total = subtotal + tax + shipping;
   </script>
+  
   <tr>
     <td colspan="4" width="100%">&nbsp;</td>
   </tr>
   <tr>
-    <td style="text-align: center;" colspan="3" width="67%">Sub-total</td>
+    <td style="text-align: center;" colspan="3" width="100%">Sub-total</td>
     <td width="54%">$
       <script>document.write(subtotal.toFixed(2));</script>
     </td>
   </tr>
   <tr>
-    <td style="text-align: center;" colspan="3" width="67%"><span style="font-family: arial;">Tax @
+    <td style="text-align: center;" colspan="3" width="100%"><span style="font-family: arial;">Tax @
         <script>document.write(100 * tax_rate);</script>%
       </span></td>
     <td width="54%">$
@@ -158,13 +162,13 @@
     </td>
   </tr>
   <tr>
-    <td style="text-align: center;" colspan="3" width="67%">Shipping<span style="font-family: arial;">
+    <td style="text-align: center;" colspan="3" width="100%">Shipping<span style="font-family: arial;">
     <td width="54%">$
       <script>document.write(shipping.toFixed(2));</script>
     </td>
   </tr>
   <tr>
-    <td style="text-align: center;" colspan="3" width="67%"><strong>Total</strong></td>
+    <td style="text-align: center;" colspan="3" width="100"><strong>Total</strong></td>
     <td width="54%"><strong>$
         <script>document.write(total.toFixed(2));</script>
       </strong></td>
@@ -177,13 +181,16 @@
     A subtotal $50 - $99.99 will be $5 shipping
     <br>
     Subtotals over $100 will be charged 5% of the subtotal amount
-  </div>
+  </div></center>
 </body>
 <footer>
   <h4>
-    <center>
-      <button class="submit" onclick="location.href=`user_update.html?${params.toString()}`;">Edit Credentials</button>
+  <center>
+      <form action="/email_inv" method="POST">
+        <button class="submit">Confirm</button>
+      </form>
     </center>
   </h4>
 </footer>
+</div>
 </html>

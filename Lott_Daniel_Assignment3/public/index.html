@@ -1,90 +1,68 @@
 <style>
   html {
-    background-image: url(images/index.jpg);
-    background-color: #ff6961;
+    background-color: lightgray;
     border-color: #ff6961;
 
   }
 
   header {
     background-color: #333;
-    /* Set the background color of the header */
     display: flex;
-    /* Display the header as a flex container */
     align-items: center;
-    /* Center the header items vertically */
     padding: 20px;
-    /* Add some padding to the header */
     height: 10px;
   }
 
   /* Style the logo */
   header img {
     height: 50px;
-    /* Set the height of the logo image */
   }
 
 
   /* Style the navigation bar */
   nav {
     margin-left: auto;
-    /* Move the navigation bar to the right side of the header */
     width: 100%;
-    /* Set the width of the navbar to 100% of the container */
   }
 
   /* Style the links inside the navbar */
   nav ul {
     list-style-type: none;
-    /* Remove the default bullet points from the list */
     margin: 0;
-    /* Remove the default margin */
     padding: 0;
-    /* Remove the default padding */
     overflow: hidden;
     /* Hide any elements that overflow the navbar */
     display: flex;
-    /* Display the navbar as a flex container */
     align-items: center;
-    /* Center the navbar items vertically */
-    justify-content: space-between;
-    /* Spread the navbar items evenly across the container */
   }
 
   /* Style the links inside the navbar */
   nav ul li a {
     color: white;
-    /* Set the text color of the links */
+    font-family: "Segoe UI";
     text-decoration: none;
     padding: 10px;
-    /* Add some padding to the links */
     float: left;
-    /* Float the navbar links to the left by default */
   }
 
   /* Style the home link */
   nav ul li a:first-child {
-    /* The first-child pseudo-class selects the first link in the navbar */
     float: left;
-    /* Float the home link to the left */
   }
 
   /* Style the cart link */
   nav ul li a:last-child {
-    /* The last-child pseudo-class selects the last link in the navbar */
     float: right;
-    /* Float the cart link to the right */
   }
 
   /* Add a hover effect to the links */
   nav ul li a:hover {
     background-color: #555;
-    /* Change the background color of the link on hover */
     border-radius: 4px;
-    /* Add rounded corners to the link */
   }
 
   h1 {
+    font-family: "Lucida Console", "Menlo", "Monaco", "Courier", monospace;
     font-size: 4rem;
     background-blend-mode: lighten;
     color: white;
@@ -92,16 +70,28 @@
   }
 
   h4 {
+    font-family: "Segoe UI";
     font-size: 1.1rem;
-    color: Yellow;
+    color: black;
     z-index: 3000;
 
   }
+
+  .container {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    width: 1000px;
+    height: 700px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
 </style>
 
 <head>
   <script src="./functions.js"></script>
-  <link href="index-style.css" rel="stylesheet">
   <script>
     var products;
     var total = 0;
@@ -158,19 +148,21 @@
 </header>
 
 <body>
-  <script>
-    if (ifLoggedIn == 'true') {
-      document.write('<h4>Welcome ' + user_data[user_email].name +
-        '<br>Number of Logins: ' + user_data[user_email].num_loggedIn +
-        '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>')
-    }
-  </script>
+  <div class="container">
   <center>
-    <h1>Welcome to Island Cycling!</h1>
-  </center>
-  <center>
+    <h1>Welcome <span id="username" style="color: blue;"></span> to Island Cycling!</h1>
+    <script>
+      //if user is logged in, then displays user name in the header and the other user information on the page.
+      if (ifLoggedIn == 'true') {
+        username.innerHTML = user_data[user_email].name
+        document.write('<h4><br>Number of Logins: ' + user_data[user_email].num_loggedIn +
+          '<br> Last date logged on: ' + user_data[user_email].last_date_loggin + '</h4>')
+      }
+    </script>
+        <img src="./images/background.webp" alt="image" height="45%" width="35%" class="img">
     <h4>Please Use The Navigation Bar Above To Begin Shopping</h4>
   </center>
+</div>
 </body>
 
 </html>

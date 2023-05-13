@@ -12,6 +12,8 @@ function loadJSON(service, callback) {
     xobj.send(null);  
  }
 
+ //creates the nav bar used on all pages for products
+ //referred to Z_Multi_Page_Nav under Assignment 3 Examples:
 function nav_bar(this_product_key, products_data) {
     // This makes a navigation bar to other product pages
     for (let products_key in products_data) {
