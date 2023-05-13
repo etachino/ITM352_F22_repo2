@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Harness</title>
+
+    <style>
+        .pass {
+            color: green;
+        }
+
+        .fail {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="testResults"></div>
+
+    <script>
+        function setPrice(item_id, products, sales_record, discount, dynamic) {
+            // setPrice that takes parameters item_id, products, sales_record, discount, and dynamic. This function is responsible for setting the price of an item based on the provided inputs.
+            const now = new Date();
+            const results = [];
+            const discountRates = {
+                24: 10,
+                48: 30,
+                72: 60,
+                96: 95,
+            };
+            for (let category in products) {
+                products[category].forEach((product) => {
+                    // Iterates through each product in the current category using the forEach method of the products[category] array.
+                    if (item_id === '*' || product.id === item_id) {
+                        if (dynamic) {
+                            const sales = sales_record.filter((record) =>
+                            // Filter the sales_record array using the filter method and store the result in the constant sales. 
+                                record.item_id === product.id &&
+                                record.Customer_Id &&
+                                record.Quantity_sold > 0 &&
+                                record.date &&
+                                now - new Date(record.date) < 97 * 60 * 60 * 1000
+                            );
+                            let dynamicDiscount = 0;
+                            let lastSaleDate = sales.length > 0 ? new Date(sales[0].date) : null;
+                            // lastSaleDate and assign it a value based on the condition: if the sales array has a length greater than 0, create a new Date object using the date property of the first element in the sales array; otherwise, assign null to lastSaleDate. 
+                            for (let hours in discountRates) {
+                                if (!lastSaleDate || now - lastSaleDate >= Number(hours) * 60 * 60 * 1000) {
+                                    // if lastSaleDate is false or theres difference between current date and lastSaleDate is >= than the hours specified 
+                                    dynamicDiscount = discountRates[hours];
+                                }
+                            }
+                            let oldPrice = product.price;
+                            product.price = Number((product.price * (1 - dynamicDiscount / 100)).toFixed(2));
+                            // new price for product using dynamic discount, multiply current price for the product by dynamicdiscount. 
+                            results.push(`Applied dynamic pricing to ${product.name}. Price went from $${oldPrice} to $${product.price}`);
+                            // Creates a string message indicating that dynamic pricing has been applied to the product. Include the product's name, the old price before the update (stored in the oldPrice variable), and the new price after the update. Push this message to the results array.
+                            results.push(`Sales record: ${product.name}. Current date: ${now}. Last purchased: ${lastSaleDate ? new Date(lastSaleDate) : ''}`);
+                            // indicates the sales record for the product
+                        } else {
+                            let oldPrice = product.price;
+                            product.price = Number((product.price * (1 - discount / 100)).toFixed(2));
+                            //new price for the product by applying the discount.
+                            results.push(`Applied a ${discount}% discount to ${product.name}. Price went from $${oldPrice} to $${product.price}`);
+                            // indicates the sales record for the product
+                        }
+                    }
+                    console.log(results);
+                });
+            }
+            return results;
+        }
+
+        // Define the test cases
+        const testCases = [
+            // Test setPrice() with a valid item_id and a positive fixed discount
+            {
+                description: "Valid item_id, single product, fixed discount",
+                input: {
+                    item_id: "B1",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            }
+                        ],
+                        "Helmets": []
+                    },
+                    sales_record: [
+                        {
+                            item_id: "B1",
+                            Customer_Id: "0001",
+                            Quantity_sold: 1,
+                            date: new Date() // Use a valid date here
+                        }
+                    ],
+                    discount: 20,
+                    dynamic: false
+                },
+                expected_output: [
+                    "Applied a 20% discount to Raleigh Militis Elite 3. Price went from $1500 to $1200"
+                ]
+            },
+            // Test setPrice() with a valid item_id and a negative fixed discount
+            {
+                description: "Valid item_id, single product, negative fixed discount",
+                input: {
+                    item_id: "B1",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            }
+                        ],
+                        "Helmets": []
+                    },
+                    sales_record: [],
+                    discount: -20,
+                    dynamic: false,
+                },
+                expected_output: [
+                    "Applied a -20% discount to Raleigh Militis Elite 3. Price went from $1500 to $1800"
+                ]
+            },
+            // Test setPrice() with a valid item_id and 0 discount (price should stay the same)
+            {
+                description: "Valid item_id, single product, zero fixed discount",
+                input: {
+                    item_id: "B1",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            }
+                        ],
+                        "Helmets": []
+                    },
+                    sales_record: [],
+                    discount: 0,
+                    dynamic: false,
+                },
+                expected_output: [
+                    "Applied a 0% discount to Raleigh Militis Elite 3. Price went from $1500 to $1500"
+                ]
+            },
+            // Test setPrice() with a valid item_id and dynamic discount
+            {
+                description: "Valid item_id, single product, dynamic discount",
+                input: {
+                    item_id: "B1",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            },
+                            {
+                                "id": "B2",
+                                "name": "Giant Defy Advanced 2",
+                                "price": 2000,
+                                "image": "bike_giant.jpg",
+                                "qty_available": "10"
+                            }
+                        ],
+                        "Helmets": []
+                    },
+                    sales_record: [
+                        {
+                            item_id: 'B1',
+                            Customer_Id: '0000',
+                            Quantity_sold: 1,
+                            date: new Date("2023-05-11T03:14:33.280Z")
+                        }
+                    ],
+                    discount: 0,
+                    dynamic: true
+                },
+                expected_output: [
+                    "Applied dynamic pricing to Raleigh Militis Elite 3. Price went from $1500 to $1350",
+                    'Applied dynamic pricing to Giant Defy Advanced 2. Price went from $2000 to $100',
+                    `Sales record: Raleigh Militis Elite 3. Current date: ${new Date()}. Last purchased: ${new Date("2023-05-11T03:14:33.280Z")}`
+                ]
+            },
+            // Add more test cases...
+
+            // Test setPrice() with an invalid item_id and a fixed discount
+            {
+                description: "Invalid item_id (does not exist), fixed discount",
+                input: {
+                    item_id: "9999",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            }
+                        ],
+                        "Helmets": []
+                    },
+                    sales_record: [],
+                    discount: 10,
+                    dynamic: false,
+                },
+                expected_output: []
+            },
+            // Test setPrice() with an invalid item_id (a string instead of numbers) and a positive discount
+            {
+                description: "Invalid item_id (string), fixed discount",
+                input: {
+                    item_id: "cat",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            }
+                        ],
+                        "Helmets": []
+                    },
+                    sales_record: [],
+                    discount: 10,
+                    dynamic: false,
+                },
+                expected_output: []
+            },
+            // Test setPrice() with a valid item_id and an out-of-range discount
+            {
+                description: "Valid item_id, out-of-range fixed discount",
+                input: {
+                    item_id: "B1",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            }
+                        ],
+                        "Helmets": []
+                    },
+                    sales_record: [],
+                    discount: 150,
+                    dynamic: false,
+                },
+                expected_output: []
+            },
+            // Test setPrice() with an item_id "*" and a fixed discount
+            {
+                description: "All items, fixed discount",
+                input: {
+                    item_id: "*",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            },
+                            {
+                                "id": "B2",
+                                "name": "Giant Defy Advanced 2",
+                                "price": 2000,
+                                "image": "bike_giant.jpg",
+                                "qty_available": "10"
+                            }
+                        ],
+                        "Helmets": [
+                            {
+                                "id": "H1",
+                                "name": "Bell Super 3R MIPS Helmet",
+                                "price": 150,
+                                "image": "helmet_bell.jpg",
+                                "qty_available": "20"
+                            },
+                            {
+                                "id": "H2",
+                                "name": "Giro Register MIPS Helmet",
+                                "price": 100,
+                                "image": "helmet_giro.jpg",
+                                "qty_available": "30"
+                            }
+                        ]
+                    },
+                    sales_record: [],
+                    discount: 50,
+                    dynamic: false,
+                },
+                expected_output: [
+                    "Applied a 50% discount to Raleigh Militis Elite 3. Price went from $1500 to $750",
+                    "Applied a 50% discount to Giant Defy Advanced 2. Price went from $2000 to $1000",
+                    "Applied a 50% discount to Bell Super 3R MIPS Helmet. Price went from $150 to $75",
+                    "Applied a 50% discount to Giro Register MIPS Helmet. Price went from $100 to $50"
+                ]
+            },
+            // Test setPrice() with an item_id "*" and a dynamic discount
+            {
+                description: "All items, dynamic discount",
+                input: {
+                    item_id: "*",
+                    products: {
+                        "Bikes": [
+                            {
+                                "id": "B1",
+                                "name": "Raleigh Militis Elite 3",
+                                "price": 1500,
+                                "image": "bike_raleigh.jpg",
+                                "qty_available": "15"
+                            },
+                            {
+                                "id": "B2",
+                                "name": "Giant Defy Advanced 2",
+                                "price": 2000,
+                                "image": "bike_giant.jpg",
+                                "qty_available": "10"
+                            }
+                        ],
+                        "Helmets": [
+                            {
+                                "id": "H1",
+                                "name": "Bell Super 3R MIPS Helmet",
+                                "price": 150,
+                                "image": "helmet_bell.jpg",
+                                "qty_available": "20"
+                            },
+                            {
+                                "id": "H2",
+                                "name": "Giro Register MIPS Helmet",
+                                "price": 100,
+                                "image": "helmet_giro.jpg",
+                                "qty_available": "30"
+                            }
+                        ]
+                    },
+                    sales_record: [
+                        {
+                            item_id: 'B1',
+                            Customer_Id: '0001',
+                            Quantity_sold: 1,
+                            date: new Date()
+                        },
+                        {
+                            item_id: 'H1',
+                            Customer_Id: '0002',
+                            Quantity_sold: 1,
+                            date: new Date()
+                        }
+                    ],
+                    discount: 0,
+                    dynamic: true
+                },
+                expected_output: [
+                    "Applied dynamic pricing to Raleigh Militis Elite 3. Price went from $1500 to $1350",
+                    "Applied dynamic pricing to Giant Defy Advanced 2. Price went from $2000 to $1800",
+                    "Applied dynamic pricing to Bell Super 3R MIPS Helmet. Price went from $150 to $135",
+                    "Applied dynamic pricing to Giro Register MIPS Helmet. Price went from $100 to $90"
+                ]
+            }
+        ];
+
+        // Run the test cases
+        function runTests() {
+            let passed = 0;
+            let failed = 0;
+            let testResults = "";
+
+            testCases.forEach((testCase, index) => {
+                testResults += `Running test case ${index + 1}: ${testCase.description}<br>`;
+                // Iterates through each test case in the testCases array using the forEach method. For each test case, concatenate a message to the testResults string indicating the current test case index (index + 1) and its description.
+
+                try {
+                    const actualOutput = setPrice(
+                        testCase.input.item_id,
+                        testCase.input.products,
+                        testCase.input.sales_record,
+                        testCase.input.discount,
+                        testCase.input.dynamic
+                    );
+                    // Calls the setPrice function with the input values from the current test case, and assigns the returned value to the variable actualOutput. This represents the actual output of the function based on the provided input.
+
+                    if (isEqual(actualOutput, testCase.expected_output)) {
+                        testResults += `<span class="pass">Test passed!</span><br>`;
+                        passed++;
+                    } else {
+                        testResults += `<span class="fail">Test failed: Output does not match expected output.</span><br>`;
+                        failed++;
+                    }
+                } catch (error) {
+                    testResults += `<span class="fail">Test failed: ${error.message}</span><br>`;
+                    failed++;
+                }
+
+                testResults += "--------------------------------------------------<br>";
+            });
+
+            testResults += "Test summary:<br>";
+            testResults += `Passed: ${passed}<br>`;
+            testResults += `Failed: ${failed}<br>`;
+
+            document.getElementById("testResults").innerHTML = testResults;
+        }
+
+        // Utility function to check if two arrays are deeply equal
+        function isEqual(a, b) {
+            if (a.length !== b.length) {
+                return false;
+            } 
+            // Check if the lengths of arrays 'a' and 'b' are not equal. If the lengths are different, return false, indicating that the arrays are not equal.
+
+            for (let i = 0; i < a.length; i++) {
+                if (a[i] !== b[i]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Call the runTests function to execute the test cases
+        runTests();
+    </script>
+</body>
+
+</html>
